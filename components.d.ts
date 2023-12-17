@@ -17,5 +17,6 @@ declare module 'vue' {
     ElMain: typeof import('element-plus/es')['ElMain']
     ElRow: typeof import('element-plus/es')['ElRow']
     Header: typeof import('./src/components/container/header.vue')['default']
+    SvgIcon: typeof import('./src/components/SvgIcon.vue')['default']
   }
 }

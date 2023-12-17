@@ -5,6 +5,7 @@ import path from 'node:path'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 export default defineConfig({
   resolve: {
@@ -28,6 +29,20 @@ export default defineConfig({
         enabled: false,
         filepath: './.eslintrc-auto-import.json',
         globalsPropValue: true,
+      },
+    }),
+    createSvgIconsPlugin({
+      iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
+      symbolId: 'icon-[name]',
+      svgoOptions: {
+        plugins: [
+          {
+            name: 'removeAttrs',
+            params: {
+              attrs: 'fill',
+            },
+          },
+        ],
       },
     }),
   ],

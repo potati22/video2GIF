@@ -1,12 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import '@/styles/reset.scss'
+import 'virtual:svg-icons-register'
+import SvgIcon from '@/components/SvgIcon.vue'
 
-import { setupStore } from '@/store/index'
+import '@/styles/reset.scss'
 
 const app = createApp(App)
 
-setupStore(app)
+app.component('SvgIcon', SvgIcon)
 
 app.mount('#app')

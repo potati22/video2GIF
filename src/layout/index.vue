@@ -4,12 +4,14 @@
       <MyHeader />
     </el-header>
     <el-container>
-      <el-aside class="aside-box">Aside</el-aside>
+      <el-aside class="aside-box">
+        <SvgIcon icon-class="video" />
+      </el-aside>
       <el-container>
         <el-main class="main-box">
           <MyMain />
         </el-main>
-        <el-footer class="footer-box">Footer</el-footer>
+        <el-footer class="footer-box"><MyFooter /></el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -18,6 +20,7 @@
 <script lang="ts" setup>
 import MyHeader from './header/index.vue'
 import MyMain from './main/index.vue'
+import MyFooter from './footer/index.vue'
 </script>
 
 <style lang="scss" scoped>
@@ -35,6 +38,7 @@ import MyMain from './main/index.vue'
 .aside-box {
   width: 70px;
   border-right: 1px solid var(--el-border-color);
+  font-size: 30px;
 }
 .main-box {
   padding: 0;
@@ -42,5 +46,6 @@ import MyMain from './main/index.vue'
 .footer-box {
   border-top: 1px solid var(--el-border-color);
   height: 350px;
+  padding: 0;
 }
 </style>

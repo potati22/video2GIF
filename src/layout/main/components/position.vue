@@ -1,28 +1,73 @@
 <template>
-  <div>
-    <el-button @click="startClip">开始裁剪</el-button>
-    <el-button @click="closeClip">确定裁剪</el-button>
+  <div class="pos-box">
+    <div class="xny-box">
+      <div>X：{{ videoInstance.clipPos.x }}</div>
+      <div>Y：{{ videoInstance.clipPos.y }}</div>
+    </div>
     <el-row>
-      <span>宽：</span>
-      <el-input v-model="clipPositionStore.width" />
+      <span>W：</span>
+      <el-input
+        v-model.number="videoInstance.clipPos.width"
+        placeholder="W: "
+      />
     </el-row>
     <el-row>
-      <span>高：</span>
-      <el-input v-model="clipPositionStore.height" />
+      <span>H：</span>
+      <el-input
+        v-model.number="videoInstance.clipPos.height"
+        placeholder="H: "
+      />
     </el-row>
+    <el-button class="btn-box" type="primary" @click="startClip"
+      >开始裁剪</el-button
+    >
+    <el-button class="btn-box" type="primary" @click="closeClip"
+      >确定裁剪</el-button
+    >
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useClipPositionStore } from '@/store/modules/clipPosition.ts'
+import { useVideo } from '@/hooks/useVideo'
 
-const clipPositionStore = useClipPositionStore()
+const { videoInstance } = useVideo()
 
 function startClip() {
-  clipPositionStore.changeCliping(true)
+  videoInstance.cliping = true
 }
 
 function closeClip() {
-  clipPositionStore.changeCliping(false)
+  videoInstance.cliping = false
 }
 </script>
+
+<style lang="scss" scoped>
+.pos-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-content: space-around;
+}
+.xny-box {
+  width: 300px;
+  height: 50px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.el-row {
+  width: 300px;
+  height: 30px;
+  flex-wrap: nowrap;
+  align-items: center;
+  span {
+    width: 30px;
+  }
+}
+.btn-box {
+  width: 300px;
+  height: 50px;
+}
+</style>

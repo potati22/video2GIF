@@ -25,6 +25,6 @@ import Position from './components/position.vue'
   align-items: center;
 }
 .position {
-  width: 500px;
+  width: 400px;
 }
 </style>
