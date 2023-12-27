@@ -162,7 +162,9 @@ watch(
 
 <style lang="scss" scoped>
 .content {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 canvas {
   position: absolute;

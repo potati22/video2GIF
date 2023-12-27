@@ -5,13 +5,17 @@
     </el-header>
     <el-container>
       <el-aside class="aside-box">
-        <SvgIcon icon-class="video" />
+        <MyAside />
       </el-aside>
-      <el-container>
+      <el-container class="right-box">
         <el-main class="main-box">
           <MyMain />
         </el-main>
-        <el-footer class="footer-box"><MyFooter /></el-footer>
+        <el-footer
+          class="footer-box"
+          :style="{ '--heigth': footerHeight + 'px' }"
+          ><MyFooter @change-footer-height="changeFooterHeight"
+        /></el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -19,11 +23,21 @@
 
 <script lang="ts" setup>
 import MyHeader from './header/index.vue'
+import MyAside from './aside/index.vue'
 import MyMain from './main/index.vue'
 import MyFooter from './footer/index.vue'
+
+const footerHeight = ref(250)
+
+function changeFooterHeight(h: number) {
+  footerHeight.value = h
+}
 </script>
 
 <style lang="scss" scoped>
+.el-container {
+  background-color: var(--el-bg-color-page);
+}
 .common-box {
   height: 100vh;
 }
@@ -31,21 +45,25 @@ import MyFooter from './footer/index.vue'
   border-bottom: 1px solid var(--el-border-color);
   height: 50px;
   padding: 0;
-  display: flex;
   flex-direction: row;
   align-items: center;
 }
 .aside-box {
   width: 70px;
-  border-right: 1px solid var(--el-border-color);
-  font-size: 30px;
+  display: flex;
+  flex-direction: column;
+}
+.right-box {
+  display: flex;
+  flex-direction: column;
 }
 .main-box {
   padding: 0;
+  flex: 1;
 }
 .footer-box {
-  border-top: 1px solid var(--el-border-color);
-  height: 350px;
+  height: var(--heigth);
+  min-height: 250px;
   padding: 0;
 }
 </style>

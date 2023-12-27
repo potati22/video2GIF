@@ -6,6 +6,7 @@ specifiers:
   '@ffmpeg/ffmpeg': ^0.12.7
   '@ffmpeg/util': ^0.12.1
   '@types/node': ^20.10.4
+  '@types/vue-router': ^2.0.0
   '@typescript-eslint/eslint-plugin': 6.0.0
   '@typescript-eslint/parser': 6.3.0
   '@vitejs/plugin-vue': ^4.2.3
@@ -26,6 +27,7 @@ specifiers:
   vite: ^4.3.9
   vite-plugin-svg-icons: ^2.0.1
   vue: ^3.3.4
+  vue-router: ^4.2.5
 
 dependencies:
   '@ffmpeg/core': 0.12.4
@@ -34,9 +36,11 @@ dependencies:
   '@types/node': 20.10.4
   element-plus: 2.4.4
   vue: 3.3.11_typescript@4.9.5
+  vue-router: 4.2.5
 
 devDependencies:
   '@commitlint/cli': 12.1.4
+  '@types/vue-router': 2.0.0
   '@typescript-eslint/eslint-plugin': 6.0.0_d43lbjrm24u5b3be2fppqrss24
   '@typescript-eslint/parser': 6.3.0_c6scop6gobf6637sntyzfiffg4
   '@vitejs/plugin-vue': 4.5.2_vite@4.5.1+vue@3.3.11
@@ -647,6 +651,13 @@ packages:
       '@types/node': 20.10.4
     dev: true
 
+  /@types/vue-router/2.0.0:
+    resolution: {integrity: sha512-E454lQ6tp9ftVWdZ8VGZpRcIV4YeqVAcx/uifl3P1GGwscYsxOFdYfgIuKasKO0Fm6Np2JM/L378D3bcRQE9hg==}
+    deprecated: This is a stub types definition for vue-router (https://github.com/vuejs/vue-router). ecmarkup provides its own type definitions, so you don\'t need @types/ecmarkup installed!
+    dependencies:
+      vue-router: 4.2.5
+    dev: true
+
   /@types/web-bluetooth/0.0.16:
     resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
     dev: false
@@ -871,6 +882,9 @@ packages:
     dependencies:
       '@vue/compiler-dom': 3.3.11
       '@vue/shared': 3.3.11
+
+  /@vue/devtools-api/6.5.1:
+    resolution: {integrity: sha512-+KpckaAQyfbvshdDW5xQylLni1asvNSGme1JFs8I1+/H5pHEhqUKMEQD/qn3Nx5+/nycBq11qAEi8lk+LXI2dA==}
 
   /@vue/reactivity-transform/3.3.11:
     resolution: {integrity: sha512-fPGjH0wqJo68A0wQ1k158utDq/cRyZNlFoxGwNScE28aUFOKFEnCBsvyD8jHn+0kd0UKVpuGuaZEQ6r9FJRqCg==}
@@ -4440,6 +4454,13 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /vue-router/4.2.5:
+    resolution: {integrity: sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@vue/devtools-api': 6.5.1
 
   /vue/3.3.11_typescript@4.9.5:
     resolution: {integrity: sha512-d4oBctG92CRO1cQfVBZp6WJAs0n8AK4Xf5fNjQCBeKCvMI1efGQ5E3Alt1slFJS9fZuPcFoiAiqFvQlv1X7t/w==}
