@@ -6,7 +6,7 @@
       :class="['menu-item', { chosen: chosen === item.path }]"
       @click="to(item.path)"
     >
-      <SvgIcon :icon-class="item.icon" />
+      <HSvgIcon :icon-class="item.icon" />
       <span>{{ item.title }}</span>
     </div>
   </div>
@@ -29,7 +29,7 @@ const menu = [
   {
     id: 2,
     icon: 'cut',
-    title: '剪辑',
+    title: '裁剪',
     path: '/cut',
   },
   {

@@ -1,7 +1,7 @@
 <template>
   <div class="control-box">
-    <SvgIcon icon-class="play" @click="videoPlay" />
-    <SvgIcon icon-class="pause" @click="videoPause" />
+    <HSvgIcon icon-class="play" @click="videoPlay" />
+    <HSvgIcon icon-class="pause" @click="videoPause" />
   </div>
 </template>
 

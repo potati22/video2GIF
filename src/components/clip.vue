@@ -31,6 +31,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  clipped: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emits = defineEmits(['changeClipX', 'changeClipY'])
@@ -71,12 +75,17 @@ function startClip() {
 }
 
 function closeClip() {
-  ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
+  if (props.clipped) {
+    ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
+    ctx.fillStyle = '#212123'
+    ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight)
+    ctx.clearRect(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
+  } else {
+    ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
+  }
   canvas.removeEventListener('mousedown', mouseDown)
   canvas.removeEventListener('mousemove', mouseMove)
   canvas.removeEventListener('mouseup', mouseUp)
-  canvas = null
-  ctx = null
 }
 
 function reDrawClip(x: number, y: number, width: number, height: number) {
@@ -162,6 +171,7 @@ watch(
 
 <style lang="scss" scoped>
 .content {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -3,6 +3,18 @@ html.dark {
   --el-bg-color: #212123;
   --el-border-color: #000;
   --my-color: #fded70;
+  --h-btn-bg-color: #2b2b2e;
+  --h-btn-bg-color-hover: #18181a;
+  --h-btn-bg-color-bright: #fded70;
+  --h-btn-bg-color-bright-hover: #ffe456;
+  --h-btn-color: #e4eaf1;
+  --h-bth-color-bright: #212123;
+  --h-inp-bg-color: #2b2b2e;
+  --h-inp-border-color: #18181a;
+  --h-inp-color: #b4c3d3;
+  --h-inp-bg-color-focus: #0a0b0d;
+  --h-inp-bg-color-hover: #18181a;
+  --h-inp-color-focus: #fded70;
   /* #18181a */
   /* #212123 */
 }

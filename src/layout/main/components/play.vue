@@ -15,6 +15,7 @@
           :clip-width="videoInstance.clipPos.width"
           :clip-height="videoInstance.clipPos.height"
           :cliping="videoInstance.cliping"
+          :clipped="videoInstance.clipped"
           @change-clip-x="(x) => (videoInstance.clipPos.x = x)"
           @change-clip-y="(y) => (videoInstance.clipPos.y = y)"
         >
@@ -68,7 +69,7 @@ onUnmounted(() => {
   eleResizeObserver.unobserve(unref(innerBox))
 })
 
-const myVideo: Ref<HTMLMediaElement> = ref()
+const myVideo: Ref<HTMLVideoElement> = ref()
 const { videoInstance, videoInit } = useVideo()
 videoInit(myVideo)
 </script>

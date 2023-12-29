@@ -5,9 +5,12 @@ interface IVideoInstance {
     width: number
     height: number
   }
+  realWidth: number
+  realHeight: number
   clientWidth: number
   clientHeight: number
   cliping: boolean
+  clipped: boolean
   playing: boolean
   paused: boolean
   startTimesStamp: string
@@ -21,25 +24,30 @@ const videoInstance: IVideoInstance = reactive({
     width: 150,
     height: 150,
   },
-  clientWidth: 150,
-  clientHeight: 150,
+  realWidth: 0,
+  realHeight: 0,
+  clientWidth: 0,
+  clientHeight: 0,
   cliping: false,
+  clipped: false,
   playing: false,
   paused: true,
   startTimesStamp: '0',
   endTimesStamp: '0',
 })
-let video: HTMLMediaElement
+let video: HTMLVideoElement
 
 export function useVideo() {
   // 注册video事件
-  function videoInit(videoRef: Ref<HTMLMediaElement>) {
+  function videoInit(videoRef: Ref<HTMLVideoElement>) {
     if (video) throw '已经初始化过一次video了'
     onMounted(() => {
       video = unref(videoRef)
       video.onloadedmetadata = function (e) {
-        videoInstance.clientWidth = (e.target as HTMLMediaElement).clientWidth
-        videoInstance.clientHeight = (e.target as HTMLMediaElement).clientHeight
+        videoInstance.realWidth = video.videoWidth
+        videoInstance.realHeight = video.videoHeight
+        videoInstance.clientWidth = (e.target as HTMLVideoElement).clientWidth
+        videoInstance.clientHeight = (e.target as HTMLVideoElement).clientHeight
       }
     })
   }
