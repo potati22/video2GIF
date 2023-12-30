@@ -40,38 +40,43 @@ const innerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
 const workAreaWidth = ref(0)
 const videoHeight = ref(0)
-let eleResizeObserver: ResizeObserver
+let innerBoxResizeObserver: ResizeObserver
+let videoResizeObserver: ResizeObserver
+
+const myVideo: Ref<HTMLVideoElement> = ref()
+const { videoInstance, videoInit } = useVideo()
+videoInit(myVideo)
 
 onMounted(() => {
-  eleResizeObserver = new ResizeObserver((e) => {
-    const H = e[0].contentRect.height
-    const W = e[0].contentRect.width
+  innerBoxResizeObserver = new ResizeObserver((e) => {
+    const H = Math.floor(e[0].contentRect.height)
+    const W = Math.floor(e[0].contentRect.width)
     if (2 * H > W) {
       workAreaWidth.value = W
-      workAreaHeight.value = W / 2
-      videoHeight.value = workAreaHeight.value / 1.2
-      videoInstance.clientWidth = myVideo.value.clientWidth
-      videoInstance.clientHeight = myVideo.value.clientHeight
+      workAreaHeight.value = Math.floor(W / 2)
+      videoHeight.value = Math.floor(workAreaHeight.value / 1.2)
+      videoInstance.clientHeight = videoHeight.value
     } else {
       workAreaHeight.value = H
       workAreaWidth.value = 2 * H
-      videoHeight.value = workAreaHeight.value / 1.2
-      videoInstance.clientWidth = myVideo.value.clientWidth
-      videoInstance.clientHeight = myVideo.value.clientHeight
+      videoHeight.value = Math.floor(workAreaHeight.value / 1.2)
+      videoInstance.clientHeight = videoHeight.value
     }
   })
-  eleResizeObserver.observe(unref(innerBox), {
+  innerBoxResizeObserver.observe(unref(innerBox), {
+    box: 'content-box',
+  })
+  videoResizeObserver = new ResizeObserver((e) => {
+    videoInstance.clientWidth = Math.ceil(e[0].contentRect.width)
+  })
+  videoResizeObserver.observe(unref(myVideo), {
     box: 'content-box',
   })
 })
 
 onUnmounted(() => {
-  eleResizeObserver.unobserve(unref(innerBox))
+  innerBoxResizeObserver.unobserve(unref(innerBox))
 })
-
-const myVideo: Ref<HTMLVideoElement> = ref()
-const { videoInstance, videoInit } = useVideo()
-videoInit(myVideo)
 </script>
 
 <style lang="scss" scoped>

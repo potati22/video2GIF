@@ -62,9 +62,43 @@ watch(
   },
 )
 
+watch(
+  () => props.canvasWidth,
+  () => {
+    if (!props.cliping && !props.clipped) {
+      // 什么都不做
+    } else if (!props.cliping && props.clipped) {
+      nextTick(() => {
+        reDrawCanvas()
+      })
+    } else if (props.cliping) {
+      reDrawClip(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
+    }
+  },
+)
+
+watch(
+  () => props.clipWidth,
+  (newVal) => {
+    // clip不能超出画布
+    if (clipPoint.x + newVal >= props.canvasWidth) return
+    reDrawClip(clipPoint.x, clipPoint.y, newVal, props.clipHeight)
+  },
+)
+
+watch(
+  () => props.clipHeight,
+  (newVal) => {
+    // clip不能超出画布
+    if (clipPoint.y + newVal >= props.canvasHeight) return
+    reDrawClip(clipPoint.x, clipPoint.y, props.clipWidth, newVal)
+  },
+)
+
 function startClip() {
   canvas = document.getElementById('mask') as HTMLCanvasElement
   ctx = canvas.getContext('2d')
+  ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
   ctx.fillStyle = 'rgba(0, 0, 0, .5)'
   ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight)
   ctx.clearRect(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
@@ -76,10 +110,7 @@ function startClip() {
 
 function closeClip() {
   if (props.clipped) {
-    ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
-    ctx.fillStyle = '#212123'
-    ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight)
-    ctx.clearRect(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
+    reDrawCanvas()
   } else {
     ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
   }
@@ -88,6 +119,15 @@ function closeClip() {
   canvas.removeEventListener('mouseup', mouseUp)
 }
 
+// 绘制裁剪完的区域
+function reDrawCanvas() {
+  ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
+  ctx.fillStyle = '#212123'
+  ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight)
+  ctx.clearRect(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
+}
+
+// 绘制裁剪区域
 function reDrawClip(x: number, y: number, width: number, height: number) {
   ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
   ctx.fillStyle = 'rgba(0, 0, 0, .5)'
@@ -149,24 +189,6 @@ function mouseMove(e: MouseEvent) {
     reDrawClip(curClipPosX, curClipPosY, props.clipWidth, props.clipHeight)
   }
 }
-
-watch(
-  () => props.clipWidth,
-  (newVal) => {
-    // clip不能超出画布
-    if (clipPoint.x + newVal >= props.canvasWidth) return
-    reDrawClip(clipPoint.x, clipPoint.y, newVal, props.clipHeight)
-  },
-)
-
-watch(
-  () => props.clipHeight,
-  (newVal) => {
-    // clip不能超出画布
-    if (clipPoint.y + newVal >= props.canvasHeight) return
-    reDrawClip(clipPoint.x, clipPoint.y, props.clipWidth, newVal)
-  },
-)
 </script>
 
 <style lang="scss" scoped>
