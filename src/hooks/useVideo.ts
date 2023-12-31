@@ -9,6 +9,7 @@ interface IVideoInstance {
   realHeight: number
   clientWidth: number
   clientHeight: number
+  realToCanR: number
   cliping: boolean
   clipped: boolean
   playing: boolean
@@ -21,13 +22,14 @@ const videoInstance: IVideoInstance = reactive({
   clipPos: {
     x: 0,
     y: 0,
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
   },
   realWidth: 0,
   realHeight: 0,
   clientWidth: 0,
   clientHeight: 0,
+  realToCanR: 1,
   cliping: false,
   clipped: false,
   playing: false,

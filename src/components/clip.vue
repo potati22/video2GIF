@@ -65,14 +65,14 @@ watch(
 watch(
   () => props.canvasWidth,
   () => {
-    if (!props.cliping && !props.clipped) {
-      // 什么都不做
-    } else if (!props.cliping && props.clipped) {
+    if (!props.cliping && props.clipped) {
       nextTick(() => {
         reDrawCanvas()
       })
     } else if (props.cliping) {
-      reDrawClip(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
+      nextTick(() => {
+        reDrawClip(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
+      })
     }
   },
 )
@@ -101,6 +101,7 @@ function startClip() {
   ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
   ctx.fillStyle = 'rgba(0, 0, 0, .5)'
   ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight)
+  console.log(props.clipWidth, props.clipHeight)
   ctx.clearRect(clipPoint.x, clipPoint.y, props.clipWidth, props.clipHeight)
 
   canvas.addEventListener('mousedown', mouseDown)
