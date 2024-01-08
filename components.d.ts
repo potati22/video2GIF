@@ -19,6 +19,7 @@ declare module 'vue' {
     HButton: typeof import('./src/components/web/HButton.vue')['default']
     Header: typeof import('./src/components/container/header.vue')['default']
     HInput: typeof import('./src/components/web/HInput.vue')['default']
+    HSSelect: typeof import('./src/components/web/HSSelect.vue')['default']
     HSvgIcon: typeof import('./src/components/web/HSvgIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

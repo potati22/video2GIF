@@ -5,9 +5,7 @@
     </div>
     <div v-show="videoInstance.cliping" class="row">
       <span>宽高比：</span>
-      <HInput v-model.number="videoInstance.clipPos.width" class="inp" />
-      <span style="margin: 0 5px">:</span>
-      <HInput v-model.number="videoInstance.clipPos.height" class="inp" />
+      <HSSelect :data="seleceData" @select="(e) => console.log(e)" />
     </div>
     <div v-show="videoInstance.cliping" class="row">
       <HButton class="btn cancel" @click="cancelClip">取消</HButton>
@@ -23,6 +21,10 @@
 import { useVideo } from '@/hooks/useVideo'
 
 const { videoInstance } = useVideo()
+const seleceData = [
+  { id: 0, name: '1:1' },
+  { id: 1, name: '自由' },
+]
 
 function startClip() {
   if (videoInstance.cliping) return
@@ -56,16 +58,14 @@ function resetClip() {
 .row {
   width: 250px;
   margin-bottom: 15px;
+  display: flex;
+  align-items: center;
 }
 .btn {
   height: 36px;
 }
 .start {
   width: 250px;
-}
-.inp {
-  width: 64px;
-  height: 36px;
 }
 .apply {
   width: 120px;

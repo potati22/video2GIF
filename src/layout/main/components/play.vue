@@ -10,7 +10,10 @@
       >
         <div class="video-outer">
           <video ref="myVideo" src="/static/capture.mp4"></video>
-          <Crop></Crop>
+          <Crop
+            :cliping="videoInstance.cliping"
+            :clipped="videoInstance.clipped"
+          ></Crop>
         </div>
       </div>
     </div>
@@ -30,7 +33,7 @@ const workAreaWidth = ref(0)
 let innerBoxResizeObserver: ResizeObserver
 
 const myVideo: Ref<HTMLVideoElement> = ref()
-const { videoInit } = useVideo()
+const { videoInit, videoInstance } = useVideo()
 videoInit(myVideo)
 
 onMounted(() => {
@@ -79,12 +82,15 @@ onUnmounted(() => {
   align-items: center;
 }
 .video-outer {
-  display: inline-block;
+  display: inline-block; // 行内块元素 宽度只能为内容宽度 故为video宽度
   height: 80%;
   position: relative;
+  overflow: hidden;
+  background-color: var(--el-bg-color);
 }
 video {
   height: 100%;
   object-fit: contain;
+  background-color: var(--el-bg-color);
 }
 </style>
