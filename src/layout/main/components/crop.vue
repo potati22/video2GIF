@@ -146,8 +146,8 @@ function registerCrop() {
     if (!cropCanmove.value) return
     const x = cropBoxTransX.value + e.movementX
     const y = cropBoxTransY.value + e.movementY
-    const maxX = wrapWidth.value - cropRef.value.clientWidth
-    const maxY = wrapHeight.value - cropRef.value.clientHeight
+    const maxX = wrapWidth.value - cropRef.value.clientWidth - 3
+    const maxY = wrapHeight.value - cropRef.value.clientHeight - 3
     if (x <= 0 || x >= maxX || y <= 0 || y >= maxY) return
     cropBoxTransX.value = x
     cropBoxTransY.value = y
@@ -163,8 +163,8 @@ function registerTM() {
     if (!cropCanchange.value) return
     const h = cropBoxTransH.value - e.movementY
     const y = cropBoxTransY.value + e.movementY
-    const maxH = wrapHeight.value
-    const maxY = wrapHeight.value - h
+    const maxH = wrapHeight.value - 3
+    const maxY = wrapHeight.value - h - 3
     if (h < 0 || h >= maxH || y < 0 || y >= maxY) return
     cropBoxTransH.value = h
     cropBoxTransY.value = y
@@ -179,7 +179,7 @@ function registerBM() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanchange.value) return
     const h = cropBoxTransH.value + e.movementY
-    const maxH = wrapHeight.value - cropBoxTransY.value
+    const maxH = wrapHeight.value - cropBoxTransY.value - 3
     if (h < 0 || h >= maxH) return
     cropBoxTransH.value = h
   }
@@ -194,8 +194,8 @@ function registerLM() {
     if (!cropCanchange.value) return
     const w = cropBoxTransW.value - e.movementX
     const x = cropBoxTransX.value + e.movementX
-    const maxW = wrapWidth.value
-    const maxX = wrapWidth.value - w
+    const maxW = wrapWidth.value - 3
+    const maxX = wrapWidth.value - w - 3
     if (w < 0 || w >= maxW || x < 0 || x >= maxX) return
     cropBoxTransW.value = w
     cropBoxTransX.value = x
@@ -210,7 +210,7 @@ function registerRM() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanchange.value) return
     const w = cropBoxTransW.value + e.movementX
-    const maxW = wrapWidth.value - cropBoxTransX.value
+    const maxW = wrapWidth.value - cropBoxTransX.value - 3
     if (w < 0 || w >= maxW) return
     cropBoxTransW.value = w
   }
@@ -285,14 +285,13 @@ function registerAll() {
 }
 
 .move-point {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
   color: var(--my-color);
   font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .scale-point {
   position: absolute;
@@ -334,5 +333,23 @@ function registerAll() {
 }
 .rm {
   left: 100%;
+}
+
+.tm::after,
+.bm::after {
+  position: absolute;
+  content: '';
+  width: 1000%;
+  height: 400%;
+  transform: translate(-50%, -10px);
+}
+
+.lm::after,
+.rm::after {
+  position: absolute;
+  content: '';
+  height: 1000%;
+  width: 400%;
+  transform: translate(-10px, -50%);
 }
 </style>
