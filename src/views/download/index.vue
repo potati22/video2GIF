@@ -25,16 +25,20 @@ async function videoProcess() {
   const uint8arry = await fetchFile('/static/capture.mp4')
   await ffmpeg.writeFile('enhypen.mp4', uint8arry)
   await ffmpeg.exec([
+    '-t',
+    '3',
+    '-ss',
+    '00:00:02',
     '-i',
     'enhypen.mp4',
     '-vf',
     `crop=${width}:${height}:${x}:${y}`,
-    'enhypen2.mp4',
+    'enhypen2.gif',
   ])
-  const final = await ffmpeg.readFile('enhypen2.mp4', 'binary')
+  const final = await ffmpeg.readFile('enhypen2.gif', 'binary')
   console.log(
     URL.createObjectURL(
-      new Blob([(final as Uint8Array).buffer], { type: 'video/mp4' }),
+      new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
     ),
   )
 }
