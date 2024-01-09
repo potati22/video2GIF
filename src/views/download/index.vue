@@ -17,6 +17,11 @@ const ffmpeg = new FFmpeg()
 const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
 
 async function videoProcess() {
+  const loading = ElLoading.service({
+    lock: true,
+    text: '🏃‍♀️Loading...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
   const { x, y, width, height } = getRealClipPos()
   await ffmpeg.load({
     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
@@ -41,6 +46,7 @@ async function videoProcess() {
       new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
     ),
   )
+  loading.close()
 }
 </script>
 

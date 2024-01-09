@@ -10,6 +10,7 @@
       >
         <div class="video-outer">
           <video ref="myVideo" src="/static/capture.mp4"></video>
+          <div></div>
           <Crop></Crop>
         </div>
       </div>
@@ -82,12 +83,10 @@ onUnmounted(() => {
   display: inline-block; // 行内块元素 宽度只能为内容宽度 故为video宽度
   height: 80%;
   position: relative;
-  overflow: hidden;
   background-color: var(--el-bg-color);
 }
 video {
   height: 100%;
-  object-fit: contain;
   background-color: var(--el-bg-color);
 }
 </style>
