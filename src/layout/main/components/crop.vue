@@ -1,5 +1,5 @@
 <template>
-  <div v-show="cliping" class="wrap-outer">
+  <div v-show="videoInstance.cliping" class="wrap-outer">
     <div
       ref="wrapRef"
       class="wrap-box cliping"
@@ -31,7 +31,7 @@
     </div>
   </div>
   <div
-    v-show="!cliping && clipped"
+    v-show="!videoInstance.cliping && videoInstance.clipped"
     class="wrap-box clipped"
     :style="{
       '--x': `${Rx * 100}%`,
@@ -45,16 +45,10 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
-  cliping: {
-    type: Boolean,
-    default: false,
-  },
-  clipped: {
-    type: Boolean,
-    default: false,
-  },
-})
+import { useVideo } from '@/hooks/useVideo'
+
+const { videoInstance, clipApplyOn, clipCancelOn, clipResetOn } = useVideo()
+
 let wrapBoxResizeObserver: ResizeObserver
 
 const cropRef = ref()
@@ -76,6 +70,23 @@ const Ry = ref(0)
 const Rw = ref(0)
 const Rh = ref(0)
 
+const cropCanchange = ref(false)
+const cropCanmove = ref(false)
+
+clipApplyOn(cropBoxTransX, cropBoxTransY, cropBoxTransW, cropBoxTransH)
+clipCancelOn(() => {
+  cropBoxTransX.value = videoInstance.clipPos.x
+  cropBoxTransY.value = videoInstance.clipPos.y
+  cropBoxTransW.value = videoInstance.clipPos.width
+  cropBoxTransH.value = videoInstance.clipPos.height
+})
+clipResetOn(() => {
+  cropBoxTransX.value = 0
+  cropBoxTransY.value = 0
+  cropBoxTransW.value = 100
+  cropBoxTransH.value = 100
+})
+
 watch(cropBoxTransX, () => {
   Rx.value = ((cropBoxTransX.value / wrapWidth.value) * 100) / 100
 })
@@ -91,9 +102,6 @@ watch(cropBoxTransW, () => {
 watch(cropBoxTransH, () => {
   Rh.value = ((cropBoxTransH.value / wrapHeight.value) * 100) / 100
 })
-
-const cropCanchange = ref(false)
-const cropCanmove = ref(false)
 
 onMounted(() => {
   let flag = 0 // 用于初始化Rw和Rh

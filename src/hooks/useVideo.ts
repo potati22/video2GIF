@@ -1,3 +1,5 @@
+import emitter from '@/utils/bus'
+
 interface IVideoInstance {
   clipPos: {
     x: number
@@ -22,8 +24,8 @@ const videoInstance: IVideoInstance = reactive({
   clipPos: {
     x: 0,
     y: 0,
-    width: 250,
-    height: 250,
+    width: 0,
+    height: 0,
   },
   realWidth: 0,
   realHeight: 0,
@@ -64,10 +66,72 @@ export function useVideo() {
     video.pause()
   }
 
+  // 开始裁剪
+  function clipStartEmit() {
+    videoInstance.cliping = true
+  }
+
+  // 确认裁剪
+  function clipApplyEmit() {
+    emitter.emit('clip-apply')
+    videoInstance.cliping = false
+    videoInstance.clipped = true
+  }
+
+  function clipApplyOn(
+    x: Ref<number>,
+    y: Ref<number>,
+    width: Ref<number>,
+    height: Ref<number>,
+  ) {
+    emitter.on('clip-apply', () => {
+      videoInstance.clipPos.x = x.value
+      videoInstance.clipPos.y = y.value
+      videoInstance.clipPos.width = width.value
+      videoInstance.clipPos.height = height.value
+    })
+  }
+
+  // 取消裁剪
+  function clipCancelEmit() {
+    emitter.emit('clip-cancel')
+    videoInstance.cliping = false
+  }
+
+  function clipCancelOn(cb: () => void) {
+    emitter.on('clip-cancel', () => {
+      cb()
+    })
+  }
+
+  // 重置裁剪
+  function clipResetEmit() {
+    emitter.emit('clip-reset')
+    videoInstance.cliping = false
+    videoInstance.clipped = false
+  }
+
+  function clipResetOn(cb?: () => void) {
+    emitter.on('clip-reset', () => {
+      cb && cb()
+      videoInstance.clipPos.x = 0
+      videoInstance.clipPos.y = 0
+      videoInstance.clipPos.width = 0
+      videoInstance.clipPos.height = 0
+    })
+  }
+
   return {
     videoInstance,
     videoInit,
     videoPlay,
     videoPause,
+    clipStartEmit,
+    clipApplyEmit,
+    clipCancelEmit,
+    clipResetEmit,
+    clipApplyOn,
+    clipCancelOn,
+    clipResetOn,
   }
 }

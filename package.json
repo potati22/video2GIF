@@ -19,6 +19,7 @@
     "@ffmpeg/util": "^0.12.1",
     "@types/node": "^20.10.4",
     "element-plus": "^2.4.4",
+    "mitt": "^3.0.1",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },

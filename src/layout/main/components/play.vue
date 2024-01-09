@@ -10,10 +10,7 @@
       >
         <div class="video-outer">
           <video ref="myVideo" src="/static/capture.mp4"></video>
-          <Crop
-            :cliping="videoInstance.cliping"
-            :clipped="videoInstance.clipped"
-          ></Crop>
+          <Crop></Crop>
         </div>
       </div>
     </div>
@@ -33,7 +30,7 @@ const workAreaWidth = ref(0)
 let innerBoxResizeObserver: ResizeObserver
 
 const myVideo: Ref<HTMLVideoElement> = ref()
-const { videoInit, videoInstance } = useVideo()
+const { videoInit } = useVideo()
 videoInit(myVideo)
 
 onMounted(() => {
