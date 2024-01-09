@@ -11,7 +11,7 @@ interface IVideoInstance {
   realHeight: number
   clientWidth: number
   clientHeight: number
-  realToCanR: number
+  radio: number
   cliping: boolean
   clipped: boolean
   playing: boolean
@@ -27,11 +27,11 @@ const videoInstance: IVideoInstance = reactive({
     width: 0,
     height: 0,
   },
+  radio: 0, // realHeight / clientHeight
   realWidth: 0,
   realHeight: 0,
   clientWidth: 0,
   clientHeight: 0,
-  realToCanR: 1,
   cliping: false,
   clipped: false,
   playing: false,
@@ -121,6 +121,18 @@ export function useVideo() {
     })
   }
 
+  // 获得video真实裁剪数据
+  function getRealClipPos() {
+    const r = videoInstance.realHeight / videoInstance.clientHeight
+    videoInstance.radio = r
+    return {
+      x: Math.floor(videoInstance.clipPos.x * r),
+      y: Math.floor(videoInstance.clipPos.y * r),
+      width: Math.floor(videoInstance.clipPos.width * r),
+      height: Math.floor(videoInstance.clipPos.height * r),
+    }
+  }
+
   return {
     videoInstance,
     videoInit,
@@ -133,5 +145,6 @@ export function useVideo() {
     clipApplyOn,
     clipCancelOn,
     clipResetOn,
+    getRealClipPos,
   }
 }
