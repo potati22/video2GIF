@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import Control from './components/control.vue'
+import Control from './components/Control.vue'
 
 const controlLine = ref()
 let lineCanMove = false
