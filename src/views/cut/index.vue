@@ -5,7 +5,12 @@
     </div>
     <div v-show="videoInstance.cliping" class="row">
       <span>宽高比：</span>
-      <HSSelect :data="seleceData" @select="(e) => console.log(e)" />
+      <div
+        :class="['square', videoInstance.square ? 'square-selected' : '']"
+        @click="SquareTurnOnEmit"
+      >
+        1:1
+      </div>
     </div>
     <div v-show="videoInstance.cliping" class="row">
       <HButton class="btn cancel" @click="clipCancelEmit">取消</HButton>
@@ -26,11 +31,8 @@ const {
   clipApplyEmit,
   clipCancelEmit,
   clipResetEmit,
+  SquareTurnOnEmit,
 } = useVideo()
-const seleceData = [
-  { id: 0, name: '1:1' },
-  { id: 1, name: '自由' },
-]
 </script>
 
 <style lang="scss" scoped>
@@ -48,6 +50,29 @@ const seleceData = [
   margin-bottom: 15px;
   display: flex;
   align-items: center;
+}
+.square {
+  width: 40px;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  padding: 0 12px;
+  margin: 5px;
+  background-color: var(--h-btn-bg-color);
+  color: var(--h-btn-color);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.square:hover {
+  background-color: var(--h-btn-bg-color-hover);
+}
+.square:focus {
+  background-color: var(--h-inp-bg-color-focus);
+  color: var(--h-inp-color);
+}
+.square-selected {
+  background-color: var(--h-inp-bg-color-focus);
+  color: var(--h-inp-color);
 }
 .btn {
   height: 36px;

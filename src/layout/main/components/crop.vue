@@ -47,7 +47,14 @@
 <script lang="ts" setup>
 import { useVideo } from '@/hooks/useVideo'
 
-const { videoInstance, clipApplyOn, clipCancelOn, clipResetOn } = useVideo()
+const {
+  videoInstance,
+  clipApplyOn,
+  clipCancelOn,
+  clipResetOn,
+  SquareTurnOnOn,
+  SquareTurnOff,
+} = useVideo()
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -85,6 +92,13 @@ clipResetOn(() => {
   cropBoxTransY.value = 0
   cropBoxTransW.value = 100
   cropBoxTransH.value = 100
+})
+SquareTurnOnOn(() => {
+  if (cropBoxTransW.value > cropBoxTransH.value) {
+    cropBoxTransW.value = cropBoxTransH.value
+  } else {
+    cropBoxTransH.value = cropBoxTransW.value
+  }
 })
 
 watch(cropBoxTransX, () => {
@@ -135,6 +149,7 @@ function closeMove() {
 
 function openChange() {
   cropCanchange.value = true
+  SquareTurnOff()
 }
 
 function closeChange() {

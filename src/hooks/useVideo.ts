@@ -12,6 +12,7 @@ interface IVideoInstance {
   clientWidth: number
   clientHeight: number
   radio: number
+  square: boolean
   cliping: boolean
   clipped: boolean
   playing: boolean
@@ -28,6 +29,7 @@ const videoInstance: IVideoInstance = reactive({
     height: 0,
   },
   radio: 0, // realHeight / clientHeight
+  square: false, // 是否1：1宽高比
   realWidth: 0,
   realHeight: 0,
   clientWidth: 0,
@@ -133,6 +135,21 @@ export function useVideo() {
     }
   }
 
+  function SquareTurnOnEmit() {
+    videoInstance.square = true
+    emitter.emit('square-on')
+  }
+
+  function SquareTurnOnOn(cb: () => void) {
+    emitter.on('square-on', () => {
+      cb()
+    })
+  }
+
+  function SquareTurnOff() {
+    videoInstance.square = false
+  }
+
   return {
     videoInstance,
     videoInit,
@@ -146,5 +163,8 @@ export function useVideo() {
     clipCancelOn,
     clipResetOn,
     getRealClipPos,
+    SquareTurnOnEmit,
+    SquareTurnOnOn,
+    SquareTurnOff,
   }
 }
