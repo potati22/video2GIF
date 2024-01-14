@@ -8,9 +8,9 @@
       <HSvgIcon icon-class="pause" @click="videoPause" />
     </div>
     <div class="right-box">
-      <HSvgIcon icon-class="reduce-btn" />
-      <progress max="100" value="70"></progress>
-      <HSvgIcon icon-class="add-btn" />
+      <HSvgIcon icon-class="reduce-btn" @click="reduceScaleLevel" />
+      <progress max="3" :value="scaleLevel"></progress>
+      <HSvgIcon icon-class="add-btn" @click="addScaleLevel" />
     </div>
   </div>
 </template>
@@ -18,6 +18,24 @@
 <script lang="ts" setup>
 import { useVideo } from '@/hooks/useVideo'
 const { videoPlay, videoPause } = useVideo()
+
+const emit = defineEmits(['changeScaleLevel'])
+
+const scaleLevel = ref(4)
+
+function reduceScaleLevel() {
+  const res = scaleLevel.value - 1
+  if (res < 1) return
+  scaleLevel.value = res
+  emit('changeScaleLevel', res)
+}
+
+function addScaleLevel() {
+  const res = scaleLevel.value + 1
+  if (res > 3) return
+  scaleLevel.value = res
+  emit('changeScaleLevel', res)
+}
 </script>
 
 <style lang="scss" scoped>

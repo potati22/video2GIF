@@ -10,7 +10,6 @@
       >
         <div class="video-outer">
           <video ref="myVideo" src="/static/capture.mp4"></video>
-          <div></div>
           <Crop></Crop>
         </div>
       </div>

@@ -39,6 +39,7 @@ function changeFooterHeight(h: number) {
   background-color: var(--el-bg-color-page);
 }
 .common-box {
+  width: 100%;
   height: 100vh;
 }
 .header-box {
@@ -62,6 +63,7 @@ function changeFooterHeight(h: number) {
   flex: 1;
 }
 .footer-box {
+  position: relative;
   height: var(--heigth);
   min-height: 250px;
   padding: 0;

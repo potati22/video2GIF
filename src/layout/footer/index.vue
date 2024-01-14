@@ -1,15 +1,21 @@
 <template>
-  <div ref="controlLine" class="control-line"></div>
-  <Control />
-  <div class="frame-box"></div>
+  <div class="footer-wrapper">
+    <div ref="controlLine" class="control-line"></div>
+    <Control @change-scale-level="(e) => (scaleLevel = e)" />
+    <div class="panel-box">
+      <TimeLine :scale-level="scaleLevel" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import Control from './components/Control.vue'
+import TimeLine from './components/TimeLine.vue'
 
 const controlLine = ref()
 let lineCanMove = false
 let viewInnerHeight = 0
+const scaleLevel = ref(3)
 
 const emits = defineEmits(['changeFooterHeight'])
 
@@ -35,6 +41,15 @@ function mousemove(e: MouseEvent) {
 </script>
 
 <style lang="scss" scoped>
+.footer-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+}
 .control-line {
   position: relative;
   height: 1px;
@@ -55,5 +70,20 @@ function mousemove(e: MouseEvent) {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: hsla(0, 0%, 100%, 0);
+}
+
+.panel-box {
+  flex-grow: 1;
+  width: 100%;
+  overflow: auto;
+}
+.panel-box::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+.panel-box::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: #74808c;
 }
 </style>

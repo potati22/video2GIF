@@ -19,6 +19,7 @@ interface IVideoInstance {
   paused: boolean
   startTimesStamp: string
   endTimesStamp: string
+  duration: number
 }
 
 const videoInstance: IVideoInstance = reactive({
@@ -40,6 +41,7 @@ const videoInstance: IVideoInstance = reactive({
   paused: true,
   startTimesStamp: '0',
   endTimesStamp: '0',
+  duration: 0,
 })
 let video: HTMLVideoElement
 
@@ -49,11 +51,24 @@ export function useVideo() {
     if (video) throw '已经初始化过一次video了'
     onMounted(() => {
       video = unref(videoRef)
-      video.onloadedmetadata = function (e) {
+      video.onloadedmetadata = function () {
         videoInstance.realWidth = video.videoWidth
         videoInstance.realHeight = video.videoHeight
-        videoInstance.clientWidth = (e.target as HTMLVideoElement).clientWidth
-        videoInstance.clientHeight = (e.target as HTMLVideoElement).clientHeight
+        videoInstance.clientWidth = video.clientWidth
+        videoInstance.clientHeight = video.clientHeight
+        if (video.duration === Infinity) {
+          // 解决媒体流式传输无法得到duration值
+          video.ontimeupdate = function () {
+            this.ontimeupdate = () => {
+              return
+            }
+            video.currentTime = 0
+            // 此时可以获取正确的duration值
+            videoInstance.duration = video.duration
+            // videoInstance.duration = 22
+          }
+          video.currentTime = 1e101
+        }
       }
     })
   }
@@ -66,6 +81,11 @@ export function useVideo() {
   // 暂停
   function videoPause() {
     video.pause()
+    console.log(video.currentTime)
+  }
+
+  function videoSkip(time: number) {
+    video.currentTime = time
   }
 
   // 开始裁剪
@@ -155,6 +175,7 @@ export function useVideo() {
     videoInit,
     videoPlay,
     videoPause,
+    videoSkip,
     clipStartEmit,
     clipApplyEmit,
     clipCancelEmit,
