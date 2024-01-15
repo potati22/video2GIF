@@ -61,13 +61,17 @@ export function useVideo() {
           video.ontimeupdate = function () {
             this.ontimeupdate = () => {
               videoInstance.currentTime = Number(video.currentTime.toFixed(2))
+              console.log(videoInstance.currentTime)
             }
             video.currentTime = 0
             // 此时可以获取正确的duration值
-            videoInstance.duration = 23
+            videoInstance.duration = video.duration
           }
           video.currentTime = 1e101
         }
+      }
+      video.onended = function () {
+        videoInstance.playing = false
       }
     })
   }

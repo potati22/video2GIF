@@ -45,13 +45,23 @@ const { videoInstance, videoSkip } = useVideo()
 const canvasWidth = computed(() => {
   return (
     drawConfig.value.spaceGap *
-    (Math.ceil(videoInstance.duration) / drawConfig.value.timeGap + 2)
+    (videoInstance.duration / drawConfig.value.timeGap + 2)
+  )
+})
+// 真实总轴长 = (总时长 / timeGap) * spaceGap
+// 即timeStripe可运动的范围为： 0 ~ 真实总轴长
+const realTimeLineLen = computed(() => {
+  return (
+    (videoInstance.duration / drawConfig.value.timeGap) *
+    drawConfig.value.spaceGap
   )
 })
 
 onMounted(() => {
   ctx = canvasRef.value.getContext('2d')
   canvasRef.value.addEventListener('mousedown', (e) => {
+    console.log(realTimeLineLen.value)
+    if (e.offsetX > realTimeLineLen.value) return
     offsetX.value = e.offsetX
     offsetXToCurrentTime(e.offsetX)
   })
@@ -84,7 +94,7 @@ watch(
     }
     nextTick(() => {
       drawTimeLine()
-      currentTimeToOffsetX(videoInstance.currentTime)
+      offsetX.value = getOffsetXfromCurrentTime(videoInstance.currentTime)
     })
   },
 )
@@ -103,7 +113,6 @@ watch(
   () => videoInstance.currentTime,
   (newVal) => {
     if (!videoInstance.playing) return
-    console.log(videoInstance.currentTime, 2)
     currentTimeToOffsetX(newVal)
   },
 )
@@ -116,10 +125,31 @@ function offsetXToCurrentTime(offsetX: number) {
 
 // 将 视频的currentTime 转换为 在时间轴上选择的时刻
 function currentTimeToOffsetX(time: number) {
+  // 当timeStripe位于最后时，重新播放，需重置timeStripe的位置
+  if (time === 0) offsetX.value = 0
+
+  // final 为 currentTime 应对应的 offsetX
+  const final = getOffsetXfromCurrentTime(time)
+
+  let timer = null
+
+  // 每delay毫秒 timeStripe 就移动1px
+  // 直到timeStripe移动到final位置
+  function cb() {
+    if (offsetX.value < final) {
+      offsetX.value = offsetX.value + 1
+    } else {
+      clearInterval(timer)
+    }
+  }
+  const delay = (drawConfig.value.timeGap / drawConfig.value.spaceGap) * 1000
+  timer = setInterval(cb, delay)
+}
+
+function getOffsetXfromCurrentTime(time: number) {
+  // 当前时间 / 总时长 = offsetX / 真实总轴长
   const R = time / videoInstance.duration
-  offsetX.value = Math.floor(
-    R * (videoInstance.duration * drawConfig.value.spaceGap),
-  )
+  return Math.floor(R * realTimeLineLen.value)
 }
 
 function drawTimeLine() {
