@@ -54,6 +54,9 @@ function addScaleLevel() {
 .right-box {
   display: flex;
   align-items: center;
+  .svg-icon {
+    cursor: pointer;
+  }
 }
 progress {
   margin-right: 10px;

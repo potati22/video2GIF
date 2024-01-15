@@ -16,10 +16,10 @@ interface IVideoInstance {
   cliping: boolean
   clipped: boolean
   playing: boolean
-  paused: boolean
   startTimesStamp: string
   endTimesStamp: string
   duration: number
+  currentTime: number
 }
 
 const videoInstance: IVideoInstance = reactive({
@@ -38,10 +38,10 @@ const videoInstance: IVideoInstance = reactive({
   cliping: false,
   clipped: false,
   playing: false,
-  paused: true,
   startTimesStamp: '0',
   endTimesStamp: '0',
   duration: 0,
+  currentTime: 0,
 })
 let video: HTMLVideoElement
 
@@ -60,12 +60,11 @@ export function useVideo() {
           // 解决媒体流式传输无法得到duration值
           video.ontimeupdate = function () {
             this.ontimeupdate = () => {
-              return
+              videoInstance.currentTime = Number(video.currentTime.toFixed(2))
             }
             video.currentTime = 0
             // 此时可以获取正确的duration值
-            videoInstance.duration = video.duration
-            // videoInstance.duration = 22
+            videoInstance.duration = 23
           }
           video.currentTime = 1e101
         }
@@ -75,13 +74,14 @@ export function useVideo() {
 
   // 播放
   function videoPlay() {
+    videoInstance.playing = true
     video.play()
   }
 
   // 暂停
   function videoPause() {
+    videoInstance.playing = false
     video.pause()
-    console.log(video.currentTime)
   }
 
   function videoSkip(time: number) {

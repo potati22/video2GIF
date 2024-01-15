@@ -73,6 +73,7 @@ function mousemove(e: MouseEvent) {
 }
 
 .panel-box {
+  position: relative;
   flex-grow: 1;
   width: 100%;
   overflow: auto;
