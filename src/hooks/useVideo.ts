@@ -65,7 +65,7 @@ export function useVideo() {
             }
             video.currentTime = 0
             // 此时可以获取正确的duration值
-            videoInstance.duration = video.duration
+            videoInstance.duration = Number(video.duration.toFixed(2))
           }
           video.currentTime = 1e101
         }
