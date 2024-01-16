@@ -72,6 +72,7 @@ onMounted(() => {
     } else if (e.keyCode === 37) {
       offsetX.value = offsetX.value - 1
     }
+    offsetXToCurrentTime(offsetX.value)
   })
 })
 
