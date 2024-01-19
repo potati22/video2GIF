@@ -1,9 +1,10 @@
 <template>
   <div class="footer-wrapper">
     <div ref="controlLine" class="control-line"></div>
-    <Control @change-scale-level="(e) => (scaleLevel = e)" />
+    <Control />
     <div class="panel-box">
-      <TimeLine :scale-level="scaleLevel" />
+      <TimeLine />
+      <KeyFrame />
     </div>
   </div>
 </template>
@@ -11,11 +12,11 @@
 <script lang="ts" setup>
 import Control from './components/Control.vue'
 import TimeLine from './components/TimeLine.vue'
+import KeyFrame from './components/KeyFrame.vue'
 
 const controlLine = ref()
 let lineCanMove = false
 let viewInnerHeight = 0
-const scaleLevel = ref(3)
 
 const emits = defineEmits(['changeFooterHeight'])
 
@@ -80,7 +81,7 @@ function mousemove(e: MouseEvent) {
 }
 .panel-box::-webkit-scrollbar {
   height: 5px;
-  width: 5px;
+  width: 0px;
 }
 .panel-box::-webkit-scrollbar-thumb {
   border-radius: 10px;

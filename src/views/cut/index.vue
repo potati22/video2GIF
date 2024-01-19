@@ -1,38 +1,56 @@
 <template>
   <div class="cut-box">
-    <div v-show="!videoInstance.cliping" class="row">
-      <HButton class="btn start" @click="clipStartEmit">开始裁剪</HButton>
+    <div v-show="!cropStore.cropping" class="row">
+      <HButton class="btn start" @click="start">开始裁剪</HButton>
     </div>
-    <div v-show="videoInstance.cliping" class="row">
-      <span>宽高比：</span>
-      <div
-        :class="['square', videoInstance.square ? 'square-selected' : '']"
-        @click="SquareTurnOnEmit"
-      >
-        1:1
+    <div v-show="cropStore.cropping">
+      <div class="row">
+        <span>宽高比：</span>
+        <div
+          :class="['square', cropStore.square ? 'square-selected' : '']"
+          @click="squareTurnOn"
+        >
+          1:1
+        </div>
       </div>
-    </div>
-    <div v-show="videoInstance.cliping" class="row">
-      <HButton class="btn cancel" @click="clipCancelEmit">取消</HButton>
-      <HButton class="btn apply" @click="clipApplyEmit">确认</HButton>
-    </div>
-    <div v-show="videoInstance.cliping" class="row">
-      <HButton class="btn reset" @click="clipResetEmit">重置</HButton>
+      <div class="row">
+        <HButton class="btn cancel" @click="cancel">取消</HButton>
+        <HButton class="btn apply" @click="confirm">确认</HButton>
+      </div>
+      <div class="row">
+        <HButton class="btn reset" @click="reset">重置</HButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useVideo } from '@/hooks/useVideo'
+import emitter from '@/utils/bus'
 
-const {
-  videoInstance,
-  clipStartEmit,
-  clipApplyEmit,
-  clipCancelEmit,
-  clipResetEmit,
-  SquareTurnOnEmit,
-} = useVideo()
+import { useCropStore } from '@/store/modules/crop'
+
+const cropStore = useCropStore()
+
+function start() {
+  emitter.emit('cropStart')
+}
+
+function confirm() {
+  emitter.emit('cropConfirm')
+}
+
+function cancel() {
+  emitter.emit('cropCancel')
+}
+
+function reset() {
+  emitter.emit('cropReset')
+}
+
+function squareTurnOn() {
+  cropStore.changeSquare(true)
+  emitter.emit('squareTurnOn')
+}
 </script>
 
 <style lang="scss" scoped>

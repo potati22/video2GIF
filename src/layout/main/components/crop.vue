@@ -1,5 +1,5 @@
 <template>
-  <div v-show="videoInstance.cliping" class="wrap-outer">
+  <div v-show="cropStore.cropping" class="wrap-outer">
     <div
       ref="wrapRef"
       class="wrap-box cliping"
@@ -31,7 +31,7 @@
     </div>
   </div>
   <div
-    v-show="!videoInstance.cliping && videoInstance.clipped"
+    v-show="!cropStore.cropping && cropStore.cropped"
     class="wrap-box clipped"
     :style="{
       '--x': `${Rx * 100}%`,
@@ -45,16 +45,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useVideo } from '@/hooks/useVideo'
+import emitter from '@/utils/bus'
+import { useCropStore } from '@/store/modules/crop'
 
-const {
-  videoInstance,
-  clipApplyOn,
-  clipCancelOn,
-  clipResetOn,
-  SquareTurnOnOn,
-  SquareTurnOff,
-} = useVideo()
+const cropStore = useCropStore()
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -80,20 +74,28 @@ const Rh = ref(0)
 const cropCanchange = ref(false)
 const cropCanmove = ref(false)
 
-clipApplyOn(cropBoxTransX, cropBoxTransY, cropBoxTransW, cropBoxTransH)
-clipCancelOn(() => {
-  cropBoxTransX.value = videoInstance.clipPos.x
-  cropBoxTransY.value = videoInstance.clipPos.y
-  cropBoxTransW.value = videoInstance.clipPos.width
-  cropBoxTransH.value = videoInstance.clipPos.height
+emitter.on('cropStart', () => {
+  cropStore.cropStrat()
 })
-clipResetOn(() => {
-  cropBoxTransX.value = 0
-  cropBoxTransY.value = 0
-  cropBoxTransW.value = 100
-  cropBoxTransH.value = 100
+emitter.on('cropConfirm', () => {
+  cropStore.cropConfirm(
+    cropBoxTransX.value,
+    cropBoxTransY.value,
+    cropBoxTransW.value,
+    cropBoxTransH.value,
+  )
 })
-SquareTurnOnOn(() => {
+emitter.on('cropCancel', () => {
+  cropStore.cropCancel()
+  cropBoxTransX.value = cropStore.cropX
+  cropBoxTransY.value = cropStore.cropY
+  cropBoxTransW.value = cropStore.cropW
+  cropBoxTransH.value = cropStore.cropH
+})
+emitter.on('cropReset', () => {
+  cropStore.cropReset()
+})
+emitter.on('squareTurnOn', () => {
   if (cropBoxTransW.value > cropBoxTransH.value) {
     cropBoxTransW.value = cropBoxTransH.value
   } else {
@@ -149,7 +151,7 @@ function closeMove() {
 
 function openChange() {
   cropCanchange.value = true
-  SquareTurnOff()
+  cropStore.changeSquare(false)
 }
 
 function closeChange() {

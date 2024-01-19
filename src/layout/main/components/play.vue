@@ -19,7 +19,7 @@
 
 <script lang="ts" setup>
 import Crop from './crop.vue'
-import { useVideo } from '@/hooks/useVideo'
+import { usePlayerStore } from '@/store/modules/player'
 
 import type { Ref } from 'vue'
 
@@ -30,8 +30,8 @@ const workAreaWidth = ref(0)
 let innerBoxResizeObserver: ResizeObserver
 
 const myVideo: Ref<HTMLVideoElement> = ref()
-const { videoInit } = useVideo()
-videoInit(myVideo)
+const playerStore = usePlayerStore()
+playerStore.initPlayer(myVideo)
 
 onMounted(() => {
   innerBoxResizeObserver = new ResizeObserver((e) => {

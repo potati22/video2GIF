@@ -36,6 +36,14 @@ export function useFFmpeg() {
       background: 'rgba(0, 0, 0, 0.7)',
     })
 
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(
+        `${baseURL}/ffmpeg-core.wasm`,
+        'application/wasm',
+      ),
+    })
+
     const uint8arry = await fetchFile('/static/capture.mp4')
     await ffmpeg.writeFile('enhypen.mp4', uint8arry)
     await ffmpeg.exec([
@@ -58,8 +66,44 @@ export function useFFmpeg() {
     loading.close()
   }
 
+  async function extractKeyFrame() {
+    if (!isLoaded) {
+      console.log(' ffmpeg 还没初始化好')
+      return
+    }
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(
+        `${baseURL}/ffmpeg-core.wasm`,
+        'application/wasm',
+      ),
+    })
+    const uint8arry = await fetchFile('/static/capture.mp4')
+    await ffmpeg.writeFile('enhypen.mp4', uint8arry)
+    await ffmpeg.exec([
+      '-ss',
+      '4',
+      '-i',
+      'enhypen.mp4',
+      '-s',
+      '960x540',
+      '-f',
+      'image2',
+      '-frames',
+      '1',
+      `frame-1.jpeg`,
+    ])
+    const final = await ffmpeg.readFile('frame-1.jpeg', 'binary')
+    console.log(
+      URL.createObjectURL(
+        new Blob([(final as Uint8Array).buffer], { type: 'image/jpeg' }),
+      ),
+    )
+  }
+
   return {
-    videoToGIF,
     load,
+    videoToGIF,
+    extractKeyFrame,
   }
 }

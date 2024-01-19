@@ -1,21 +1,33 @@
 <template>
   <div class="download-box">
     <div class="row">
-      <HButton class="btn" @click="() => videoToGIF(x, y, width, height)"
+      <HButton
+        class="btn"
+        @click="
+          () =>
+            videoToGIF(
+              cropStore.cropData.x,
+              cropStore.cropData.y,
+              cropStore.cropData.width,
+              cropStore.cropData.height,
+            )
+        "
         >导出GIF</HButton
       >
+    </div>
+    <div class="row">
+      <HButton class="btn" @click="extractKeyFrame">获取关键帧</HButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useVideo } from '@/hooks/useVideo'
 import { useFFmpeg } from '@/hooks/useFFmpeg'
+import { useCropStore } from '@/store/modules/crop'
 
-const { getRealClipPos } = useVideo()
-const { videoToGIF } = useFFmpeg()
+const cropStore = useCropStore()
 
-const { x, y, width, height } = getRealClipPos()
+const { videoToGIF, extractKeyFrame } = useFFmpeg()
 </script>
 
 <style lang="scss" scoped>

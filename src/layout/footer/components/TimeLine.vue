@@ -1,6 +1,6 @@
 <template>
   <div class="timeline-box">
-    <canvas ref="canvasRef" :width="canvasWidth" :height="20"></canvas>
+    <canvas ref="timeLineRef" :width="timeLineWidth" :height="20"></canvas>
   </div>
   <div
     ref="timeStripeRef"
@@ -10,26 +10,30 @@
 </template>
 
 <script lang="ts" setup>
+import { usePlayerStore } from '@/store/modules/player'
+import { useTrackStore } from '@/store/modules/track'
+
+import { formatTime3 } from '@/utils/formatTime'
+
 import type { Ref } from 'vue'
-import { useVideo } from '@/hooks/useVideo'
 
-const props = defineProps({
-  // 时间轴缩放程度
-  scaleLevel: {
-    type: Number,
-    default: 3,
-  },
+const playerStore = usePlayerStore()
+const trackStore = useTrackStore()
+
+const timeLineRef: Ref<HTMLCanvasElement> = ref()
+const timeStripeRef: Ref<HTMLElement> = ref()
+
+let timeLineCtx: CanvasRenderingContext2D
+
+// 2是虚假段数，不会对其进行刻度数绘制，只是为了增大线条长度
+const timeLineWidth = computed(() => {
+  return trackStore.spaceGap * (playerStore.duration / trackStore.timeGap + 2)
 })
 
-// 时间轴缩放程度配置
-const drawConfig = ref({
-  timeGap: 1, // 时间间隔，s
-  spaceGap: 200, // 空间间隔，即一段的长度，px
+// 即timeStripe可运动的范围为： 0 ~ 真实总轴长
+const timeStripeWidth = computed(() => {
+  return trackStore.spaceGap * (playerStore.duration / trackStore.timeGap)
 })
-
-const canvasRef: Ref<HTMLCanvasElement> = ref()
-let ctx: CanvasRenderingContext2D
-const timeStripeRef = ref()
 
 // 记录鼠标在时间轴x方向上的点击位置
 const offsetX = ref(0)
@@ -38,30 +42,10 @@ const offsetLeft = computed(() => {
   return 3 + offsetX.value
 })
 
-const { videoInstance, videoSkip } = useVideo()
-
-// 时间轴段数：duration / timeGap + 2 （2是虚假段数，不会对其进行刻度数绘制，只是为了增大长度
-// 时间轴长度：时间轴段数 * spaceGap
-const canvasWidth = computed(() => {
-  return (
-    drawConfig.value.spaceGap *
-    (videoInstance.duration / drawConfig.value.timeGap + 2)
-  )
-})
-// 真实总轴长 = (总时长 / timeGap) * spaceGap
-// 即timeStripe可运动的范围为： 0 ~ 真实总轴长
-const realTimeLineLen = computed(() => {
-  return (
-    (videoInstance.duration / drawConfig.value.timeGap) *
-    drawConfig.value.spaceGap
-  )
-})
-
 onMounted(() => {
-  ctx = canvasRef.value.getContext('2d')
-  canvasRef.value.addEventListener('mousedown', (e) => {
-    console.log(realTimeLineLen.value)
-    if (e.offsetX > realTimeLineLen.value) return
+  timeLineCtx = timeLineRef.value.getContext('2d')
+  timeLineRef.value.addEventListener('mousedown', (e) => {
+    if (e.offsetX > timeStripeWidth.value) return
     offsetX.value = e.offsetX
     offsetXToCurrentTime(e.offsetX)
   })
@@ -77,32 +61,18 @@ onMounted(() => {
 })
 
 watch(
-  () => props.scaleLevel,
-  (newVal) => {
-    switch (newVal) {
-      case 3:
-        drawConfig.value.timeGap = 1
-        drawConfig.value.spaceGap = 200
-        break
-      case 2:
-        drawConfig.value.timeGap = 1
-        drawConfig.value.spaceGap = 100
-        break
-      case 1:
-        drawConfig.value.timeGap = 2
-        drawConfig.value.spaceGap = 100
-        break
-    }
+  () => trackStore.scaleLevel,
+  () => {
     nextTick(() => {
       drawTimeLine()
-      offsetX.value = getOffsetXfromCurrentTime(videoInstance.currentTime)
+      offsetX.value = getOffsetXfromCurrentTime(playerStore.currentTime)
     })
   },
 )
 
 // 当视频的总时长改变时，需要重绘时间轴
 watch(
-  () => videoInstance.duration,
+  () => playerStore.duration,
   () => {
     nextTick(() => {
       drawTimeLine()
@@ -111,17 +81,17 @@ watch(
 )
 
 watch(
-  () => videoInstance.currentTime,
+  () => playerStore.currentTime,
   (newVal) => {
-    if (!videoInstance.playing) return
+    if (!playerStore.playing) return
     currentTimeToOffsetX(newVal)
   },
 )
 
 // 将 在时间轴上选择的时刻 转换为 视频的currentTime
 function offsetXToCurrentTime(offsetX: number) {
-  const R = offsetX / (videoInstance.duration * drawConfig.value.spaceGap)
-  videoSkip(Number((R * videoInstance.duration).toFixed(2)))
+  const R = offsetX / (playerStore.duration * trackStore.spaceGap)
+  playerStore.videoSkip(Number((R * playerStore.duration).toFixed(2)))
 }
 
 // 将 视频的currentTime 转换为 在时间轴上选择的时刻
@@ -143,46 +113,40 @@ function currentTimeToOffsetX(time: number) {
       clearInterval(timer)
     }
   }
-  const delay = (drawConfig.value.timeGap / drawConfig.value.spaceGap) * 1000
+  const delay = (trackStore.timeGap / trackStore.spaceGap) * 1000
   timer = setInterval(cb, delay)
 }
 
 function getOffsetXfromCurrentTime(time: number) {
   // 当前时间 / 总时长 = offsetX / 真实总轴长
-  const R = time / videoInstance.duration
-  return Math.floor(R * realTimeLineLen.value)
+  const R = time / playerStore.duration
+  return Math.floor(R * timeStripeWidth.value)
 }
 
 function drawTimeLine() {
-  // ctx.clearRect(0, 0, canvasWidth.value, 20) 当canvas的Width变化时 会自动清空画布
+  // 当canvas的Width变化时 会自动清空画布 无需手动调用clearRect
 
-  // 需要刻画的真实时间轴段数
-  const num = Math.ceil(videoInstance.duration / drawConfig.value.timeGap)
+  const spaceGapNum = Math.ceil(playerStore.duration / trackStore.timeGap)
 
   // 绘制刻度线
-  for (let i = 0; i <= num; ++i) {
-    ctx.moveTo(i * drawConfig.value.spaceGap, 15)
-    ctx.lineTo(i * drawConfig.value.spaceGap, 20)
+  for (let i = 0; i <= spaceGapNum; ++i) {
+    timeLineCtx.moveTo(i * trackStore.spaceGap, 15)
+    timeLineCtx.lineTo(i * trackStore.spaceGap, 20)
   }
-  ctx.lineWidth = 1
-  ctx.strokeStyle = 'rgba(180, 195, 211)'
-  ctx.stroke()
+  timeLineCtx.lineWidth = 1
+  timeLineCtx.strokeStyle = 'rgba(180, 195, 211)'
+  timeLineCtx.stroke()
 
   // 绘制刻度数
-  ctx.fillStyle = '#b4c3d3'
-  ctx.textBaseline = 'top'
-  for (let i = 0; i <= num; ++i) {
-    ctx.fillText(
-      formatTimeLine(i * drawConfig.value.timeGap),
-      i * drawConfig.value.spaceGap,
+  timeLineCtx.fillStyle = '#b4c3d3'
+  timeLineCtx.textBaseline = 'top'
+  for (let i = 0; i <= spaceGapNum; ++i) {
+    timeLineCtx.fillText(
+      formatTime3(i * trackStore.timeGap),
+      i * trackStore.spaceGap,
       1,
     )
   }
-}
-
-function formatTimeLine(s: number) {
-  if (s < 10) return `00:0${s}`
-  return `00:${s}`
 }
 </script>
 

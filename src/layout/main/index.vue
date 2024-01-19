@@ -4,13 +4,11 @@
       <RouterView></RouterView>
     </div>
     <div class="play"><Play /></div>
-    <!-- <div class="position"><Position /></div> -->
   </div>
 </template>
 
 <script lang="ts" setup>
 import Play from './components/play.vue'
-// import Position from './components/position.vue'
 </script>
 
 <style lang="scss" scoped>
