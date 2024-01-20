@@ -10,12 +10,12 @@
       <HSvgIcon
         v-show="!playerStore.playing"
         icon-class="play"
-        @click="playerStore.videoPlay"
+        @click="videoPlay"
       />
       <HSvgIcon
         v-show="playerStore.playing"
         icon-class="pause"
-        @click="playerStore.videoPause"
+        @click="videoPause"
       />
 
       <span>{{ formatTime3(playerStore.duration) }}</span>
@@ -29,6 +29,8 @@
 </template>
 
 <script lang="ts" setup>
+import emitter from '@/utils/bus'
+
 import { usePlayerStore } from '@/store/modules/player'
 import { useTrackStore } from '@/store/modules/track'
 
@@ -36,6 +38,14 @@ import { formatTime3 } from '@/utils/formatTime'
 
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
+
+function videoPlay() {
+  emitter.emit('videoPlay')
+}
+
+function videoPause() {
+  emitter.emit('videoPause')
+}
 </script>
 
 <style lang="scss" scoped>

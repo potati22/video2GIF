@@ -9,7 +9,7 @@
         }"
       >
         <div class="video-outer">
-          <video ref="myVideo" src="/static/capture.mp4"></video>
+          <video ref="video" src="/static/capture.mp4"></video>
           <Crop></Crop>
         </div>
       </div>
@@ -19,6 +19,9 @@
 
 <script lang="ts" setup>
 import Crop from './crop.vue'
+
+import emitter from '@/utils/bus'
+
 import { usePlayerStore } from '@/store/modules/player'
 
 import type { Ref } from 'vue'
@@ -29,9 +32,8 @@ const workAreaWidth = ref(0)
 
 let innerBoxResizeObserver: ResizeObserver
 
-const myVideo: Ref<HTMLVideoElement> = ref()
+const video: Ref<HTMLVideoElement> = ref()
 const playerStore = usePlayerStore()
-playerStore.initPlayer(myVideo)
 
 onMounted(() => {
   innerBoxResizeObserver = new ResizeObserver((e) => {
@@ -48,6 +50,48 @@ onMounted(() => {
   innerBoxResizeObserver.observe(unref(innerBox), {
     box: 'content-box',
   })
+
+  // 初始化video
+  video.value.onloadedmetadata = () => {
+    if (video.value.duration === Infinity) {
+      video.value.ontimeupdate = () => {
+        video.value.ontimeupdate = () => {
+          playerStore.changeCurrenTime(video.value.currentTime)
+        }
+        video.value.currentTime = 0
+        // 此时可以获取正确的duration值
+        playerStore.initPlayer(
+          video.value.videoWidth,
+          video.value.videoHeight,
+          video.value.clientWidth,
+          video.value.clientHeight,
+          video.value.duration,
+        )
+      }
+      video.value.currentTime = 1e101
+    } else {
+      playerStore.initPlayer(
+        video.value.videoWidth,
+        video.value.videoHeight,
+        video.value.clientWidth,
+        video.value.clientHeight,
+        video.value.duration,
+      )
+    }
+  }
+  video.value.onended = () => {
+    playerStore.changePlaying(false)
+  }
+})
+
+emitter.on('videoPlay', () => {
+  playerStore.changePlaying(true)
+  video.value.play()
+})
+
+emitter.on('videoPause', () => {
+  playerStore.changePlaying(false)
+  video.value.pause()
 })
 
 onUnmounted(() => {

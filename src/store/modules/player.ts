@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia'
 
-let video: HTMLVideoElement
-
 export const usePlayerStore = defineStore('player', () => {
   const videoWidth = ref(0)
   const videoHeight = ref(0)
@@ -11,43 +9,26 @@ export const usePlayerStore = defineStore('player', () => {
   const currentTime = ref(0)
   const playing = ref(false)
 
-  function initPlayer(videoRef: Ref<HTMLVideoElement>) {
-    onMounted(() => {
-      video = unref(videoRef)
-      video.onloadedmetadata = () => {
-        videoWidth.value = video.videoWidth
-        videoHeight.value = video.videoHeight
-        clientWidth.value = video.clientWidth
-        clientHeight.value = video.clientHeight
-        if (video.duration === Infinity) {
-          video.ontimeupdate = () => {
-            this.ontimeupdate = () => {
-              currentTime.value = Number(video.currentTime.toFixed(2))
-            }
-            video.currentTime = 0
-            // 此时可以获取正确的duration值
-            duration.value = Number(video.duration.toFixed(2))
-          }
-          video.currentTime = 1e101
-        } else {
-          duration.value = Number(video.duration.toFixed(2))
-        }
-      }
-      video.onended = () => {
-        playing.value = false
-      }
-    })
+  function initPlayer(
+    vW: number,
+    vH: number,
+    cW: number,
+    cH: number,
+    du: number,
+  ) {
+    videoWidth.value = vW
+    videoHeight.value = vH
+    clientWidth.value = cW
+    clientHeight.value = cH
+    duration.value = Number(du.toFixed(2))
   }
 
-  function videoPlay() {
-    console.log(video)
-    playing.value = true
-    video.play()
+  function changeCurrenTime(cu: number) {
+    currentTime.value = Number(cu.toFixed(2))
   }
 
-  function videoPause() {
-    playing.value = false
-    video.pause()
+  function changePlaying(state: boolean) {
+    playing.value = state
   }
 
   function videoSkip(time: number) {
@@ -63,8 +44,8 @@ export const usePlayerStore = defineStore('player', () => {
     currentTime,
     playing,
     initPlayer,
-    videoPlay,
-    videoPause,
+    changeCurrenTime,
+    changePlaying,
     videoSkip,
   }
 })
