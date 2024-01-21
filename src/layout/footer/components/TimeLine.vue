@@ -1,6 +1,10 @@
 <template>
   <div class="timeline-box">
-    <canvas ref="timeLineRef" :width="timeLineWidth" :height="20"></canvas>
+    <canvas
+      ref="timeLineRef"
+      :width="trackStore.trackWidth"
+      height="20"
+    ></canvas>
   </div>
   <div
     ref="timeStripeRef"
@@ -13,6 +17,7 @@
 import { usePlayerStore } from '@/store/modules/player'
 import { useTrackStore } from '@/store/modules/track'
 
+import emitter from '@/utils/bus'
 import { formatTime3 } from '@/utils/formatTime'
 
 import type { Ref } from 'vue'
@@ -24,11 +29,6 @@ const timeLineRef: Ref<HTMLCanvasElement> = ref()
 const timeStripeRef: Ref<HTMLElement> = ref()
 
 let timeLineCtx: CanvasRenderingContext2D
-
-// 2是虚假段数，不会对其进行刻度数绘制，只是为了增大线条长度
-const timeLineWidth = computed(() => {
-  return trackStore.spaceGap * (playerStore.duration / trackStore.timeGap + 2)
-})
 
 // 即timeStripe可运动的范围为： 0 ~ 真实总轴长
 const timeStripeWidth = computed(() => {
@@ -91,7 +91,7 @@ watch(
 // 将 在时间轴上选择的时刻 转换为 视频的currentTime
 function offsetXToCurrentTime(offsetX: number) {
   const R = offsetX / (playerStore.duration * trackStore.spaceGap)
-  playerStore.videoSkip(Number((R * playerStore.duration).toFixed(2)))
+  emitter.emit('videoSkip', Number((R * playerStore.duration).toFixed(2)))
 }
 
 // 将 视频的currentTime 转换为 在时间轴上选择的时刻

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { usePlayerStore } from '@/store/modules/player'
 
 // 时间轴缩放程度配置
 const timeLineSpecStore = [
@@ -17,12 +18,17 @@ const timeLineSpecStore = [
 ]
 
 export const useTrackStore = defineStore('track', () => {
+  const playerStore = usePlayerStore()
+
   const scaleLevel = ref(3)
   const timeGap = computed(() => {
     return timeLineSpecStore[scaleLevel.value - 1].timeGap
   })
   const spaceGap = computed(() => {
     return timeLineSpecStore[scaleLevel.value - 1].spaceGap
+  })
+  const trackWidth = computed(() => {
+    return spaceGap.value * (playerStore.duration / timeGap.value + 2)
   })
 
   function reduceScaleLevel() {
@@ -41,6 +47,7 @@ export const useTrackStore = defineStore('track', () => {
     scaleLevel,
     timeGap,
     spaceGap,
+    trackWidth,
     reduceScaleLevel,
     addScaleLevel,
   }

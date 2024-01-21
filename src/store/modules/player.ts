@@ -31,9 +31,9 @@ export const usePlayerStore = defineStore('player', () => {
     playing.value = state
   }
 
-  function videoSkip(time: number) {
+  /* function videoSkip(time: number) {
     currentTime.value = time
-  }
+  } */
 
   return {
     videoWidth,
@@ -46,6 +46,5 @@ export const usePlayerStore = defineStore('player', () => {
     initPlayer,
     changeCurrenTime,
     changePlaying,
-    videoSkip,
   }
 })

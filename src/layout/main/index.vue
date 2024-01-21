@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import Play from './components/play.vue'
+import Play from './components/Play.vue'
 </script>
 
 <style lang="scss" scoped>

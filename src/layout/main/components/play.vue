@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import Crop from './crop.vue'
+import Crop from './Crop.vue'
 
 import emitter from '@/utils/bus'
 
@@ -92,6 +92,10 @@ emitter.on('videoPlay', () => {
 emitter.on('videoPause', () => {
   playerStore.changePlaying(false)
   video.value.pause()
+})
+
+emitter.on('videoSkip', (time: number) => {
+  video.value.currentTime = time
 })
 
 onUnmounted(() => {
