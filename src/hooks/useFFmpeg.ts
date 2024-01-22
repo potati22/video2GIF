@@ -48,7 +48,7 @@ export function useFFmpeg() {
     loading.close()
   }
 
-  async function extractKeyFrame(frames: number) {
+  async function extractKeyFrame() {
     const loading = ElLoading.service({
       lock: true,
       text: '🏃‍♀️Loading...',
@@ -66,26 +66,37 @@ export function useFFmpeg() {
     const uint8arry = await fetchFile('/static/capture.mp4')
     await ffmpeg.writeFile('enhypen.mp4', uint8arry)
 
-    for (let i = 0; i <= frames; ++i) {
-      await ffmpeg.exec([
-        '-ss',
-        `${i}`,
-        '-i',
-        'enhypen.mp4',
-        '-s',
-        '100x50',
-        '-f',
-        'image2',
-        '-frames',
-        '1',
-        `frame-${i}.jpeg`,
-      ])
-    }
+    await ffmpeg.createDir('key')
 
+    await ffmpeg.exec([
+      '-i',
+      'enhypen.mp4',
+      '-vf',
+      'fps=1',
+      '-s',
+      '100x50',
+      `key/frame-%02d.jpeg`,
+    ])
+    /* await ffmpeg.exec([
+      '-i',
+      'enhypen.mp4',
+      '-vf',
+      `select='eq(pict_type\,I)'`,
+      '-vsync',
+      '2',
+      '-s',
+      '100x50',
+      `key/frame-%02d.jpeg`,
+    ]) */
+
+    const keyFramesList = await ffmpeg.listDir('key')
     const res: Array<Blob> = []
 
-    for (let i = 0; i <= frames; ++i) {
-      const final = await ffmpeg.readFile(`frame-${i}.jpeg`, 'binary')
+    for (let i = 2; i < keyFramesList.length; ++i) {
+      const final = await ffmpeg.readFile(
+        `key/${keyFramesList[i].name}`,
+        'binary',
+      )
       res.push(new Blob([(final as Uint8Array).buffer], { type: 'image/jpeg' }))
     }
 

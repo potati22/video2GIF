@@ -15,26 +15,16 @@
         >导出GIF</HButton
       >
     </div>
-    <div class="row">
-      <HButton class="btn" @click="test">获取关键帧</HButton>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import emitter from '@/utils/bus'
-
 import { useFFmpeg } from '@/hooks/useFFmpeg'
 import { useCropStore } from '@/store/modules/crop'
 
 const cropStore = useCropStore()
 
-const { videoToGIF, extractKeyFrame } = useFFmpeg()
-
-async function test() {
-  const res = await extractKeyFrame(5)
-  emitter.emit('keyFrames', res)
-}
+const { videoToGIF } = useFFmpeg()
 </script>
 
 <style lang="scss" scoped>

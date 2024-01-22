@@ -2,7 +2,7 @@
   <div class="timeline-box">
     <canvas
       ref="timeLineRef"
-      :width="trackStore.trackWidth"
+      :width="trackStore.canvasWidth"
       height="20"
     ></canvas>
   </div>
@@ -30,11 +30,6 @@ const timeStripeRef: Ref<HTMLElement> = ref()
 
 let timeLineCtx: CanvasRenderingContext2D
 
-// 即timeStripe可运动的范围为： 0 ~ 真实总轴长
-const timeStripeWidth = computed(() => {
-  return trackStore.spaceGap * (playerStore.duration / trackStore.timeGap)
-})
-
 // 记录鼠标在时间轴x方向上的点击位置
 const offsetX = ref(0)
 // 时间线的偏移距离（起始点为3
@@ -45,7 +40,7 @@ const offsetLeft = computed(() => {
 onMounted(() => {
   timeLineCtx = timeLineRef.value.getContext('2d')
   timeLineRef.value.addEventListener('mousedown', (e) => {
-    if (e.offsetX > timeStripeWidth.value) return
+    if (e.offsetX > trackStore.trackWidth) return
     offsetX.value = e.offsetX
     offsetXToCurrentTime(e.offsetX)
   })
@@ -120,7 +115,7 @@ function currentTimeToOffsetX(time: number) {
 function getOffsetXfromCurrentTime(time: number) {
   // 当前时间 / 总时长 = offsetX / 真实总轴长
   const R = time / playerStore.duration
-  return Math.floor(R * timeStripeWidth.value)
+  return Math.floor(R * trackStore.trackWidth)
 }
 
 function drawTimeLine() {
@@ -167,6 +162,6 @@ canvas {
   bottom: 0;
   left: var(--left);
   width: 13px;
-  background-image: url('@/assets/icons/time-stripe.svg');
+  background-image: url('@/assets/img/time-stripe.svg');
 }
 </style>

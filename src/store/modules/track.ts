@@ -27,8 +27,11 @@ export const useTrackStore = defineStore('track', () => {
   const spaceGap = computed(() => {
     return timeLineSpecStore[scaleLevel.value - 1].spaceGap
   })
-  const trackWidth = computed(() => {
+  const canvasWidth = computed(() => {
     return spaceGap.value * (playerStore.duration / timeGap.value + 2)
+  })
+  const trackWidth = computed(() => {
+    return spaceGap.value * (playerStore.duration / timeGap.value)
   })
 
   function reduceScaleLevel() {
@@ -47,6 +50,7 @@ export const useTrackStore = defineStore('track', () => {
     scaleLevel,
     timeGap,
     spaceGap,
+    canvasWidth,
     trackWidth,
     reduceScaleLevel,
     addScaleLevel,
