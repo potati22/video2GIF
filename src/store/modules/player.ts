@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 export const usePlayerStore = defineStore('player', () => {
+  const videoSrc = ref('')
   const videoWidth = ref(0)
   const videoHeight = ref(0)
   const clientWidth = ref(0)
@@ -8,6 +9,10 @@ export const usePlayerStore = defineStore('player', () => {
   const duration = ref(0)
   const currentTime = ref(0)
   const playing = ref(false)
+
+  if (sessionStorage.getItem('videosrc')) {
+    videoSrc.value = sessionStorage.getItem('videosrc')
+  }
 
   function initPlayer(
     vW: number,
@@ -36,6 +41,7 @@ export const usePlayerStore = defineStore('player', () => {
   } */
 
   return {
+    videoSrc,
     videoWidth,
     videoHeight,
     clientWidth,

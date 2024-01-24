@@ -9,7 +9,7 @@
         }"
       >
         <div class="video-outer">
-          <video ref="video" src="/static/capture.mp4"></video>
+          <video ref="video" :src="playerStore.videoSrc"></video>
           <Crop></Crop>
         </div>
       </div>
@@ -26,6 +26,8 @@ import { usePlayerStore } from '@/store/modules/player'
 
 import type { Ref } from 'vue'
 
+const playerStore = usePlayerStore()
+
 const innerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
 const workAreaWidth = ref(0)
@@ -33,7 +35,6 @@ const workAreaWidth = ref(0)
 let innerBoxResizeObserver: ResizeObserver
 
 const video: Ref<HTMLVideoElement> = ref()
-const playerStore = usePlayerStore()
 
 onMounted(() => {
   innerBoxResizeObserver = new ResizeObserver((e) => {

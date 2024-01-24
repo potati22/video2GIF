@@ -1,10 +1,12 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
+import { usePlayerStore } from '@/store/modules/player'
 
 const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
 
 export function useFFmpeg() {
   const ffmpeg = new FFmpeg()
+  const playerStore = usePlayerStore()
 
   async function videoToGIF(
     x: number,
@@ -63,7 +65,7 @@ export function useFFmpeg() {
       ),
     })
 
-    const uint8arry = await fetchFile('/static/capture.mp4')
+    const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile('enhypen.mp4', uint8arry)
 
     await ffmpeg.createDir('key')

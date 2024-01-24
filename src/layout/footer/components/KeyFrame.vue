@@ -12,11 +12,13 @@
 
 <script lang="ts" setup>
 import { useTrackStore } from '@/store/modules/track'
+import { usePlayerStore } from '@/store/modules/player'
 import { useFFmpeg } from '@/hooks/useFFmpeg'
 
 import type { Ref } from 'vue'
 
 const trackStore = useTrackStore()
+const playerStore = usePlayerStore()
 const { extractKeyFrame } = useFFmpeg()
 let keyFrames: Blob[] = []
 
@@ -27,11 +29,18 @@ onMounted(() => {
   keyFrameCtx = keyFrameRef.value.getContext('2d')
 })
 
-initKeyFrame()
+watch(
+  () => playerStore.videoSrc,
+  (newVal) => {
+    if (!newVal) return
+    initKeyFrame()
+  },
+)
 
 watch(
   () => trackStore.scaleLevel,
   (newVal) => {
+    if (keyFrames.length === 0) return
     drawKeyFrames(newVal)
   },
 )
