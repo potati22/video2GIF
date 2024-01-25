@@ -2,9 +2,8 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   {
-    name: 'Welcome',
     path: '/',
-    component: () => import('@/views/welcome/index.vue'),
+    redirect: '/record',
   },
   {
     name: 'Record',

@@ -51,12 +51,6 @@ export function useFFmpeg() {
   }
 
   async function extractKeyFrame() {
-    const loading = ElLoading.service({
-      lock: true,
-      text: '🏃‍♀️Loading...',
-      background: 'rgba(0, 0, 0, 0.7)',
-    })
-
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(
@@ -107,7 +101,6 @@ export function useFFmpeg() {
         new Blob([(final as Uint8Array).buffer], { type: 'image/jpeg' }),
       ),
     ) */
-    loading.close()
     return res
   }
 

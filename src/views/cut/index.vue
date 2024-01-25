@@ -28,10 +28,19 @@
 import emitter from '@/utils/bus'
 
 import { useCropStore } from '@/store/modules/crop'
+import { usePlayerStore } from '@/store/modules/player'
 
 const cropStore = useCropStore()
+const playerStore = usePlayerStore()
 
 function start() {
+  if (!playerStore.videoSrc) {
+    ElMessage({
+      message: '工作区没有视频资源~',
+      type: 'warning',
+    })
+    return
+  }
   emitter.emit('cropStart')
 }
 

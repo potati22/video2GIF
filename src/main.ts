@@ -18,3 +18,7 @@ app.use(router)
 registerComponents(app)
 
 app.mount('#app')
+
+window.addEventListener('beforeunload', (e) => {
+  e.preventDefault()
+})

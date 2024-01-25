@@ -14,10 +14,18 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
-const chosen = ref('/')
+const route = useRoute()
+const chosen = ref('')
+
+watch(
+  () => route.path,
+  (path) => {
+    chosen.value = path
+  },
+)
 
 const menu = [
   {
@@ -42,7 +50,6 @@ const menu = [
 
 function to(path: string) {
   router.replace(path)
-  chosen.value = path
 }
 </script>
 

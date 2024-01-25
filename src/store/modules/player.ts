@@ -10,10 +10,6 @@ export const usePlayerStore = defineStore('player', () => {
   const currentTime = ref(0)
   const playing = ref(false)
 
-  if (sessionStorage.getItem('videosrc')) {
-    videoSrc.value = sessionStorage.getItem('videosrc')
-  }
-
   function initPlayer(
     vW: number,
     vH: number,
@@ -38,7 +34,6 @@ export const usePlayerStore = defineStore('player', () => {
 
   function changeVideoSrc(src: string) {
     videoSrc.value = src
-    sessionStorage.setItem('videosrc', src)
   }
 
   return {

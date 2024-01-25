@@ -135,6 +135,9 @@ onUnmounted(() => {
 }
 video {
   height: 100%;
-  background-color: var(--el-bg-color);
+  background-image: url('@/assets/img/no-video.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 </style>
