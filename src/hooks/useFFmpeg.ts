@@ -74,7 +74,7 @@ export function useFFmpeg() {
       '-i',
       'enhypen.mp4',
       '-vf',
-      'fps=1',
+      'fps=1/0.5',
       '-s',
       '100x50',
       `key/frame-%02d.jpeg`,

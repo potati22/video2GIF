@@ -27,6 +27,7 @@ let keyFrameCtx: CanvasRenderingContext2D
 
 onMounted(() => {
   keyFrameCtx = keyFrameRef.value.getContext('2d')
+  // if (playerStore.videoSrc) initKeyFrame()
 })
 
 watch(
@@ -39,57 +40,24 @@ watch(
 
 watch(
   () => trackStore.scaleLevel,
-  (newVal) => {
+  () => {
     if (keyFrames.length === 0) return
-    drawKeyFrames(newVal)
+    drawKeyFrames()
   },
 )
 
 async function initKeyFrame() {
   keyFrames = await extractKeyFrame()
-  drawKeyFrames(trackStore.scaleLevel)
+  drawKeyFrames()
 }
 
-function drawKeyFrames(item: number) {
-  switch (item) {
-    case 1:
-      drawKeyFrames1(keyFrames)
-      break
-    case 2:
-      drawKeyFrames2(keyFrames)
-      break
-    case 3:
-      drawKeyFrames3(keyFrames)
-      break
-  }
-}
+async function drawKeyFrames() {
+  const pickKeyFrameGap = (trackStore.timeGap * 2) / (trackStore.spaceGap / 100)
+  const startPos = 100 / pickKeyFrameGap
 
-async function drawKeyFrames3(res: Blob[]) {
-  for (let i = 0; i < res.length; ++i) {
-    const bitmap = await createImageBitmap(res[i])
-    keyFrameCtx.drawImage(bitmap, 2 * i * 100, 0)
-    keyFrameCtx.drawImage(bitmap, (2 * i + 1) * 100, 0)
-    if (i === res.length - 1) {
-      keyFrameCtx.drawImage(bitmap, (2 * i + 2) * 100, 0)
-      keyFrameCtx.drawImage(bitmap, (2 * i + 3) * 100, 0)
-    }
-  }
-}
-
-async function drawKeyFrames2(res: Blob[]) {
-  for (let i = 0; i < res.length; ++i) {
-    const bitmap = await createImageBitmap(res[i])
-    keyFrameCtx.drawImage(bitmap, i * 100, 0)
-    if (i === res.length - 1) {
-      keyFrameCtx.drawImage(bitmap, (i + 1) * 100, 0)
-    }
-  }
-}
-
-async function drawKeyFrames1(res: Blob[]) {
-  for (let i = 0; i < res.length; i = i + 2) {
-    const bitmap = await createImageBitmap(res[i])
-    keyFrameCtx.drawImage(bitmap, i * 50, 0)
+  for (let i = 0; i < keyFrames.length; i = i + pickKeyFrameGap) {
+    const bitmap = await createImageBitmap(keyFrames[i])
+    keyFrameCtx.drawImage(bitmap, i * startPos, 0)
   }
 }
 </script>

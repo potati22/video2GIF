@@ -30,8 +30,7 @@ async function record() {
   }, 10000)
 
   recorder.addEventListener('dataavailable', (evt) => {
-    playerStore.videoSrc = URL.createObjectURL(evt.data)
-    sessionStorage.setItem('videosrc', playerStore.videoSrc)
+    playerStore.changeVideoSrc(URL.createObjectURL(evt.data))
   })
 }
 </script>

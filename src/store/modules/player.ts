@@ -36,9 +36,10 @@ export const usePlayerStore = defineStore('player', () => {
     playing.value = state
   }
 
-  /* function videoSkip(time: number) {
-    currentTime.value = time
-  } */
+  function changeVideoSrc(src: string) {
+    videoSrc.value = src
+    sessionStorage.setItem('videosrc', src)
+  }
 
   return {
     videoSrc,
@@ -52,5 +53,6 @@ export const usePlayerStore = defineStore('player', () => {
     initPlayer,
     changeCurrenTime,
     changePlaying,
+    changeVideoSrc,
   }
 })
