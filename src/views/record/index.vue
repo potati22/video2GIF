@@ -18,7 +18,18 @@ async function record() {
   }
 
   // 提示用户去选择和授权需要捕获的内容，并将其展示在一个MediaStream里
-  const stream = await navigator.mediaDevices.getDisplayMedia()
+  const [stream, hasError] = await navigator.mediaDevices
+    .getDisplayMedia()
+    .then((res) => [res, null])
+    .catch((err) => [null, err])
+
+  if (hasError) {
+    ElMessage({
+      message: '你拒绝了屏幕共享',
+      type: 'warning',
+    })
+    return
+  }
 
   // 对指定的MediaStream对象进行录制
   const recorder = new MediaRecorder(stream)

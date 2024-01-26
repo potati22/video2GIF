@@ -57,7 +57,17 @@ watch(
 
 async function initKeyFrame() {
   loading.value = true
-  keyFrames = await extractKeyFrame()
+  try {
+    keyFrames = await extractKeyFrame()
+  } catch (err) {
+    ElMessage({
+      message: 'ffmpeg错误了',
+      type: 'error',
+    })
+    console.log(err)
+    loading.value = false
+    return
+  }
   drawKeyFrames()
   loading.value = false
 }
