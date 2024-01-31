@@ -71,6 +71,7 @@ watch(
   () => {
     nextTick(() => {
       drawTimeLine()
+      offsetX.value = 0
     })
   },
 )
@@ -163,5 +164,6 @@ canvas {
   left: var(--left);
   width: 13px;
   background-image: url('@/assets/img/time-stripe.svg');
+  z-index: 10;
 }
 </style>

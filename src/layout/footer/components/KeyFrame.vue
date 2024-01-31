@@ -1,11 +1,5 @@
 <template>
-  <div
-    v-loading="loading"
-    :element-loading-spinner="svg"
-    element-loading-background="rgba(0, 0, 0, 0.5)"
-    class="keyframe-box"
-    :style="{ width: trackStore.canvasWidth + 'px' }"
-  >
+  <div class="keyframe-box" :style="{ width: trackStore.canvasWidth + 'px' }">
     <div v-show="playerStore.videoSrc" id="keyFramesWrap" class="wrap">
       <canvas
         ref="keyFrameRef"
@@ -14,6 +8,13 @@
       ></canvas>
     </div>
   </div>
+  <div
+    v-loading="loading"
+    :element-loading-spinner="svg"
+    element-loading-background="rgba(0, 0, 0, 0.5)"
+    class="loading-box"
+    :style="{ width: trackStore.canvasWidth + 'px' }"
+  ></div>
 </template>
 
 <script lang="ts" setup>
@@ -79,6 +80,12 @@ async function drawKeyFrames() {
   for (let i = 0; i < keyFrames.length; i = i + pickKeyFrameGap) {
     const bitmap = await createImageBitmap(keyFrames[i])
     keyFrameCtx.drawImage(bitmap, i * startPos, 0)
+    if (
+      i + pickKeyFrameGap >= keyFrames.length &&
+      i * startPos + 100 < trackStore.trackWidth
+    ) {
+      keyFrameCtx.drawImage(bitmap, i * startPos + 100, 0)
+    }
   }
 }
 </script>
@@ -89,6 +96,13 @@ async function drawKeyFrames() {
   height: 52px;
   margin: 10px 10px;
   background-color: #1b1e22;
+}
+.loading-box {
+  max-width: calc(100% - 10px);
+  margin: 10px 0px 10px 10px;
+  height: 52px;
+  position: relative;
+  top: -62px;
 }
 .wrap {
   position: relative;

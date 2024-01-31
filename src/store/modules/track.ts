@@ -35,12 +35,14 @@ export const useTrackStore = defineStore('track', () => {
   })
 
   function reduceScaleLevel() {
+    if (playerStore.playing) return
     const level = scaleLevel.value - 1
     if (level < 1) return
     scaleLevel.value = level
   }
 
   function addScaleLevel() {
+    if (playerStore.playing) return
     const level = scaleLevel.value + 1
     if (level > 3) return
     scaleLevel.value = level
