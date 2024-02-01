@@ -7,6 +7,7 @@
     ></canvas>
   </div>
   <div
+    v-show="!clipStore.clipping"
     ref="timeStripeRef"
     class="time-stripe"
     :style="{ '--left': `${offsetLeft}px` }"
@@ -16,6 +17,7 @@
 <script lang="ts" setup>
 import { usePlayerStore } from '@/store/modules/player'
 import { useTrackStore } from '@/store/modules/track'
+import { useClipStore } from '@/store/modules/clip'
 
 import emitter from '@/utils/bus'
 import { formatTime3 } from '@/utils/formatTime'
@@ -24,6 +26,7 @@ import type { Ref } from 'vue'
 
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
+const clipStore = useClipStore()
 
 const timeLineRef: Ref<HTMLCanvasElement> = ref()
 const timeStripeRef: Ref<HTMLElement> = ref()
@@ -42,16 +45,7 @@ onMounted(() => {
   timeLineRef.value.addEventListener('mousedown', (e) => {
     if (e.offsetX > trackStore.trackWidth) return
     offsetX.value = e.offsetX
-    offsetXToCurrentTime(e.offsetX)
-  })
-  document.addEventListener('keydown', (e) => {
-    e.preventDefault()
-    if (e.keyCode === 39) {
-      offsetX.value = offsetX.value + 1
-    } else if (e.keyCode === 37) {
-      offsetX.value = offsetX.value - 1
-    }
-    offsetXToCurrentTime(offsetX.value)
+    emitter.emit('videoSkip', getCurrentTimefromOffsetX(offsetX.value))
   })
 })
 
@@ -84,16 +78,37 @@ watch(
   },
 )
 
+emitter.on('clip-left', () => {
+  offsetX.value = clipStore.clipLeft
+  const currentTime = getCurrentTimefromOffsetX(offsetX.value)
+  playerStore.changeStartTime(currentTime)
+  emitter.emit('videoSkip', currentTime)
+})
+
+emitter.on('clip-right', () => {
+  offsetX.value = trackStore.trackWidth - clipStore.clipRight
+  const currentTime = getCurrentTimefromOffsetX(offsetX.value)
+  playerStore.changeEndTime(currentTime)
+  emitter.emit('videoSkip', currentTime)
+})
+
 // 将 在时间轴上选择的时刻 转换为 视频的currentTime
-function offsetXToCurrentTime(offsetX: number) {
+function getCurrentTimefromOffsetX(offsetX: number) {
   const R = offsetX / (playerStore.duration * trackStore.spaceGap)
-  emitter.emit('videoSkip', Number((R * playerStore.duration).toFixed(2)))
+  return Number((R * playerStore.duration).toFixed(2))
+}
+
+function getOffsetXfromCurrentTime(time: number) {
+  // 当前时间 / 总时长 = offsetX / 真实总轴长
+  const R = time / playerStore.duration
+  return Math.floor(R * trackStore.trackWidth)
 }
 
 // 将 视频的currentTime 转换为 在时间轴上选择的时刻
 function currentTimeToOffsetX(time: number) {
   // 当timeStripe位于最后时，重新播放，需重置timeStripe的位置
-  if (time === 0) offsetX.value = 0
+  if (time === playerStore.startTime)
+    offsetX.value = getOffsetXfromCurrentTime(playerStore.startTime)
 
   // final 为 currentTime 应对应的 offsetX
   const final = getOffsetXfromCurrentTime(time)
@@ -111,12 +126,6 @@ function currentTimeToOffsetX(time: number) {
   }
   const delay = (trackStore.timeGap / trackStore.spaceGap) * 1000
   timer = setInterval(cb, delay)
-}
-
-function getOffsetXfromCurrentTime(time: number) {
-  // 当前时间 / 总时长 = offsetX / 真实总轴长
-  const R = time / playerStore.duration
-  return Math.floor(R * trackStore.trackWidth)
 }
 
 function drawTimeLine() {

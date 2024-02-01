@@ -1,6 +1,16 @@
 <template>
   <div class="keyframe-box" :style="{ width: trackStore.canvasWidth + 'px' }">
     <div v-show="playerStore.videoSrc" id="keyFramesWrap" class="wrap">
+      <div
+        class="select-box"
+        :style="{
+          left: clipStore.clipLeft + 'px',
+          right: clipStore.clipRight + 'px',
+        }"
+      >
+        <div ref="leftRef" class="select-left"></div>
+        <div ref="rightRef" class="select-right"></div>
+      </div>
       <canvas
         ref="keyFrameRef"
         :width="trackStore.trackWidth"
@@ -9,6 +19,7 @@
     </div>
   </div>
   <div
+    v-show="loading"
     v-loading="loading"
     :element-loading-spinner="svg"
     element-loading-background="rgba(0, 0, 0, 0.5)"
@@ -20,7 +31,10 @@
 <script lang="ts" setup>
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
+import { useClipStore } from '@/store/modules/clip'
 import { useFFmpeg } from '@/hooks/useFFmpeg'
+
+import emitter from '@/utils/bus'
 
 import type { Ref } from 'vue'
 
@@ -30,14 +44,25 @@ const svg =
 
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
+const clipStore = useClipStore()
+
 const { extractKeyFrame } = useFFmpeg()
+
 let keyFrames: Blob[] = []
 
 const keyFrameRef: Ref<HTMLCanvasElement> = ref()
 let keyFrameCtx: CanvasRenderingContext2D
 
+const leftRef = ref()
+const rightRef = ref()
+let leftFlag = false
+let rightFlag = false
+
 onMounted(() => {
   keyFrameCtx = keyFrameRef.value.getContext('2d')
+  registerLeft()
+  registerRight()
+  registerAll()
 })
 
 watch(
@@ -88,6 +113,60 @@ async function drawKeyFrames() {
     }
   }
 }
+
+function closeMove() {
+  clipStore.changeClipping(false)
+  if (leftFlag) {
+    leftFlag = false
+    emitter.emit('clip-left')
+  }
+  if (rightFlag) {
+    rightFlag = false
+    emitter.emit('clip-right')
+  }
+}
+
+function registerAll() {
+  window.addEventListener('mouseup', closeMove)
+}
+
+function registerLeft() {
+  function mouseDown() {
+    clipStore.changeClipping(true)
+    leftFlag = true
+    rightFlag = false
+  }
+
+  function mouseMove(e: MouseEvent) {
+    if (!clipStore.clipping) return
+
+    let offsetLeft = clipStore.clipLeft + e.movementX
+    if (offsetLeft < 0) return
+    clipStore.changeClipLeft(offsetLeft)
+  }
+
+  leftRef.value.addEventListener('mousedown', mouseDown)
+  leftRef.value.addEventListener('mousemove', mouseMove)
+}
+
+function registerRight() {
+  function mouseDown() {
+    clipStore.changeClipping(true)
+    leftFlag = false
+    rightFlag = true
+  }
+
+  function mouseMove(e: MouseEvent) {
+    if (!clipStore.clipping) return
+
+    let offsetRight = clipStore.clipRight - e.movementX
+    if (offsetRight < 0) return
+    clipStore.changeClipRight(offsetRight)
+  }
+
+  rightRef.value.addEventListener('mousedown', mouseDown)
+  rightRef.value.addEventListener('mousemove', mouseMove)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -108,21 +187,22 @@ async function drawKeyFrames() {
   position: relative;
   height: 50px;
   display: inline-block;
+}
+.select-box {
+  position: absolute;
+  height: 50px;
   border: 1px solid var(--my-color);
 }
-.wrap::before {
-  content: '';
+.select-left {
   width: 15px;
   height: 50px;
   background-color: var(--my-color);
   position: absolute;
-  left: 0;
   background-image: url('@/assets/img/spots.svg');
   background-position: 50%;
   background-repeat: no-repeat;
 }
-.wrap::after {
-  content: '';
+.select-right {
   width: 15px;
   height: 50px;
   background-color: var(--my-color);
@@ -131,5 +211,10 @@ async function drawKeyFrames() {
   background-image: url('@/assets/img/spots.svg');
   background-position: 50%;
   background-repeat: no-repeat;
+}
+
+.select-left:hover,
+.select-right:hover {
+  cursor: ew-resize;
 }
 </style>

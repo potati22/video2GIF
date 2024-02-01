@@ -28,13 +28,13 @@ export function useFFmpeg() {
       ),
     })
 
-    const uint8arry = await fetchFile('/static/capture.mp4')
+    const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile('enhypen.mp4', uint8arry)
     await ffmpeg.exec([
-      '-t',
-      '3',
       '-ss',
-      '00:00:02',
+      `${playerStore.startTime}`,
+      '-t',
+      `${playerStore.endTime - playerStore.startTime}`,
       '-i',
       'enhypen.mp4',
       '-vf',

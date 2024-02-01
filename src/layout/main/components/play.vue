@@ -57,7 +57,15 @@ onMounted(() => {
     if (video.value.duration === Infinity) {
       video.value.ontimeupdate = () => {
         video.value.ontimeupdate = () => {
-          playerStore.changeCurrenTime(video.value.currentTime)
+          const currentTime = Number(video.value.currentTime.toFixed(2))
+          if (currentTime >= playerStore.endTime) {
+            playerStore.changeCurrenTime(playerStore.endTime)
+            setTimeout(videoPause, 0)
+            return
+          }
+          playerStore.changeCurrenTime(currentTime)
+          /* playerStore.changeCurrenTime(currentTime)
+          if (currentTime === playerStore.endTime) setTimeout(videoPause, 0) */
         }
         video.value.currentTime = 0
         // 此时可以获取正确的duration值
@@ -80,24 +88,32 @@ onMounted(() => {
       )
     }
   }
-  video.value.onended = () => {
+  /* video.value.onended = () => {
     playerStore.changePlaying(false)
-  }
+  } */
 })
 
-emitter.on('videoPlay', () => {
-  playerStore.changePlaying(true)
-  video.value.play()
-})
+emitter.on('videoPlay', videoPlay)
 
-emitter.on('videoPause', () => {
-  playerStore.changePlaying(false)
-  video.value.pause()
-})
+emitter.on('videoPause', videoPause)
 
 emitter.on('videoSkip', (time: number) => {
   video.value.currentTime = time
 })
+
+function videoPlay() {
+  // 当前时间 等于 最晚时间 时, 重置当前时间为 最早时间
+  if (playerStore.currentTime >= playerStore.endTime) {
+    video.value.currentTime = playerStore.startTime
+  }
+  playerStore.changePlaying(true)
+  video.value.play()
+}
+
+function videoPause() {
+  playerStore.changePlaying(false)
+  video.value.pause()
+}
 
 onUnmounted(() => {
   innerBoxResizeObserver.unobserve(unref(innerBox))
