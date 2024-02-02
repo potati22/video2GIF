@@ -16,6 +16,13 @@
         :width="trackStore.trackWidth"
         height="50"
       ></canvas>
+      <div
+        class="shadow"
+        :style="{
+          '--left': clipStore.clipLeft + 'px',
+          '--right': trackStore.trackWidth - clipStore.clipRight + 'px',
+        }"
+      ></div>
     </div>
   </div>
   <div
@@ -185,8 +192,26 @@ function registerRight() {
 }
 .wrap {
   position: relative;
-  height: 50px;
+  height: 52px;
   display: inline-block;
+}
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(1, 1, 1, 0.8);
+  clip-path: polygon(
+    0 0,
+    0 100%,
+    var(--left) 100%,
+    var(--left) 0,
+    var(--right) 0,
+    var(--right) 100%,
+    100% 100%,
+    100% 0
+  );
 }
 .select-box {
   position: absolute;

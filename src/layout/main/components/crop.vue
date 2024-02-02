@@ -172,7 +172,6 @@ function registerCrop() {
 
   moveRef.value.addEventListener('mousedown', openMove)
   moveRef.value.addEventListener('mousemove', mouseMove)
-  moveRef.value.addEventListener('mouseup', closeMove)
 }
 
 function registerTM() {
@@ -189,7 +188,6 @@ function registerTM() {
 
   tmRef.value.addEventListener('mousedown', openChange)
   tmRef.value.addEventListener('mousemove', mouseMove)
-  tmRef.value.addEventListener('mouseup', closeChange)
 }
 
 function registerBM() {
@@ -203,7 +201,6 @@ function registerBM() {
 
   bmRef.value.addEventListener('mousedown', openChange)
   bmRef.value.addEventListener('mousemove', mouseMove)
-  bmRef.value.addEventListener('mouseup', closeChange)
 }
 
 function registerLM() {
@@ -220,7 +217,6 @@ function registerLM() {
 
   lmRef.value.addEventListener('mousedown', openChange)
   lmRef.value.addEventListener('mousemove', mouseMove)
-  lmRef.value.addEventListener('mouseup', closeChange)
 }
 
 function registerRM() {
@@ -234,14 +230,10 @@ function registerRM() {
 
   rmRef.value.addEventListener('mousedown', openChange)
   rmRef.value.addEventListener('mousemove', mouseMove)
-  rmRef.value.addEventListener('mouseup', closeChange)
 }
 
 function registerAll() {
-  cropRef.value.addEventListener('mouseup', () => {
-    closeChange()
-  })
-  wrapRef.value.addEventListener('mouseup', () => {
+  window.addEventListener('mouseup', () => {
     closeMove()
     closeChange()
   })

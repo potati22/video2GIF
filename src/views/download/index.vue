@@ -8,10 +8,8 @@
 
 <script setup lang="ts">
 import { useFFmpeg } from '@/hooks/useFFmpeg'
-import { useCropStore } from '@/store/modules/crop'
 import { usePlayerStore } from '@/store/modules/player'
 
-const cropStore = useCropStore()
 const playerStore = usePlayerStore()
 
 const { videoToGIF } = useFFmpeg()
@@ -25,12 +23,7 @@ function downloadGIF() {
     return
   }
 
-  videoToGIF(
-    cropStore.cropData.x,
-    cropStore.cropData.y,
-    cropStore.cropData.width,
-    cropStore.cropData.height,
-  )
+  videoToGIF()
 }
 </script>
 

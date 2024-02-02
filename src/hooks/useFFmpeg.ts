@@ -1,19 +1,16 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import { usePlayerStore } from '@/store/modules/player'
+import { useCropStore } from '@/store/modules/crop'
 
 const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
 
 export function useFFmpeg() {
   const ffmpeg = new FFmpeg()
   const playerStore = usePlayerStore()
+  const cropStore = useCropStore()
 
-  async function videoToGIF(
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-  ) {
+  async function videoToGIF() {
     const loading = ElLoading.service({
       lock: true,
       text: '🏃‍♀️Loading...',
@@ -38,7 +35,7 @@ export function useFFmpeg() {
       '-i',
       'enhypen.mp4',
       '-vf',
-      `crop=${width}:${height}:${x}:${y}`,
+      `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
       'enhypen2.gif',
     ])
     const final = await ffmpeg.readFile('enhypen2.gif', 'binary')
