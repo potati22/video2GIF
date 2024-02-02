@@ -1,9 +1,7 @@
 <template>
   <div class="control-box">
     <div class="left-box">
-      <HSvgIcon icon-class="back" />
-      <HSvgIcon icon-class="split" />
-      <HSvgIcon icon-class="delete" />
+      <HSvgIcon icon-class="back" @click="clipBack" />
     </div>
     <div class="center-box">
       <span>{{ formatTime3(playerStore.currentTime) }}</span>
@@ -45,6 +43,10 @@ function videoPlay() {
 
 function videoPause() {
   emitter.emit('videoPause')
+}
+
+function clipBack() {
+  emitter.emit('clip-back')
 }
 </script>
 

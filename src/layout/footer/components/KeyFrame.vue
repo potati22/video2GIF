@@ -85,8 +85,16 @@ watch(
   () => {
     if (keyFrames.length === 0) return
     drawKeyFrames()
+    changeClipSize()
   },
 )
+
+emitter.on('clip-back', () => {
+  playerStore.changeStartTime(0)
+  playerStore.changeEndTime(playerStore.duration)
+  clipStore.changeClipLeft(0)
+  clipStore.changeClipRight(0)
+})
 
 async function initKeyFrame() {
   loading.value = true
@@ -103,6 +111,19 @@ async function initKeyFrame() {
   }
   drawKeyFrames()
   loading.value = false
+}
+
+function getOffsetXfromCurrentTime(time: number) {
+  // 当前时间 / 总时长 = offsetX / 真实总轴长
+  const R = time / playerStore.duration
+  return Math.floor(R * trackStore.trackWidth)
+}
+
+function changeClipSize() {
+  clipStore.changeClipLeft(getOffsetXfromCurrentTime(playerStore.startTime))
+  clipStore.changeClipRight(
+    trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime),
+  )
 }
 
 async function drawKeyFrames() {
