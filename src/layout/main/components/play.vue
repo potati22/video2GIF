@@ -58,14 +58,17 @@ onMounted(() => {
       video.value.ontimeupdate = () => {
         video.value.ontimeupdate = () => {
           const currentTime = Number(video.value.currentTime.toFixed(2))
-          if (currentTime >= playerStore.endTime) {
+          if (playerStore.playing && currentTime == playerStore.endTime) return
+          if (
+            playerStore.playing &&
+            currentTime >= playerStore.endTime - 0.15
+          ) {
+            video.value.currentTime = playerStore.endTime
             playerStore.changeCurrenTime(playerStore.endTime)
             setTimeout(videoPause, 0)
             return
           }
           playerStore.changeCurrenTime(currentTime)
-          /* playerStore.changeCurrenTime(currentTime)
-          if (currentTime === playerStore.endTime) setTimeout(videoPause, 0) */
         }
         video.value.currentTime = 0
         // 此时可以获取正确的duration值
@@ -88,9 +91,6 @@ onMounted(() => {
       )
     }
   }
-  /* video.value.onended = () => {
-    playerStore.changePlaying(false)
-  } */
 })
 
 emitter.on('videoPlay', videoPlay)
