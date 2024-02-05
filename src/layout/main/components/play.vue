@@ -1,17 +1,15 @@
 <template>
-  <div class="outer-box">
-    <div ref="innerBox" class="inner-box">
-      <div
-        class="work-area"
-        :style="{
-          '--height': workAreaHeight + 'px',
-          '--width': workAreaWidth + 'px',
-        }"
-      >
-        <div class="video-outer">
-          <video ref="video" :src="playerStore.videoSrc"></video>
-          <Crop></Crop>
-        </div>
+  <div ref="outerBox" class="outer-box">
+    <div
+      class="work-area"
+      :style="{
+        '--height': workAreaHeight + 'px',
+        '--width': workAreaWidth + 'px',
+      }"
+    >
+      <div class="video-outer">
+        <video ref="video" :src="playerStore.videoSrc"></video>
+        <Crop></Crop>
       </div>
     </div>
   </div>
@@ -21,6 +19,7 @@
 import Crop from './Crop.vue'
 
 import emitter from '@/utils/bus'
+import { VIDEOPLAY, VIDEOPAUSE, VIDEOSKIP } from '@/utils/eventName'
 
 import { usePlayerStore } from '@/store/modules/player'
 
@@ -28,16 +27,29 @@ import type { Ref } from 'vue'
 
 const playerStore = usePlayerStore()
 
-const innerBox: Ref<HTMLElement> = ref()
+const outerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
 const workAreaWidth = ref(0)
 
-let innerBoxResizeObserver: ResizeObserver
-
 const video: Ref<HTMLVideoElement> = ref()
 
+emitter.on(VIDEOPLAY, videoPlay)
+
+emitter.on(VIDEOPAUSE, videoPause)
+
+emitter.on(VIDEOSKIP, (time: number) => {
+  video.value.currentTime = time
+})
+
 onMounted(() => {
-  innerBoxResizeObserver = new ResizeObserver((e) => {
+  controlWorkArea()
+  video.value.onloadedmetadata = videoOnLoadedMetaData
+})
+
+// 监听outerBox的变化
+// 保证工作区的长宽比恒为2：1
+function controlWorkArea() {
+  const outerBoxResizeObserver: ResizeObserver = new ResizeObserver((e) => {
     const H = Math.floor(e[0].contentRect.height)
     const W = Math.floor(e[0].contentRect.width)
     if (2 * H > W) {
@@ -48,58 +60,54 @@ onMounted(() => {
       workAreaWidth.value = 2 * H
     }
   })
-  innerBoxResizeObserver.observe(unref(innerBox), {
+  outerBoxResizeObserver.observe(unref(outerBox), {
     box: 'content-box',
   })
 
-  // 初始化video
-  video.value.onloadedmetadata = () => {
-    if (video.value.duration === Infinity) {
-      video.value.ontimeupdate = () => {
-        video.value.ontimeupdate = () => {
-          const currentTime = Number(video.value.currentTime.toFixed(2))
-          if (playerStore.playing && currentTime == playerStore.endTime) return
-          if (
-            playerStore.playing &&
-            currentTime >= playerStore.endTime - 0.15
-          ) {
-            video.value.currentTime = playerStore.endTime
-            playerStore.changeCurrenTime(playerStore.endTime)
-            setTimeout(videoPause, 0)
-            return
-          }
-          playerStore.changeCurrenTime(currentTime)
-        }
-        video.value.currentTime = 0
-        // 此时可以获取正确的duration值
-        playerStore.initPlayer(
-          video.value.videoWidth,
-          video.value.videoHeight,
-          video.value.clientWidth,
-          video.value.clientHeight,
-          video.value.duration,
-        )
-      }
-      video.value.currentTime = 1e101
-    } else {
+  onUnmounted(() => {
+    outerBoxResizeObserver.unobserve(unref(outerBox))
+  })
+}
+
+// 初始化player
+function videoOnLoadedMetaData() {
+  if (video.value.duration === Infinity) {
+    video.value.ontimeupdate = () => {
+      video.value.ontimeupdate = videoOnUpateTime
+      video.value.currentTime = 0
+      // 此时可以获取正确的duration值
       playerStore.initPlayer(
-        video.value.videoWidth,
         video.value.videoHeight,
-        video.value.clientWidth,
         video.value.clientHeight,
         video.value.duration,
       )
     }
+    video.value.currentTime = 1e101
+  } else {
+    playerStore.initPlayer(
+      video.value.videoHeight,
+      video.value.clientHeight,
+      video.value.duration,
+    )
   }
-})
+}
 
-emitter.on('videoPlay', videoPlay)
+// 监听video的currentTime变化
+function videoOnUpateTime() {
+  const currentTime = Number(video.value.currentTime.toFixed(2))
 
-emitter.on('videoPause', videoPause)
+  if (playerStore.playing && currentTime >= playerStore.endTime - 0.15) {
+    video.value.currentTime = playerStore.endTime
+    playerStore.changeCurrentTime(playerStore.endTime)
+    // 如果不使用setTimeout：
+    // 修改currenTime后 watch中回调函数会被添加到微任务队列
+    // 而videoPause先执行 导致playing为false  currentTimeToOffsetX无法执行
+    setTimeout(videoPause, 0)
+    return
+  }
 
-emitter.on('videoSkip', (time: number) => {
-  video.value.currentTime = time
-})
+  playerStore.changeCurrentTime(currentTime)
+}
 
 function videoPlay() {
   // 当前时间 等于 最晚时间 时, 重置当前时间为 最早时间
@@ -114,10 +122,6 @@ function videoPause() {
   playerStore.changePlaying(false)
   video.value.pause()
 }
-
-onUnmounted(() => {
-  innerBoxResizeObserver.unobserve(unref(innerBox))
-})
 </script>
 
 <style lang="scss" scoped>
@@ -125,10 +129,6 @@ onUnmounted(() => {
   padding: 32px;
   height: 100%;
   box-sizing: border-box;
-}
-.inner-box {
-  width: 100%;
-  height: 100%;
   position: relative;
 }
 .work-area {

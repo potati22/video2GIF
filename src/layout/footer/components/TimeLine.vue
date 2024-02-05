@@ -21,6 +21,7 @@ import { useClipStore } from '@/store/modules/clip'
 
 import emitter from '@/utils/bus'
 import { formatTime3 } from '@/utils/formatTime'
+import { VIDEOSKIP, CLIPLEFT, CLIPRIGHT } from '@/utils/eventName'
 
 import type { Ref } from 'vue'
 
@@ -44,18 +45,29 @@ onMounted(() => {
   timeLineCtx = timeLineRef.value.getContext('2d')
   timeLineRef.value.addEventListener('mousedown', (e) => {
     if (e.offsetX > trackStore.trackWidth) return
-    offsetX.value = e.offsetX
-    emitter.emit('videoSkip', getCurrentTimefromOffsetX(offsetX.value))
+    offsetXToCurrentTime(e.offsetX)
   })
 })
 
+emitter.on(CLIPLEFT, () => {
+  const offsetX = clipStore.clipLeft
+  offsetXToCurrentTime(offsetX)
+  playerStore.changeStartTime(getCurrentTimefromOffsetX(offsetX))
+})
+
+emitter.on(CLIPRIGHT, () => {
+  const offestX = trackStore.trackWidth - clipStore.clipRight
+  offsetXToCurrentTime(offestX)
+  playerStore.changeEndTime(getCurrentTimefromOffsetX(offestX))
+})
+
+// 当时间轴比例变化时，需要重绘时间轴
 watch(
   () => trackStore.scaleLevel,
   () => {
-    nextTick(() => {
-      drawTimeLine()
-      offsetX.value = getOffsetXfromCurrentTime(playerStore.currentTime)
-    })
+    nextTick(() =>
+      redrawTimeLine(getOffsetXfromCurrentTime(playerStore.currentTime)),
+    )
   },
 )
 
@@ -63,13 +75,11 @@ watch(
 watch(
   () => playerStore.duration,
   () => {
-    nextTick(() => {
-      drawTimeLine()
-      offsetX.value = 0
-    })
+    nextTick(() => redrawTimeLine(0))
   },
 )
 
+// 视频播放时 监听currentTime变化
 watch(
   () => playerStore.currentTime,
   (newVal) => {
@@ -77,20 +87,6 @@ watch(
     currentTimeToOffsetX(newVal)
   },
 )
-
-emitter.on('clip-left', () => {
-  offsetX.value = clipStore.clipLeft
-  const currentTime = getCurrentTimefromOffsetX(offsetX.value)
-  playerStore.changeStartTime(currentTime)
-  emitter.emit('videoSkip', currentTime)
-})
-
-emitter.on('clip-right', () => {
-  offsetX.value = trackStore.trackWidth - clipStore.clipRight
-  const currentTime = getCurrentTimefromOffsetX(offsetX.value)
-  playerStore.changeEndTime(currentTime)
-  emitter.emit('videoSkip', currentTime)
-})
 
 // 将 在时间轴上选择的时刻 转换为 视频的currentTime
 function getCurrentTimefromOffsetX(offsetX: number) {
@@ -126,6 +122,16 @@ function currentTimeToOffsetX(time: number) {
   }
   const delay = (trackStore.timeGap / trackStore.spaceGap) * 1000
   timer = setInterval(cb, delay)
+}
+
+function offsetXToCurrentTime(pos: number) {
+  offsetX.value = pos
+  emitter.emit(VIDEOSKIP, getCurrentTimefromOffsetX(offsetX.value))
+}
+
+function redrawTimeLine(timeStripePos: number) {
+  drawTimeLine()
+  offsetX.value = timeStripePos
 }
 
 function drawTimeLine() {

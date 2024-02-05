@@ -1,13 +1,8 @@
-import emitter from '@/utils/bus'
 import { defineStore } from 'pinia'
-
-import { VIDEOCHANGE } from '@/utils/eventName'
 
 export const usePlayerStore = defineStore('player', () => {
   const videoSrc = ref('/public/static/capture.mp4') // /public/static/capture.mp4
-  const videoWidth = ref(0)
   const videoHeight = ref(0)
-  const clientWidth = ref(0)
   const clientHeight = ref(0)
   const duration = ref(0)
   const currentTime = ref(0)
@@ -15,20 +10,13 @@ export const usePlayerStore = defineStore('player', () => {
   const endTime = ref(0)
   const playing = ref(false)
 
-  watch(videoSrc, () => {
-    emitter.emit(VIDEOCHANGE)
+  // video的缩放比例
+  const radio = computed(() => {
+    return videoHeight.value / clientHeight.value
   })
 
-  function initPlayer(
-    vW: number,
-    vH: number,
-    cW: number,
-    cH: number,
-    du: number,
-  ) {
-    videoWidth.value = vW
+  function initPlayer(vH: number, cH: number, du: number) {
     videoHeight.value = vH
-    clientWidth.value = cW
     clientHeight.value = cH
     duration.value = Number(du.toFixed(2))
     currentTime.value = 0
@@ -37,7 +25,7 @@ export const usePlayerStore = defineStore('player', () => {
     playing.value = false
   }
 
-  function changeCurrenTime(cu: number) {
+  function changeCurrentTime(cu: number) {
     currentTime.value = cu
   }
 
@@ -59,17 +47,16 @@ export const usePlayerStore = defineStore('player', () => {
 
   return {
     videoSrc,
-    videoWidth,
     videoHeight,
-    clientWidth,
     clientHeight,
+    radio,
     duration,
     currentTime,
     startTime,
     endTime,
     playing,
     initPlayer,
-    changeCurrenTime,
+    changeCurrentTime,
     changeStartTime,
     changeEndTime,
     changePlaying,

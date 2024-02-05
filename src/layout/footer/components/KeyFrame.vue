@@ -42,7 +42,7 @@ import { useClipStore } from '@/store/modules/clip'
 import { useFFmpeg } from '@/hooks/useFFmpeg'
 
 import emitter from '@/utils/bus'
-import { VIDEOCHANGE } from '@/utils/eventName'
+import { CLIPLEFT, CLIPRIGHT, CLIPBACK } from '@/utils/eventName'
 
 import type { Ref } from 'vue'
 
@@ -73,21 +73,27 @@ onMounted(() => {
   registerAll()
 })
 
-emitter.on(VIDEOCHANGE, () => {
-  clipStore.clipRest()
-  initKeyFrame()
-})
+watch(
+  () => playerStore.videoSrc,
+  () => {
+    clipStore.clipRest()
+    initKeyFrame()
+  },
+)
 
 watch(
   () => trackStore.scaleLevel,
   () => {
     if (keyFrames.length === 0) return
     drawKeyFrames()
-    changeClipSize()
+    clipStore.changeClipLeft(getOffsetXfromCurrentTime(playerStore.startTime))
+    clipStore.changeClipRight(
+      trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime),
+    )
   },
 )
 
-emitter.on('clip-back', () => {
+emitter.on(CLIPBACK, () => {
   playerStore.changeStartTime(0)
   playerStore.changeEndTime(playerStore.duration)
   clipStore.clipRest()
@@ -110,19 +116,6 @@ async function initKeyFrame() {
   loading.value = false
 }
 
-function getOffsetXfromCurrentTime(time: number) {
-  // 当前时间 / 总时长 = offsetX / 真实总轴长
-  const R = time / playerStore.duration
-  return Math.floor(R * trackStore.trackWidth)
-}
-
-function changeClipSize() {
-  clipStore.changeClipLeft(getOffsetXfromCurrentTime(playerStore.startTime))
-  clipStore.changeClipRight(
-    trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime),
-  )
-}
-
 async function drawKeyFrames() {
   const pickKeyFrameGap = (trackStore.timeGap * 2) / (trackStore.spaceGap / 100)
   const startPos = 100 / pickKeyFrameGap
@@ -139,20 +132,13 @@ async function drawKeyFrames() {
   }
 }
 
-function closeMove() {
-  clipStore.changeClipping(false)
-  if (leftFlag) {
-    leftFlag = false
-    emitter.emit('clip-left')
-  }
-  if (rightFlag) {
-    rightFlag = false
-    emitter.emit('clip-right')
-  }
-}
-
 function registerAll() {
-  window.addEventListener('mouseup', closeMove)
+  window.addEventListener('mouseup', () => {
+    clipStore.changeClipping(false)
+    leftFlag && emitter.emit(CLIPLEFT)
+    rightFlag && emitter.emit(CLIPRIGHT)
+    leftFlag = rightFlag = false
+  })
 }
 
 function registerLeft() {
@@ -167,6 +153,7 @@ function registerLeft() {
 
     let offsetLeft = clipStore.clipLeft + e.movementX
     if (offsetLeft < 0) return
+    if (offsetLeft + clipStore.clipRight > trackStore.trackWidth - 100) return
     clipStore.changeClipLeft(offsetLeft)
   }
 
@@ -186,11 +173,18 @@ function registerRight() {
 
     let offsetRight = clipStore.clipRight - e.movementX
     if (offsetRight < 0) return
+    if (offsetRight + clipStore.clipLeft > trackStore.trackWidth - 100) return
     clipStore.changeClipRight(offsetRight)
   }
 
   rightRef.value.addEventListener('mousedown', mouseDown)
   rightRef.value.addEventListener('mousemove', mouseMove)
+}
+
+function getOffsetXfromCurrentTime(time: number) {
+  // 当前时间 / 总时长 = offsetX / 真实总轴长
+  const R = time / playerStore.duration
+  return Math.floor(R * trackStore.trackWidth)
 }
 </script>
 

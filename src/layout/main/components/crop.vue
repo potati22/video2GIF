@@ -46,11 +46,19 @@
 
 <script lang="ts" setup>
 import emitter from '@/utils/bus'
-import { useCropStore } from '@/store/modules/crop'
+import {
+  CROPSTART,
+  CROPCONFIRM,
+  CROPCANCEL,
+  CROPRESET,
+  SQUARETURNON,
+} from '@/utils/eventName'
 
-import { VIDEOCHANGE } from '@/utils/eventName'
+import { useCropStore } from '@/store/modules/crop'
+import { usePlayerStore } from '@/store/modules/player'
 
 const cropStore = useCropStore()
+const playerStore = usePlayerStore()
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -76,14 +84,17 @@ const Rh = ref(0)
 const cropCanchange = ref(false)
 const cropCanmove = ref(false)
 
-emitter.on(VIDEOCHANGE, () => {
-  cropStore.cropReset()
-})
+watch(
+  () => playerStore.videoSrc,
+  () => {
+    cropStore.cropReset()
+  },
+)
 
-emitter.on('cropStart', () => {
+emitter.on(CROPSTART, () => {
   cropStore.cropStrat()
 })
-emitter.on('cropConfirm', () => {
+emitter.on(CROPCONFIRM, () => {
   cropStore.cropConfirm(
     cropBoxTransX.value,
     cropBoxTransY.value,
@@ -91,17 +102,17 @@ emitter.on('cropConfirm', () => {
     cropBoxTransH.value,
   )
 })
-emitter.on('cropCancel', () => {
+emitter.on(CROPCANCEL, () => {
   cropStore.cropCancel()
   cropBoxTransX.value = cropStore.cropX
   cropBoxTransY.value = cropStore.cropY
   cropBoxTransW.value = cropStore.cropW
   cropBoxTransH.value = cropStore.cropH
 })
-emitter.on('cropReset', () => {
+emitter.on(CROPRESET, () => {
   cropStore.cropReset()
 })
-emitter.on('squareTurnOn', () => {
+emitter.on(SQUARETURNON, () => {
   if (cropBoxTransW.value > cropBoxTransH.value) {
     cropBoxTransW.value = cropBoxTransH.value
   } else {

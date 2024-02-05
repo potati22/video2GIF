@@ -8,17 +8,13 @@ export const useCropStore = defineStore('crop', () => {
   const cropY = ref(0)
   const cropW = ref(100)
   const cropH = ref(100)
-  // video的缩放比例
-  const radio = computed(() => {
-    return playerStore.videoHeight / playerStore.clientHeight
-  })
   // video的真实裁剪数据
   const cropData = computed(() => {
     return {
-      x: Math.floor(cropX.value * radio.value),
-      y: Math.floor(cropY.value * radio.value),
-      width: Math.floor(cropW.value * radio.value),
-      height: Math.floor(cropH.value * radio.value),
+      x: Math.floor(cropX.value * playerStore.radio),
+      y: Math.floor(cropY.value * playerStore.radio),
+      width: Math.floor(cropW.value * playerStore.radio),
+      height: Math.floor(cropH.value * playerStore.radio),
     }
   })
   const square = ref(false) // 是否1：1宽高比
@@ -60,7 +56,6 @@ export const useCropStore = defineStore('crop', () => {
     cropY,
     cropW,
     cropH,
-    radio,
     cropData,
     square,
     cropping,

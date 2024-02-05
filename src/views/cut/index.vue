@@ -26,6 +26,13 @@
 
 <script lang="ts" setup>
 import emitter from '@/utils/bus'
+import {
+  CROPSTART,
+  CROPCONFIRM,
+  CROPCANCEL,
+  CROPRESET,
+  SQUARETURNON,
+} from '@/utils/eventName'
 
 import { useCropStore } from '@/store/modules/crop'
 import { usePlayerStore } from '@/store/modules/player'
@@ -41,24 +48,24 @@ function start() {
     })
     return
   }
-  emitter.emit('cropStart')
+  emitter.emit(CROPSTART)
 }
 
 function confirm() {
-  emitter.emit('cropConfirm')
+  emitter.emit(CROPCONFIRM)
 }
 
 function cancel() {
-  emitter.emit('cropCancel')
+  emitter.emit(CROPCANCEL)
 }
 
 function reset() {
-  emitter.emit('cropReset')
+  emitter.emit(CROPRESET)
 }
 
 function squareTurnOn() {
   cropStore.changeSquare(true)
-  emitter.emit('squareTurnOn')
+  emitter.emit(SQUARETURNON)
 }
 </script>
 
