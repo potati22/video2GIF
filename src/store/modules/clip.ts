@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 
 export const useClipStore = defineStore('clip', () => {
   const clipping = ref(false)
-  const clipped = ref(false)
   const clipLeft = ref(0)
   const clipRight = ref(0)
 
@@ -18,13 +17,18 @@ export const useClipStore = defineStore('clip', () => {
     clipRight.value = n
   }
 
+  function clipRest() {
+    clipLeft.value = 0
+    clipRight.value = 0
+  }
+
   return {
     clipping,
-    clipped,
     clipLeft,
     clipRight,
     changeClipping,
     changeClipLeft,
     changeClipRight,
+    clipRest,
   }
 })

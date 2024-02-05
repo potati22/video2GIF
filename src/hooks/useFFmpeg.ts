@@ -36,6 +36,8 @@ export function useFFmpeg() {
       'enhypen.mp4',
       '-vf',
       `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
+      '-s',
+      '150x150',
       'enhypen2.gif',
     ])
     const final = await ffmpeg.readFile('enhypen2.gif', 'binary')

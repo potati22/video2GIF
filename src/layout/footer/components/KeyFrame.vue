@@ -42,6 +42,7 @@ import { useClipStore } from '@/store/modules/clip'
 import { useFFmpeg } from '@/hooks/useFFmpeg'
 
 import emitter from '@/utils/bus'
+import { VIDEOCHANGE } from '@/utils/eventName'
 
 import type { Ref } from 'vue'
 
@@ -72,13 +73,10 @@ onMounted(() => {
   registerAll()
 })
 
-watch(
-  () => playerStore.videoSrc,
-  (newVal) => {
-    if (!newVal) return
-    initKeyFrame()
-  },
-)
+emitter.on(VIDEOCHANGE, () => {
+  clipStore.clipRest()
+  initKeyFrame()
+})
 
 watch(
   () => trackStore.scaleLevel,
@@ -92,8 +90,7 @@ watch(
 emitter.on('clip-back', () => {
   playerStore.changeStartTime(0)
   playerStore.changeEndTime(playerStore.duration)
-  clipStore.changeClipLeft(0)
-  clipStore.changeClipRight(0)
+  clipStore.clipRest()
 })
 
 async function initKeyFrame() {

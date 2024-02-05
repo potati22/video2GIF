@@ -1,4 +1,7 @@
+import emitter from '@/utils/bus'
 import { defineStore } from 'pinia'
+
+import { VIDEOCHANGE } from '@/utils/eventName'
 
 export const usePlayerStore = defineStore('player', () => {
   const videoSrc = ref('/public/static/capture.mp4') // /public/static/capture.mp4
@@ -12,6 +15,10 @@ export const usePlayerStore = defineStore('player', () => {
   const endTime = ref(0)
   const playing = ref(false)
 
+  watch(videoSrc, () => {
+    emitter.emit(VIDEOCHANGE)
+  })
+
   function initPlayer(
     vW: number,
     vH: number,
@@ -24,7 +31,10 @@ export const usePlayerStore = defineStore('player', () => {
     clientWidth.value = cW
     clientHeight.value = cH
     duration.value = Number(du.toFixed(2))
+    currentTime.value = 0
+    startTime.value = 0
     endTime.value = duration.value
+    playing.value = false
   }
 
   function changeCurrenTime(cu: number) {

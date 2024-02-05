@@ -48,6 +48,8 @@
 import emitter from '@/utils/bus'
 import { useCropStore } from '@/store/modules/crop'
 
+import { VIDEOCHANGE } from '@/utils/eventName'
+
 const cropStore = useCropStore()
 
 let wrapBoxResizeObserver: ResizeObserver
@@ -73,6 +75,10 @@ const Rh = ref(0)
 
 const cropCanchange = ref(false)
 const cropCanmove = ref(false)
+
+emitter.on(VIDEOCHANGE, () => {
+  cropStore.cropReset()
+})
 
 emitter.on('cropStart', () => {
   cropStore.cropStrat()
