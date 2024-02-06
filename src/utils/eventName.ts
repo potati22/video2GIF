@@ -4,10 +4,6 @@ export const VIDEOPAUSE = Symbol('videoPause')
 
 export const VIDEOSKIP = Symbol('videoSkip')
 
-export const CLIPLEFT = Symbol('clipLeft')
-
-export const CLIPRIGHT = Symbol('clipRight')
-
 export const CLIPBACK = Symbol('clipBack')
 
 export const CROPSTART = Symbol('cropStart')

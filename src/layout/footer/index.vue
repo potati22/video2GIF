@@ -4,6 +4,7 @@
     <Control />
     <div class="panel-box">
       <TimeLine />
+      <TimeStripe />
       <KeyFrame />
     </div>
   </div>
@@ -12,6 +13,7 @@
 <script lang="ts" setup>
 import Control from './components/Control.vue'
 import TimeLine from './components/TimeLine.vue'
+import TimeStripe from './components/TimeStripe.vue'
 import KeyFrame from './components/KeyFrame.vue'
 
 const controlLine = ref()
