@@ -23,23 +23,32 @@ let viewInnerHeight = 0
 const emits = defineEmits(['changeFooterHeight'])
 
 onMounted(() => {
+  registerControlLine()
+  registerAll()
+})
+
+function registerControlLine() {
+  function mouseDown(e: MouseEvent) {
+    viewInnerHeight = e.view.innerHeight
+    lineCanMove = true
+  }
+
   controlLine.value.addEventListener('mousedown', mouseDown)
+}
+
+function registerAll() {
+  function mousemove(e: MouseEvent) {
+    if (!lineCanMove) return
+    if (e.clientY < 350 || viewInnerHeight - e.clientY < 250) return
+    emits('changeFooterHeight', viewInnerHeight - e.clientY)
+  }
+
+  function mouseup() {
+    lineCanMove = false
+  }
+
   document.addEventListener('mousemove', mousemove)
   document.addEventListener('mouseup', mouseup)
-})
-function mouseDown(e: MouseEvent) {
-  viewInnerHeight = e.view.innerHeight
-  lineCanMove = true
-}
-
-function mouseup() {
-  lineCanMove = false
-}
-
-function mousemove(e: MouseEvent) {
-  if (!lineCanMove) return
-  if (e.clientY < 350 || viewInnerHeight - e.clientY < 250) return
-  emits('changeFooterHeight', viewInnerHeight - e.clientY)
 }
 </script>
 

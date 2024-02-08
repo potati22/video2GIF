@@ -33,7 +33,7 @@ onMounted(() => {
 watch(
   () => playerStore.videoSrc,
   () => {
-    initKeyFrame()
+    initKeyFrames()
   },
 )
 
@@ -45,12 +45,13 @@ watch(
   },
 )
 
-async function initKeyFrame() {
+async function initKeyFrames() {
   const loading = ElLoading.service({
     lock: true,
     text: '👩🏻‍💻Working...',
     background: 'rgba(0, 0, 0, 0.7)',
   })
+
   try {
     keyFrames = await extractKeyFrame()
   } catch (err) {
@@ -62,6 +63,7 @@ async function initKeyFrame() {
     loading.close()
     return
   }
+
   drawKeyFrames()
   loading.close()
 }

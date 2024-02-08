@@ -8,8 +8,9 @@
       }"
     >
       <div class="video-outer">
-        <video ref="video" :src="playerStore.videoSrc"></video>
-        <Crop></Crop>
+        <Crop>
+          <video ref="video" :src="playerStore.videoSrc"></video>
+        </Crop>
       </div>
     </div>
   </div>

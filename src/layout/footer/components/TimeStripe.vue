@@ -44,9 +44,10 @@ watch(
 )
 
 function timeStripeRun(time: number) {
-  // 当timeStripe位于最后时，重新播放，需重置timeStripe的位置
+  // 当timeStripe位于最后开始重新播放，直接重置timeStripe的位置，无需run
   if (time == playerStore.startTime) {
     offsetX.value = trackStore.getOffsetXfromCurrentTime(playerStore.startTime)
+    return
   }
 
   // final 为 currentTime 应对应的 offsetX

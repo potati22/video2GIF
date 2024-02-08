@@ -12,6 +12,12 @@ import { usePlayerStore } from '@/store/modules/player'
 const playerStore = usePlayerStore()
 
 async function record() {
+  const loading = ElLoading.service({
+    lock: true,
+    text: '👩🏻‍💻Working...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+
   let alreadyRecord = false
   let videoBlob: Blob
 
@@ -29,6 +35,7 @@ async function record() {
     .catch((err) => [null, err])
 
   if (hasError) {
+    loading.close()
     ElMessage({
       message: '你拒绝了屏幕共享',
       type: 'warning',
@@ -42,6 +49,7 @@ async function record() {
   recorder.addEventListener('dataavailable', (evt) => {
     if (alreadyRecord) return
     alreadyRecord = true // 保证只记录一次
+    loading.close()
 
     // dataavailable事件比stop事件先触发 所以生成关键帧的函数(具体是网络通信时)会阻塞stop事件 导致浏览器的屏幕录制不能及时停止
     videoBlob = evt.data

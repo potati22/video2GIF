@@ -1,4 +1,5 @@
 <template>
+  <slot></slot>
   <div v-show="cropStore.cropping" class="wrap-outer">
     <div
       ref="wrapRef"
