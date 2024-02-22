@@ -20,6 +20,7 @@ async function record() {
 
   let alreadyRecord = false
   let videoBlob: Blob
+  let stream: MediaStream
 
   if (playerStore.videoSrc) {
     // 主动释放之前创建的URL对象 否则只会在document卸载时自动释放
@@ -27,20 +28,22 @@ async function record() {
   }
 
   // 提示用户去选择和授权需要捕获的内容，并将其展示在一个MediaStream里
-  const [stream, hasError] = await navigator.mediaDevices
+  const res = await navigator.mediaDevices
     .getDisplayMedia({
       video: true,
     })
-    .then((res) => [res, null])
-    .catch((err) => [null, err])
+    .then((res) => res)
+    .catch(() => null)
 
-  if (hasError) {
+  if (!res) {
     loading.close()
     ElMessage({
       message: '你拒绝了屏幕共享',
       type: 'warning',
     })
     return
+  } else {
+    stream = res
   }
 
   // 对指定的MediaStream对象进行录制
@@ -51,8 +54,7 @@ async function record() {
     alreadyRecord = true // 保证只记录一次
     loading.close()
 
-    // dataavailable事件比stop事件先触发 所以生成关键帧的函数(具体是网络通信时)会阻塞stop事件 导致浏览器的屏幕录制不能及时停止
-    videoBlob = evt.data
+    videoBlob = evt.data // dataavailable事件比stop事件先触发
   })
 
   // 主动stop之后需清除自动stop
@@ -65,7 +67,8 @@ async function record() {
 
   // 录制10s后自动断开
   const stopTimer = setTimeout(() => {
-    recorder.stop()
+    recorder.stop() // recoder.stop后录制停止 但流没有停止
+    stream.getTracks().forEach((item) => item.stop()) // 选项卡的录制标志与流有关
   }, 10000)
 }
 </script>
