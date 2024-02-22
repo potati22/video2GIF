@@ -14,7 +14,7 @@ const playerStore = usePlayerStore()
 
 const { videoToGIF } = useFFmpeg()
 
-function downloadGIF() {
+async function downloadGIF() {
   if (!playerStore.videoSrc) {
     ElMessage({
       message: '工作区没有视频资源~',
@@ -23,7 +23,35 @@ function downloadGIF() {
     return
   }
 
-  videoToGIF()
+  const loading = ElLoading.service({
+    lock: true,
+    text: '🏃‍♀️Loading...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+
+  let res
+
+  try {
+    res = await videoToGIF()
+  } catch (err) {
+    ElMessage({
+      message: 'ffmpeg错误了',
+      type: 'error',
+    })
+    console.log(err)
+    loading.close()
+    return
+  }
+
+  loading.close()
+
+  const d = document.createElement('a')
+  d.href = res
+  d.download = 'my.gif'
+  document.body.appendChild(d)
+  d.click()
+  document.body.removeChild(d)
+  URL.revokeObjectURL(res)
 }
 </script>
 

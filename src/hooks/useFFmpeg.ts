@@ -9,14 +9,10 @@ export function useFFmpeg() {
   const ffmpeg = new FFmpeg()
   const playerStore = usePlayerStore()
   const cropStore = useCropStore()
+  const writeGIFName = 'enhypen.mp4'
+  const readGIFName = 'enhypen2.gif'
 
   async function videoToGIF() {
-    const loading = ElLoading.service({
-      lock: true,
-      text: '🏃‍♀️Loading...',
-      background: 'rgba(0, 0, 0, 0.7)',
-    })
-
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(
@@ -26,27 +22,25 @@ export function useFFmpeg() {
     })
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
-    await ffmpeg.writeFile('enhypen.mp4', uint8arry)
+    await ffmpeg.writeFile(writeGIFName, uint8arry)
     await ffmpeg.exec([
       '-ss',
       `${playerStore.startTime}`,
       '-t',
       `${playerStore.endTime - playerStore.startTime}`,
       '-i',
-      'enhypen.mp4',
+      writeGIFName,
       '-vf',
       `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
       '-s',
       '150x150',
-      'enhypen2.gif',
+      readGIFName,
     ])
-    const final = await ffmpeg.readFile('enhypen2.gif', 'binary')
-    console.log(
-      URL.createObjectURL(
-        new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
-      ),
+    const final = await ffmpeg.readFile(readGIFName, 'binary')
+
+    return URL.createObjectURL(
+      new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
     )
-    loading.close()
   }
 
   async function extractKeyFrame() {
@@ -59,13 +53,13 @@ export function useFFmpeg() {
     })
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
-    await ffmpeg.writeFile('enhypen.mp4', uint8arry)
+    await ffmpeg.writeFile(writeGIFName, uint8arry)
 
     await ffmpeg.createDir('key')
 
     await ffmpeg.exec([
       '-i',
-      'enhypen.mp4',
+      writeGIFName,
       '-vf',
       'fps=1/0.5',
       '-s',
@@ -95,11 +89,6 @@ export function useFFmpeg() {
       res.push(new Blob([(final as Uint8Array).buffer], { type: 'image/jpeg' }))
     }
 
-    /* console.log(
-      URL.createObjectURL(
-        new Blob([(final as Uint8Array).buffer], { type: 'image/jpeg' }),
-      ),
-    ) */
     return res
   }
 
