@@ -12,6 +12,9 @@ import { usePlayerStore } from '@/store/modules/player'
 import { useClipStore } from '@/store/modules/clip'
 import { useTrackStore } from '@/store/modules/track'
 
+import emitter from '@/utils/bus'
+import { VIDEOPLAY } from '@/utils/eventName'
+
 const clipStore = useClipStore()
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
@@ -28,8 +31,6 @@ watch(
     if (!playerStore.playing) {
       offsetX.value = trackStore.getOffsetXfromCurrentTime(newVal)
       clipStore.clipping && clipStore.changeClipping(false)
-    } else {
-      timeStripeRun(newVal)
     }
   },
 )
@@ -43,28 +44,25 @@ watch(
   },
 )
 
-function timeStripeRun(time: number) {
-  // 当timeStripe位于最后开始重新播放，直接重置timeStripe的位置，无需run
-  if (time == playerStore.startTime) {
-    offsetX.value = trackStore.getOffsetXfromCurrentTime(playerStore.startTime)
-    return
-  }
+emitter.on(VIDEOPLAY, timeStripeRun1)
 
-  // final 为 currentTime 应对应的 offsetX
-  const final = trackStore.getOffsetXfromCurrentTime(time)
+function timeStripeRun1() {
+  const offsetXMax = trackStore.getOffsetXfromCurrentTime(playerStore.endTime)
+  const step = trackStore.spaceGap / trackStore.timeGap / 50
+
+  if (offsetX.value == offsetXMax) {
+    offsetX.value = trackStore.getOffsetXfromCurrentTime(playerStore.startTime)
+  }
 
   let timer = null
-  // 每delay毫秒 timeStripe 就移动1px
-  // 直到timeStripe移动到final位置
   function cb() {
-    if (offsetX.value < final) {
-      offsetX.value = offsetX.value + 1
-    } else {
+    if (offsetX.value >= offsetXMax || !playerStore.playing) {
       clearInterval(timer)
+      return
     }
+    offsetX.value += step
   }
-  const delay = (trackStore.timeGap / trackStore.spaceGap) * 1000
-  timer = setInterval(cb, delay)
+  timer = setInterval(cb, 20)
 }
 </script>
 

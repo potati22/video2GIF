@@ -98,14 +98,8 @@ function videoOnUpateTime() {
   const currentTime = Number(video.value.currentTime.toFixed(2))
 
   if (playerStore.playing && currentTime >= playerStore.endTime - 0.15) {
-    playerStore.changeCurrentTime(playerStore.endTime)
-    // 如果不使用setTimeout：
-    // 修改currenTime后 watch中回调函数会被添加到微任务队列
-    // 而videoPause先执行 导致playing为false  currentTimeToOffsetX无法执行
-    setTimeout(() => {
-      videoPause()
-      video.value.currentTime = playerStore.endTime
-    }, 0)
+    videoPause()
+    video.value.currentTime = playerStore.endTime
     return
   }
 
