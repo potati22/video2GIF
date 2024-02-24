@@ -44,9 +44,9 @@ watch(
   },
 )
 
-emitter.on(VIDEOPLAY, timeStripeRun1)
+emitter.on(VIDEOPLAY, timeStripeRun)
 
-function timeStripeRun1() {
+function timeStripeRun() {
   const offsetXMax = trackStore.getOffsetXfromCurrentTime(playerStore.endTime)
   const step = trackStore.spaceGap / trackStore.timeGap / 50
 

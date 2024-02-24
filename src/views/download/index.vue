@@ -2,6 +2,12 @@
   <div class="download-box">
     <div class="row">
       <HButton class="btn" @click="downloadGIF">导出GIF</HButton>
+      <a
+        ref="gifDownloadRef"
+        :href="gifSrc"
+        download="my.gif"
+        style="display: none"
+      ></a>
     </div>
   </div>
 </template>
@@ -10,9 +16,14 @@
 import { useFFmpeg } from '@/hooks/useFFmpeg'
 import { usePlayerStore } from '@/store/modules/player'
 
+import type { Ref } from 'vue'
+
 const playerStore = usePlayerStore()
 
 const { videoToGIF } = useFFmpeg()
+
+const gifSrc = ref('')
+const gifDownloadRef: Ref<HTMLAnchorElement> = ref()
 
 async function downloadGIF() {
   if (!playerStore.videoSrc) {
@@ -45,12 +56,8 @@ async function downloadGIF() {
 
   loading.close()
 
-  const d = document.createElement('a')
-  d.href = res
-  d.download = 'my.gif'
-  document.body.appendChild(d)
-  d.click()
-  document.body.removeChild(d)
+  gifSrc.value = res
+  gifDownloadRef.value.click()
   URL.revokeObjectURL(res)
 }
 </script>
