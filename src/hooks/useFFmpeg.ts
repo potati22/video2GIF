@@ -12,7 +12,7 @@ export function useFFmpeg() {
   const writeGIFName = 'enhypen.mp4'
   const readGIFName = 'enhypen2.gif'
 
-  async function videoToGIF() {
+  async function initFFmpeg() {
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(
@@ -20,6 +20,10 @@ export function useFFmpeg() {
         'application/wasm',
       ),
     })
+  }
+
+  async function videoToGIF() {
+    await initFFmpeg()
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile(writeGIFName, uint8arry)
@@ -44,13 +48,7 @@ export function useFFmpeg() {
   }
 
   async function extractKeyFrame() {
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.wasm`,
-        'application/wasm',
-      ),
-    })
+    await initFFmpeg()
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile(writeGIFName, uint8arry)
@@ -93,6 +91,7 @@ export function useFFmpeg() {
   }
 
   return {
+    initFFmpeg,
     videoToGIF,
     extractKeyFrame,
   }
