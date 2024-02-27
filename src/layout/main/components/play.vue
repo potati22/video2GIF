@@ -53,12 +53,12 @@ function controlWorkArea() {
   const outerBoxResizeObserver: ResizeObserver = new ResizeObserver((e) => {
     const H = Math.floor(e[0].contentRect.height)
     const W = Math.floor(e[0].contentRect.width)
-    if (2 * H > W) {
-      workAreaWidth.value = W
-      workAreaHeight.value = Math.floor(W / 2)
-    } else {
+    if (2 * H <= W) {
       workAreaHeight.value = H
       workAreaWidth.value = 2 * H
+    } else {
+      workAreaWidth.value = W
+      workAreaHeight.value = Math.floor(W / 2)
     }
   })
   outerBoxResizeObserver.observe(unref(outerBox), {

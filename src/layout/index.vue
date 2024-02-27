@@ -60,7 +60,7 @@ function changeFooterHeight(h: number) {
 }
 .main-box {
   padding: 0;
-  flex: 1;
+  flex-grow: 1;
 }
 .footer-box {
   position: relative;

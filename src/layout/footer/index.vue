@@ -18,7 +18,6 @@ import KeyFrame from './components/KeyFrame.vue'
 
 const controlLine = ref()
 let lineCanMove = false
-let viewInnerHeight = 0
 
 const emits = defineEmits(['changeFooterHeight'])
 
@@ -28,8 +27,7 @@ onMounted(() => {
 })
 
 function registerControlLine() {
-  function mouseDown(e: MouseEvent) {
-    viewInnerHeight = e.view.innerHeight
+  function mouseDown() {
     lineCanMove = true
   }
 
@@ -39,8 +37,8 @@ function registerControlLine() {
 function registerAll() {
   function mousemove(e: MouseEvent) {
     if (!lineCanMove) return
-    if (e.clientY < 350 || viewInnerHeight - e.clientY < 250) return
-    emits('changeFooterHeight', viewInnerHeight - e.clientY)
+    if (e.clientY < 350 || window.innerHeight - e.clientY < 250) return
+    emits('changeFooterHeight', window.innerHeight - e.clientY)
   }
 
   function mouseup() {
