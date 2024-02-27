@@ -17,15 +17,18 @@ const timeLineSpecStore = [
   },
 ]
 
+const timeLineSpecMin = 0
+const timeLineSpecMax = timeLineSpecStore.length - 1
+
 export const useTrackStore = defineStore('track', () => {
   const playerStore = usePlayerStore()
 
-  const scaleLevel = ref(3)
+  const scaleLevel = ref(1)
   const timeGap = computed(() => {
-    return timeLineSpecStore[scaleLevel.value - 1].timeGap
+    return timeLineSpecStore[scaleLevel.value].timeGap
   })
   const spaceGap = computed(() => {
-    return timeLineSpecStore[scaleLevel.value - 1].spaceGap
+    return timeLineSpecStore[scaleLevel.value].spaceGap
   })
   const canvasWidth = computed(() => {
     return spaceGap.value * (playerStore.duration / timeGap.value + 2)
@@ -36,16 +39,12 @@ export const useTrackStore = defineStore('track', () => {
 
   function reduceScaleLevel() {
     if (playerStore.playing) return
-    const level = scaleLevel.value - 1
-    if (level < 1) return
-    scaleLevel.value = level
+    scaleLevel.value - 1 >= timeLineSpecMin && --scaleLevel.value
   }
 
   function addScaleLevel() {
     if (playerStore.playing) return
-    const level = scaleLevel.value + 1
-    if (level > 3) return
-    scaleLevel.value = level
+    scaleLevel.value + 1 <= timeLineSpecMax && ++scaleLevel.value
   }
 
   return {
