@@ -27,6 +27,7 @@
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 import { useClipStore } from '@/store/modules/clip'
+import { useTimeTrack } from '@/hooks/useTimeTrack'
 
 import emitter from '@/utils/bus'
 import { VIDEOSKIP, CLIPBACK } from '@/utils/eventName'
@@ -34,6 +35,8 @@ import { VIDEOSKIP, CLIPBACK } from '@/utils/eventName'
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
 const clipStore = useClipStore()
+
+const { getCurrentTimefromOffsetX, getOffsetXfromCurrentTime } = useTimeTrack()
 
 const leftRef = ref()
 const rightRef = ref()
@@ -50,12 +53,9 @@ watch(
 watch(
   () => trackStore.scaleLevel,
   () => {
-    clipStore.changeClipLeft(
-      trackStore.getOffsetXfromCurrentTime(playerStore.startTime),
-    )
+    clipStore.changeClipLeft(getOffsetXfromCurrentTime(playerStore.startTime))
     clipStore.changeClipRight(
-      trackStore.trackWidth -
-        trackStore.getOffsetXfromCurrentTime(playerStore.endTime),
+      trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime),
     )
   },
 )
@@ -75,14 +75,12 @@ onMounted(() => {
 function registerAll() {
   window.addEventListener('mouseup', () => {
     if (leftFlag) {
-      const currentTime = trackStore.getCurrentTimefromOffsetX(
-        clipStore.clipLeft,
-      )
+      const currentTime = getCurrentTimefromOffsetX(clipStore.clipLeft)
       emitter.emit(VIDEOSKIP, currentTime)
       playerStore.changeStartTime(currentTime)
     }
     if (rightFlag) {
-      const currentTime = trackStore.getCurrentTimefromOffsetX(
+      const currentTime = getCurrentTimefromOffsetX(
         trackStore.trackWidth - clipStore.clipRight,
       )
       emitter.emit(VIDEOSKIP, currentTime)

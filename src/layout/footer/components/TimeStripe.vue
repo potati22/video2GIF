@@ -11,6 +11,7 @@
 import { usePlayerStore } from '@/store/modules/player'
 import { useClipStore } from '@/store/modules/clip'
 import { useTrackStore } from '@/store/modules/track'
+import { useTimeTrack } from '@/hooks/useTimeTrack'
 
 import emitter from '@/utils/bus'
 import { VIDEOPLAY } from '@/utils/eventName'
@@ -18,6 +19,8 @@ import { VIDEOPLAY } from '@/utils/eventName'
 const clipStore = useClipStore()
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
+
+const { getOffsetXfromCurrentTime } = useTimeTrack()
 
 const offsetX = ref(0)
 // 时间线的偏移距离（起始点为3
@@ -29,7 +32,7 @@ watch(
   () => playerStore.currentTime,
   (newVal) => {
     if (!playerStore.playing) {
-      offsetX.value = trackStore.getOffsetXfromCurrentTime(newVal)
+      offsetX.value = getOffsetXfromCurrentTime(newVal)
       clipStore.clipping && clipStore.changeClipping(false)
     }
   },
@@ -38,20 +41,18 @@ watch(
 watch(
   () => trackStore.scaleLevel,
   () => {
-    offsetX.value = trackStore.getOffsetXfromCurrentTime(
-      playerStore.currentTime,
-    )
+    offsetX.value = getOffsetXfromCurrentTime(playerStore.currentTime)
   },
 )
 
 emitter.on(VIDEOPLAY, timeStripeRun)
 
 function timeStripeRun() {
-  const offsetXMax = trackStore.getOffsetXfromCurrentTime(playerStore.endTime)
+  const offsetXMax = getOffsetXfromCurrentTime(playerStore.endTime)
   const step = trackStore.spaceGap / trackStore.timeGap / 50
 
   if (offsetX.value == offsetXMax) {
-    offsetX.value = trackStore.getOffsetXfromCurrentTime(playerStore.startTime)
+    offsetX.value = getOffsetXfromCurrentTime(playerStore.startTime)
   }
 
   let timer = null

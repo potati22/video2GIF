@@ -12,6 +12,8 @@
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 
+import { useTimeTrack } from '@/hooks/useTimeTrack'
+
 import emitter from '@/utils/bus'
 import { formatTime3 } from '@/utils/formatTime'
 import { VIDEOSKIP } from '@/utils/eventName'
@@ -20,6 +22,8 @@ import type { Ref } from 'vue'
 
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
+
+const { getCurrentTimefromOffsetX } = useTimeTrack()
 
 const timeLineRef: Ref<HTMLCanvasElement> = ref()
 let timeLineCtx: CanvasRenderingContext2D
@@ -42,7 +46,7 @@ onMounted(() => {
 
 function clickToCurrenTime(e: MouseEvent) {
   if (e.offsetX > trackStore.trackWidth) return
-  emitter.emit(VIDEOSKIP, trackStore.getCurrentTimefromOffsetX(e.offsetX))
+  emitter.emit(VIDEOSKIP, getCurrentTimefromOffsetX(e.offsetX))
 }
 
 function drawTimeLine(
