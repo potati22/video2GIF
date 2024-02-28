@@ -18,8 +18,6 @@ async function record() {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  let alreadyRecord = false
-  let videoBlob: Blob
   let stream: MediaStream
 
   if (playerStore.videoSrc) {
@@ -49,18 +47,11 @@ async function record() {
   // 对指定的MediaStream对象进行录制
   const recorder = new MediaRecorder(stream)
 
+  // dataavailable事件比stop事件先触发
   recorder.addEventListener('dataavailable', (evt) => {
-    if (alreadyRecord) return
-    alreadyRecord = true // 保证只记录一次
-    loading.close()
-
-    videoBlob = evt.data // dataavailable事件比stop事件先触发
-  })
-
-  // 主动stop之后需清除自动stop
-  recorder.addEventListener('stop', () => {
-    playerStore.changeVideoSrc(URL.createObjectURL(videoBlob))
+    playerStore.changeVideoSrc(URL.createObjectURL(evt.data))
     clearTimeout(stopTimer)
+    loading.close()
   })
 
   recorder.start() // 开始记录

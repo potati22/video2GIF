@@ -81,6 +81,21 @@ const Rx = ref(0)
 const Ry = ref(0)
 const Rw = ref(0)
 const Rh = ref(0)
+watch(cropBoxTransX, () => {
+  Rx.value = cropBoxTransX.value / wrapWidth.value
+})
+
+watch(cropBoxTransY, () => {
+  Ry.value = cropBoxTransY.value / wrapHeight.value
+})
+
+watch(cropBoxTransW, () => {
+  Rw.value = cropBoxTransW.value / wrapWidth.value
+})
+
+watch(cropBoxTransH, () => {
+  Rh.value = cropBoxTransH.value / wrapHeight.value
+})
 
 const cropCanchange = ref(false)
 const cropCanmove = ref(false)
@@ -119,22 +134,6 @@ emitter.on(SQUARETURNON, () => {
   } else {
     cropBoxTransH.value = cropBoxTransW.value
   }
-})
-
-watch(cropBoxTransX, () => {
-  Rx.value = ((cropBoxTransX.value / wrapWidth.value) * 100) / 100
-})
-
-watch(cropBoxTransY, () => {
-  Ry.value = ((cropBoxTransY.value / wrapHeight.value) * 100) / 100
-})
-
-watch(cropBoxTransW, () => {
-  Rw.value = ((cropBoxTransW.value / wrapWidth.value) * 100) / 100
-})
-
-watch(cropBoxTransH, () => {
-  Rh.value = ((cropBoxTransH.value / wrapHeight.value) * 100) / 100
 })
 
 onMounted(() => {
