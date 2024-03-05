@@ -1,7 +1,7 @@
 <template>
   <div class="cut-box">
     <div v-show="!cropStore.cropping" class="row">
-      <HButton class="btn start" @click="start">开始裁剪</HButton>
+      <PotButton class="btn start" @click="start">开始裁剪</PotButton>
     </div>
     <div v-show="cropStore.cropping">
       <div class="row">
@@ -14,11 +14,13 @@
         </div>
       </div>
       <div class="row">
-        <HButton class="btn cancel" @click="cancel">取消</HButton>
-        <HButton class="btn apply" @click="confirm">确认</HButton>
+        <PotButton class="btn cancel" @click="cancel">取消</PotButton>
+        <PotButton type="yellow" class="btn apply" @click="confirm"
+          >确认</PotButton
+        >
       </div>
       <div class="row">
-        <HButton class="btn reset" @click="reset">重置</HButton>
+        <PotButton class="btn reset" @click="reset">重置</PotButton>
       </div>
     </div>
   </div>
@@ -116,11 +118,6 @@ function squareTurnOn() {
 }
 .apply {
   width: 120px;
-  background-color: var(--h-btn-bg-color-bright);
-  color: var(--h-bth-color-bright);
-}
-.apply:hover {
-  background-color: var(--h-btn-bg-color-bright-hover);
 }
 .cancel {
   width: 120px;

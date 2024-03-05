@@ -6,7 +6,7 @@
       :class="['menu-item', { chosen: chosen === item.path }]"
       @click="to(item.path)"
     >
-      <HSvgIcon :icon-class="item.icon" />
+      <PotIcon :icon-class="item.icon" />
       <span>{{ item.title }}</span>
     </div>
   </div>

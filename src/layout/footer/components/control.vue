@@ -1,16 +1,16 @@
 <template>
   <div class="control-box">
     <div class="left-box">
-      <HSvgIcon icon-class="back" @click="clipBack" />
+      <PotIcon icon-class="back" @click="clipBack" />
     </div>
     <div class="center-box">
       <span>{{ formatTime3(playerStore.currentTime) }}</span>
-      <HSvgIcon
+      <PotIcon
         v-show="!playerStore.playing"
         icon-class="play"
         @click="videoPlay"
       />
-      <HSvgIcon
+      <PotIcon
         v-show="playerStore.playing"
         icon-class="pause"
         @click="videoPause"
@@ -19,9 +19,9 @@
       <span>{{ formatTime3(playerStore.duration) }}</span>
     </div>
     <div class="right-box">
-      <HSvgIcon icon-class="reduce-btn" @click="trackStore.reduceScaleLevel" />
+      <PotIcon icon-class="reduce-btn" @click="trackStore.reduceScaleLevel" />
       <progress max="3" :value="trackStore.scaleLevel"></progress>
-      <HSvgIcon icon-class="add-btn" @click="trackStore.addScaleLevel" />
+      <PotIcon icon-class="add-btn" @click="trackStore.addScaleLevel" />
     </div>
   </div>
 </template>
@@ -59,25 +59,25 @@ function clipBack() {
   align-items: center;
   justify-content: space-between;
 }
-.svg-icon {
+.pot-icon {
   font-size: 25px;
 }
 .left-box {
-  .svg-icon {
+  .pot-icon {
     margin-right: 10px;
   }
 }
 .center-box {
   display: flex;
   align-items: center;
-  .svg-icon {
+  .pot-icon {
     margin: 0 15px;
   }
 }
 .right-box {
   display: flex;
   align-items: center;
-  .svg-icon {
+  .pot-icon {
     cursor: pointer;
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="download-box">
     <div class="row">
-      <HButton class="btn" @click="downloadGIF">导出GIF</HButton>
+      <PotButton class="btn" @click="downloadGIF">导出GIF</PotButton>
       <a
         ref="gifDownloadRef"
         :href="gifSrc"

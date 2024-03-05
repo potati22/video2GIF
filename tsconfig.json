@@ -11,6 +11,7 @@
     "paths": {
       // 路径映射，相对于baseUrl
       "@/*": ["src/*"]
-    }
+    },
+    "types": ["@potati/components/global.d.ts"]
   }
 }

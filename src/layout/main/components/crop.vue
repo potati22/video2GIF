@@ -23,7 +23,7 @@
       }"
     >
       <div ref="moveRef" class="move-point">
-        <HSvgIcon icon-class="move" />
+        <PotIcon icon-class="move" />
       </div>
       <div ref="tmRef" class="scale-point tm"></div>
       <div ref="lmRef" class="scale-point lm"></div>

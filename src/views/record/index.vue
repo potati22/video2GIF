@@ -1,7 +1,9 @@
 <template>
   <div class="record-box">
     <div class="row">
-      <HButton class="btn" @click="record">录制屏幕（最长10秒左右）</HButton>
+      <PotButton class="btn" @click="record"
+        >录制屏幕（最长10秒左右）</PotButton
+      >
     </div>
   </div>
 </template>
