@@ -7,23 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    Clip: typeof import('./src/components/clip.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
-    ElButton: typeof import('element-plus/es')['ElButton']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElFooter: typeof import('element-plus/es')['ElFooter']
     ElHeader: typeof import('element-plus/es')['ElHeader']
-    ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
-    ElRow: typeof import('element-plus/es')['ElRow']
-    Header: typeof import('./src/components/container/header.vue')['default']
     PotButton: typeof import('@potati/components')['PotButton']
     PotIcon: typeof import('@potati/components')['PotIcon']
     PotRadio: typeof import('@potati/components')['PotRadio']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-  }
-  export interface ComponentCustomProperties {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

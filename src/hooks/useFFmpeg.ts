@@ -27,6 +27,11 @@ export function useFFmpeg() {
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile(writeGIFName, uint8arry)
+
+    const finalY = Math.floor(
+      (150 * cropStore.cropData.height) / cropStore.cropData.width,
+    )
+
     await ffmpeg.exec([
       '-ss',
       `${playerStore.startTime}`,
@@ -37,7 +42,7 @@ export function useFFmpeg() {
       '-vf',
       `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
       '-s',
-      '150x150',
+      `150x${finalY}`,
       readGIFName,
     ])
     const final = await ffmpeg.readFile(readGIFName, 'binary')

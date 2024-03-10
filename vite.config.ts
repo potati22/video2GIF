@@ -9,6 +9,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { PotatiResolver } from '@potati/resolver'
 
 export default defineConfig({
+  base: './',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
