@@ -277,7 +277,7 @@ function registerAll() {
   position: absolute;
   left: 0;
   top: 0;
-  border: 1px solid var(--my-color);
+  border: 1px solid var(--pot-text-color-yellow);
 }
 .cliping {
   background-color: rgba(1, 1, 1, 0.8);
@@ -295,7 +295,7 @@ function registerAll() {
   );
 }
 .clipped {
-  background-color: var(--el-bg-color);
+  background-color: var(--pot-bg-color-block);
   clip-path: polygon(
     0 0,
     0 100%,
@@ -313,7 +313,7 @@ function registerAll() {
 .move-point {
   width: 100%;
   height: 100%;
-  color: var(--my-color);
+  color: var(--pot-text-color-yellow);
   font-size: 24px;
   display: flex;
   justify-content: center;
@@ -323,12 +323,12 @@ function registerAll() {
   position: absolute;
   width: 8px;
   height: 8px;
-  border: 1px solid var(--my-color);
+  border: 1px solid var(--pot-text-color-yellow);
   transform: translate(-50%, -50%);
   background-color: rgba(1, 1, 1, 1);
 }
 .scale-point:hover {
-  background-color: var(--my-color);
+  background-color: var(--pot-text-color-yellow);
 }
 .tm:hover,
 .bm:hover {

@@ -36,14 +36,14 @@ function changeFooterHeight(h: number) {
 
 <style lang="scss" scoped>
 .el-container {
-  background-color: var(--el-bg-color-page);
+  background-color: var(--pot-bg-color-page);
 }
 .common-box {
   width: 100%;
   height: 100vh;
 }
 .header-box {
-  border-bottom: 1px solid var(--el-border-color);
+  border-bottom: 1px solid var(--pot-border-color);
   height: 50px;
   padding: 0;
   flex-direction: row;

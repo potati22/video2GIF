@@ -18,7 +18,7 @@ export default defineConfig({
     vue(),
     Components({
       // 自动注册 Element Plus 组件
-      resolvers: [ElementPlusResolver(), PotatiResolver()],
+      resolvers: [PotatiResolver(), ElementPlusResolver()],
     }),
     AutoImport({
       // 自动导入 Vue 相关函数，如：ref, reactive, toRef 等

@@ -24,5 +24,6 @@ module.exports = {
     /* 关闭组件命名规则 */
     'vue/multi-word-component-names': 0,
     'no-var': 'error',
+    '@typescript-eslint/no-explicit-any': ['off'],
   },
 }

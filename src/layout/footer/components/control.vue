@@ -54,7 +54,7 @@ function clipBack() {
 .control-box {
   height: 40px;
   padding: 0 20px;
-  border-bottom: 1px solid var(--el-border-color);
+  border-bottom: 1px solid var(--pot-border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -84,9 +84,9 @@ function clipBack() {
 progress {
   margin: 0 10px;
   height: 6px;
-  background-color: var(--my-color);
+  background-color: var(--pot-text-color-yellow);
 }
 progress::-webkit-progress-value {
-  background-color: var(--my-color);
+  background-color: var(--pot-text-color-yellow);
 }
 </style>

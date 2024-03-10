@@ -63,7 +63,7 @@ function registerAll() {
 .control-line {
   position: relative;
   height: 1px;
-  background-color: var(--el-border-color);
+  background-color: var(--pot-border-color);
 }
 
 .control-line:active,

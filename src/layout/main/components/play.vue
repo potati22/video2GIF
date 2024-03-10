@@ -135,7 +135,7 @@ function videoPause() {
   transform: translate(-50%, -50%);
   width: var(--width);
   height: var(--height);
-  background-color: var(--el-bg-color);
+  background-color: var(--pot-bg-color-block);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -144,7 +144,7 @@ function videoPause() {
   display: inline-block; // 行内块元素 宽度只能为内容宽度 故为video宽度
   height: 80%;
   position: relative;
-  background-color: var(--el-bg-color);
+  background-color: var(--pot-bg-color-block);
 }
 video {
   height: 100%;

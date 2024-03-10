@@ -5,7 +5,7 @@
       <a
         ref="gifDownloadRef"
         :href="gifSrc"
-        download="my.gif"
+        download="name.gif"
         style="display: none"
       ></a>
     </div>
@@ -25,6 +25,10 @@ const { videoToGIF } = useFFmpeg()
 const gifSrc = ref('')
 const gifDownloadRef: Ref<HTMLAnchorElement> = ref()
 
+onUnmounted(() => {
+  gifSrc.value && URL.revokeObjectURL(gifSrc.value)
+})
+
 async function downloadGIF() {
   if (!playerStore.videoSrc) {
     ElMessage({
@@ -34,31 +38,31 @@ async function downloadGIF() {
     return
   }
 
+  gifSrc.value && URL.revokeObjectURL(gifSrc.value)
+
   const loading = ElLoading.service({
     lock: true,
     text: '🏃‍♀️Loading...',
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  let res
-
   try {
-    res = await videoToGIF()
+    gifSrc.value = await videoToGIF()
   } catch (err) {
     ElMessage({
       message: 'ffmpeg错误了',
       type: 'error',
     })
     console.log(err)
-    loading.close()
     return
+  } finally {
+    loading.close()
   }
 
-  loading.close()
-
-  gifSrc.value = res
-  gifDownloadRef.value.click()
-  URL.revokeObjectURL(res)
+  // 解决GIF无法下载问题
+  setTimeout(() => {
+    gifDownloadRef.value.click()
+  }, 0)
 }
 </script>
 

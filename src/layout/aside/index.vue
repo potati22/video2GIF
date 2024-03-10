@@ -66,19 +66,19 @@ function to(path: string) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-right: 1px solid var(--el-border-color);
+  border-right: 1px solid var(--pot-border-color);
   cursor: pointer;
   span {
     margin-top: 5px;
   }
 }
 .chosen {
-  background-color: var(--el-bg-color);
-  color: var(--my-color);
-  border-color: var(--el-bg-color);
+  background-color: var(--pot-bg-color-block);
+  color: var(--pot-text-color-yellow);
+  border-color: var(--pot-bg-color-block);
 }
 .placeholder {
   flex: 1;
-  border-right: 1px solid var(--el-border-color);
+  border-right: 1px solid var(--pot-border-color);
 }
 </style>

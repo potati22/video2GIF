@@ -19,8 +19,8 @@ import Play from './components/Play.vue'
 }
 .options {
   min-width: 300px;
-  border-right: 1px solid var(--el-border-color);
-  background-color: var(--el-bg-color);
+  border-right: 1px solid var(--pot-border-color);
+  background-color: var(--pot-bg-color-block);
 }
 .play {
   flex-grow: 1;

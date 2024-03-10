@@ -6,12 +6,11 @@
     <div v-show="cropStore.cropping">
       <div class="row">
         <span>宽高比：</span>
-        <div
-          :class="['square', cropStore.square ? 'square-selected' : '']"
-          @click="squareTurnOn"
-        >
-          1:1
-        </div>
+        <PotRadio
+          v-model="sizeRadio"
+          name="sizeRadio"
+          :options="sizeRadioOptions"
+        ></PotRadio>
       </div>
       <div class="row">
         <PotButton class="btn cancel" @click="cancel">取消</PotButton>
@@ -41,6 +40,35 @@ import { usePlayerStore } from '@/store/modules/player'
 
 const cropStore = useCropStore()
 const playerStore = usePlayerStore()
+
+const sizeRadio = ref('free')
+const sizeRadioOptions = [
+  {
+    label: '1:1',
+    value: '1:1',
+    id: 1,
+  },
+  {
+    label: '自由',
+    value: 'free',
+    id: 0,
+  },
+]
+
+watch(sizeRadio, (newVal) => {
+  if (newVal === '1:1') {
+    squareTurnOn()
+  }
+})
+
+watch(
+  () => cropStore.square,
+  (newVal) => {
+    if (newVal === false) {
+      sizeRadio.value = 'free'
+    }
+  },
+)
 
 function start() {
   if (!playerStore.videoSrc) {
@@ -87,29 +115,7 @@ function squareTurnOn() {
   display: flex;
   align-items: center;
 }
-.square {
-  width: 40px;
-  height: 36px;
-  line-height: 36px;
-  text-align: center;
-  padding: 0 12px;
-  margin: 5px;
-  background-color: var(--h-btn-bg-color);
-  color: var(--h-btn-color);
-  border-radius: 4px;
-  cursor: pointer;
-}
-.square:hover {
-  background-color: var(--h-btn-bg-color-hover);
-}
-.square:focus {
-  background-color: var(--h-inp-bg-color-focus);
-  color: var(--h-inp-color);
-}
-.square-selected {
-  background-color: var(--h-inp-bg-color-focus);
-  color: var(--h-inp-color);
-}
+
 .btn {
   height: 36px;
 }

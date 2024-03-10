@@ -136,7 +136,7 @@ function registerRight() {
   min-width: calc(100% - 20px);
   height: 52px;
   margin: 10px 10px;
-  background-color: #1b1e22;
+  background-color: var(--pot-bg-color-block-darker);
 }
 .wrap {
   position: relative;
@@ -146,12 +146,12 @@ function registerRight() {
 .select-box {
   position: absolute;
   height: 50px;
-  border: 1px solid var(--my-color);
+  border: 1px solid var(--pot-text-color-yellow);
 }
 .select-left {
   width: 15px;
   height: 50px;
-  background-color: var(--my-color);
+  background-color: var(--pot-text-color-yellow);
   position: absolute;
   background-image: url('@/assets/img/spots.svg');
   background-position: 50%;
@@ -160,7 +160,7 @@ function registerRight() {
 .select-right {
   width: 15px;
   height: 50px;
-  background-color: var(--my-color);
+  background-color: var(--pot-text-color-yellow);
   position: absolute;
   right: 0;
   background-image: url('@/assets/img/spots.svg');

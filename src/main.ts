@@ -8,7 +8,6 @@ import 'virtual:svg-icons-register'
 
 import '@/styles/reset.scss'
 import 'element-plus/theme-chalk/dark/css-vars.css'
-import '@/styles/dark/css-vars.css'
 
 const app = createApp(App)
 
