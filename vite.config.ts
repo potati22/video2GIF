@@ -8,6 +8,9 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { PotatiResolver } from '@potati/resolver'
 
+import { visualizer } from 'rollup-plugin-visualizer'
+import viteImagemin from 'vite-plugin-imagemin'
+
 export default defineConfig({
   base: './',
   resolve: {
@@ -47,9 +50,49 @@ export default defineConfig({
         ],
       },
     }),
+    viteImagemin({
+      gifsicle: {
+        optimizationLevel: 7,
+        interlaced: false,
+      },
+      optipng: {
+        optimizationLevel: 7,
+      },
+      mozjpeg: {
+        quality: 20,
+      },
+      pngquant: {
+        quality: [0.8, 0.9],
+        speed: 4,
+      },
+      svgo: {
+        plugins: [
+          {
+            name: 'removeViewBox',
+          },
+          {
+            name: 'removeEmptyAttrs',
+            active: false,
+          },
+        ],
+      },
+    }),
+    visualizer(),
   ],
   worker: {
     format: 'es',
   },
   optimizeDeps: { exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'] },
+  build: {
+    rollupOptions: {
+      output: {
+        dir: path.resolve(__dirname, 'dist'), // 产物输出目录
+        entryFileNames: 'js/[name]-[hash].js', //入口模块
+        chunkFileNames: 'js/[name]-[hash].js', // 非入口模块，如动态import
+        assetFileNames: 'assets/[name]-[hash].[ext]', // 静态资源
+        format: 'esm', // 产物格式
+        sourcemap: false,
+      },
+    },
+  },
 })
