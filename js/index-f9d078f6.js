@@ -5859,14 +5859,14 @@ function Ah(e) {
 yn.closeAll = Ah
 yn._context = null
 const Rc = Op(yn, '$message')
-const $h = '' + new URL('../static/logo.png', import.meta.url).href
+const $h = '' + new URL('../assets/logo-4800e564.png', import.meta.url).href
 const it = (e, t) => {
     const n = e.__vccOpts || e
     for (const [o, s] of t) n[o] = s
     return n
   },
   Mh = {},
-  Tc = (e) => (bl('data-v-47380b6d'), (e = e()), wl(), e),
+  Tc = (e) => (bl('data-v-6dc9eed8'), (e = e()), wl(), e),
   Nh = { class: 'img-box' },
   kh = Tc(() => G('img', { src: $h }, null, -1)),
   Fh = Tc(() => G('div', null, 'hamseung', -1)),
@@ -5876,7 +5876,7 @@ function Bh(e, t) {
 }
 const jh = it(Mh, [
     ['render', Bh],
-    ['__scopeId', 'data-v-47380b6d'],
+    ['__scopeId', 'data-v-6dc9eed8'],
   ]),
   lr = (e, t) => {
     if (
@@ -9323,9 +9323,9 @@ const fg = it(ug, [['__scopeId', 'data-v-ecd257fd']]),
       path: '/record',
       component: () =>
         cs(
-          () => import('./index-b0bd29a8.js'),
+          () => import('./index-3a1a16e3.js'),
           [
-            './index-b0bd29a8.js',
+            './index-3a1a16e3.js',
             '..\\assets\\index-99ad9762.css',
             '..\\assets\\button-e76b79e2.css',
           ],
@@ -9337,9 +9337,9 @@ const fg = it(ug, [['__scopeId', 'data-v-ecd257fd']]),
       path: '/cut',
       component: () =>
         cs(
-          () => import('./index-ee71f3e8.js'),
+          () => import('./index-7fc0d852.js'),
           [
-            './index-ee71f3e8.js',
+            './index-7fc0d852.js',
             '..\\assets\\index-d9ed4739.css',
             '..\\assets\\button-e76b79e2.css',
           ],
@@ -9351,9 +9351,9 @@ const fg = it(ug, [['__scopeId', 'data-v-ecd257fd']]),
       path: '/download',
       component: () =>
         cs(
-          () => import('./index-e60b8f2f.js'),
+          () => import('./index-d77934bf.js'),
           [
-            './index-e60b8f2f.js',
+            './index-d77934bf.js',
             '..\\assets\\index-7b9c2905.css',
             '..\\assets\\button-e76b79e2.css',
           ],
