@@ -1,6 +1,6 @@
 <template>
   <div class="img-box">
-    <img src="/static/logo.png" />
+    <img src="@/assets/img/logo.png" />
     <div>hamseung</div>
   </div>
 </template>
