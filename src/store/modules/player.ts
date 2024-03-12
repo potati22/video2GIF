@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 export const usePlayerStore = defineStore('player', () => {
-  const videoSrc = ref('') // /static/capture.mp4
+  const videoSrc = ref('/capture.mp4') // /capture.mp4
   const videoHeight = ref(0)
   const clientHeight = ref(0)
   const duration = ref(0)

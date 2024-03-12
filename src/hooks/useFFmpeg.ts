@@ -52,6 +52,32 @@ export function useFFmpeg() {
     )
   }
 
+  async function addSubtitles() {
+    await initFFmpeg()
+
+    const uint8arry = await fetchFile(playerStore.videoSrc)
+    await ffmpeg.writeFile('my.mp4', uint8arry)
+
+    const logouint8arry = await fetchFile('/logo.png')
+    await ffmpeg.writeFile('logo.png', logouint8arry)
+
+    await ffmpeg.exec([
+      '-i',
+      'my.mp4',
+      '-vf',
+      'movie=logo.png[watermark];[in][watermark]overlay=100:100',
+      'output1.mp4',
+    ])
+
+    const final = await ffmpeg.readFile('output1.mp4', 'binary')
+
+    console.log(
+      URL.createObjectURL(
+        new Blob([(final as Uint8Array).buffer], { type: 'video/mp4' }),
+      ),
+    )
+  }
+
   async function extractKeyFrame() {
     await initFFmpeg()
 
@@ -99,5 +125,6 @@ export function useFFmpeg() {
     initFFmpeg,
     videoToGIF,
     extractKeyFrame,
+    addSubtitles,
   }
 }
