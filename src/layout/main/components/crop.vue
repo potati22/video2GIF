@@ -111,6 +111,7 @@ emitter.on(CROPSTART, () => {
   cropStore.cropStrat()
 })
 emitter.on(CROPCONFIRM, () => {
+  playerStore.changeVideoClientH(wrapHeight.value) // 最好换成videoHeight 之后再重构一下
   cropStore.cropConfirm(
     cropBoxTransX.value,
     cropBoxTransY.value,

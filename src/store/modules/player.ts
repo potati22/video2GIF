@@ -25,6 +25,10 @@ export const usePlayerStore = defineStore('player', () => {
     playing.value = false
   }
 
+  function changeVideoClientH(cH: number) {
+    clientHeight.value = cH
+  }
+
   function changeCurrentTime(cu: number) {
     currentTime.value = cu
   }
@@ -56,6 +60,7 @@ export const usePlayerStore = defineStore('player', () => {
     endTime,
     playing,
     initPlayer,
+    changeVideoClientH,
     changeCurrentTime,
     changeStartTime,
     changeEndTime,
