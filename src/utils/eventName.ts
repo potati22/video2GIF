@@ -1,9 +1,3 @@
-export const VIDEOPLAY = Symbol('videoPlay')
-
-export const VIDEOPAUSE = Symbol('videoPause')
-
-export const VIDEOSKIP = Symbol('videoSkip')
-
 export const CLIPBACK = Symbol('clipBack')
 
 export const CROPSTART = Symbol('cropStart')

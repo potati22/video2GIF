@@ -29,21 +29,15 @@
 <script lang="ts" setup>
 import emitter from '@/utils/bus'
 import { formatTime3 } from '@/utils/formatTime'
-import { VIDEOPLAY, VIDEOPAUSE, CLIPBACK } from '@/utils/eventName'
+import { CLIPBACK } from '@/utils/eventName'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useTrackStore } from '@/store/modules/track'
+import { useVideo } from '@/hooks/useVideo'
 
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
-
-function videoPlay() {
-  emitter.emit(VIDEOPLAY)
-}
-
-function videoPause() {
-  emitter.emit(VIDEOPAUSE)
-}
+const { videoPlay, videoPause } = useVideo()
 
 function clipBack() {
   emitter.emit(CLIPBACK)

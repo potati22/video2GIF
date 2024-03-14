@@ -57,9 +57,11 @@ import {
 
 import { useCropStore } from '@/store/modules/crop'
 import { usePlayerStore } from '@/store/modules/player'
+import { useVideo } from '@/hooks/useVideo'
 
 const cropStore = useCropStore()
 const playerStore = usePlayerStore()
+const { video } = useVideo()
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -111,7 +113,7 @@ emitter.on(CROPSTART, () => {
   cropStore.cropStrat()
 })
 emitter.on(CROPCONFIRM, () => {
-  playerStore.changeVideoClientH(wrapHeight.value) // 最好换成videoHeight 之后再重构一下
+  playerStore.changeclientHeight(video.value.clientHeight)
   cropStore.cropConfirm(
     cropBoxTransX.value,
     cropBoxTransY.value,

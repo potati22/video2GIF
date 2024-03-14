@@ -13,9 +13,6 @@ import { useClipStore } from '@/store/modules/clip'
 import { useTrackStore } from '@/store/modules/track'
 import { useTimeTrack } from '@/hooks/useTimeTrack'
 
-import emitter from '@/utils/bus'
-import { VIDEOPLAY } from '@/utils/eventName'
-
 const clipStore = useClipStore()
 const playerStore = usePlayerStore()
 const trackStore = useTrackStore()
@@ -45,7 +42,12 @@ watch(
   },
 )
 
-emitter.on(VIDEOPLAY, timeStripeRun)
+watch(
+  () => playerStore.playing,
+  (newVal) => {
+    newVal && timeStripeRun()
+  },
+)
 
 function timeStripeRun() {
   const offsetXMax = getOffsetXfromCurrentTime(playerStore.endTime)

@@ -28,15 +28,17 @@ import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 import { useClipStore } from '@/store/modules/clip'
 import { useTimeTrack } from '@/hooks/useTimeTrack'
+import { useVideo } from '@/hooks/useVideo'
 
 import emitter from '@/utils/bus'
-import { VIDEOSKIP, CLIPBACK } from '@/utils/eventName'
+import { CLIPBACK } from '@/utils/eventName'
 
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
 const clipStore = useClipStore()
 
 const { getCurrentTimefromOffsetX, getOffsetXfromCurrentTime } = useTimeTrack()
+const { videoSkip } = useVideo()
 
 const leftRef = ref()
 const rightRef = ref()
@@ -76,14 +78,15 @@ function registerAll() {
   window.addEventListener('mouseup', () => {
     if (leftFlag) {
       const currentTime = getCurrentTimefromOffsetX(clipStore.clipLeft)
-      emitter.emit(VIDEOSKIP, currentTime)
+      videoSkip(currentTime)
       playerStore.changeStartTime(currentTime)
     }
     if (rightFlag) {
       const currentTime = getCurrentTimefromOffsetX(
         trackStore.trackWidth - clipStore.clipRight,
       )
-      emitter.emit(VIDEOSKIP, currentTime)
+      videoSkip(currentTime)
+
       playerStore.changeEndTime(currentTime)
     }
     leftFlag = rightFlag = false
