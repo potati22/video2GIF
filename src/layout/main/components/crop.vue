@@ -1,8 +1,8 @@
 <template>
   <slot></slot>
-  <div v-show="cropStore.cropping" class="wrap-outer">
+  <div ref="wrapRef" class="wrap-outer">
     <div
-      ref="wrapRef"
+      v-show="cropStore.cropping"
       class="wrap-box cliping"
       :style="{
         '--x': `${Rx * 100}%`,
@@ -14,6 +14,7 @@
       }"
     ></div>
     <div
+      v-show="cropStore.cropping"
       ref="cropRef"
       class="crop-box"
       :style="{
@@ -57,11 +58,9 @@ import {
 
 import { useCropStore } from '@/store/modules/crop'
 import { usePlayerStore } from '@/store/modules/player'
-import { useVideo } from '@/hooks/useVideo'
 
 const cropStore = useCropStore()
 const playerStore = usePlayerStore()
-const { video } = useVideo()
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -110,10 +109,11 @@ watch(
 )
 
 emitter.on(CROPSTART, () => {
+  resetCropData()
   cropStore.cropStrat()
 })
 emitter.on(CROPCONFIRM, () => {
-  playerStore.changeclientHeight(video.value.clientHeight)
+  playerStore.changeclientHeight(wrapHeight.value)
   cropStore.cropConfirm(
     cropBoxTransX.value,
     cropBoxTransY.value,
@@ -140,11 +140,12 @@ emitter.on(SQUARETURNON, () => {
 })
 
 onMounted(() => {
-  let flag = 0 // 用于初始化Rw和Rh
+  let flag = 0 // 用于初始化Rw和Rh 使其不为0
   wrapBoxResizeObserver = new ResizeObserver((e) => {
     wrapWidth.value = Math.floor(e[0].contentRect.width)
     wrapHeight.value = Math.floor(e[0].contentRect.height)
     if (flag === 0 && wrapWidth.value !== 0) {
+      // 触发响应watch 给Rw和Rh赋值
       cropBoxTransW.value = 100
       cropBoxTransH.value = 100
       ++flag
@@ -160,6 +161,15 @@ onMounted(() => {
   registerLM()
   registerRM()
 })
+
+// 当工作区域大小发生改变时，wrapWidth和wrapHeight会发生改变
+// 所以需要resetCropData，以确保CropData的数据正确
+function resetCropData() {
+  cropBoxTransX.value = Math.floor(Rx.value * wrapWidth.value)
+  cropBoxTransY.value = Math.floor(Ry.value * wrapHeight.value)
+  cropBoxTransW.value = Math.floor(Rw.value * wrapWidth.value)
+  cropBoxTransH.value = Math.floor(Rh.value * wrapHeight.value)
+}
 
 function openMove() {
   cropCanmove.value = true
