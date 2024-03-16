@@ -1,26 +1,26 @@
 <template>
   <slot></slot>
-  <div ref="wrapRef" class="wrap-outer">
-    <div
-      v-show="cropStore.cropping"
-      class="wrap-box cliping"
-      :style="{
-        '--x': `${Rx * 100}%`,
-        '--y': `${Ry * 100}%`,
-        '--w': `${Rw * 100}%`,
-        '--h': `${Rh * 100}%`,
-        '--x-w': `${Rx * 100 + Rw * 100}%`,
-        '--y-h': `${Ry * 100 + Rh * 100}%`,
-      }"
-    ></div>
+  <div
+    ref="wrapRef"
+    class="wrap-outer"
+    :style="{
+      '--x': `${Rx * 100}%`,
+      '--y': `${Ry * 100}%`,
+      '--w': `${Rw * 100}%`,
+      '--h': `${Rh * 100}%`,
+      '--x-w': `${Rx * 100 + Rw * 100}%`,
+      '--y-h': `${Ry * 100 + Rh * 100}%`,
+    }"
+  >
+    <div v-show="cropStore.cropping" class="wrap-box cliping"></div>
     <div
       v-show="cropStore.cropping"
       ref="cropRef"
       class="crop-box"
       :style="{
-        transform: `translate(${wrapWidth * Rx}px, ${wrapHeight * Ry}px)`,
-        width: `${wrapWidth * Rw}px`,
-        height: `${wrapHeight * Rh}px`,
+        translate: `${wrapWidth * Rx}px ${wrapHeight * Ry}px`,
+        width: `${Rw * 100}%`,
+        height: `${Rh * 100}%`,
       }"
     >
       <div ref="moveRef" class="move-point">
@@ -31,19 +31,11 @@
       <div ref="rmRef" class="scale-point rm"></div>
       <div ref="bmRef" class="scale-point bm"></div>
     </div>
+    <div
+      v-show="!cropStore.cropping && cropStore.cropped"
+      class="wrap-box clipped"
+    ></div>
   </div>
-  <div
-    v-show="!cropStore.cropping && cropStore.cropped"
-    class="wrap-box clipped"
-    :style="{
-      '--x': `${Rx * 100}%`,
-      '--y': `${Ry * 100}%`,
-      '--w': `${Rw * 100}%`,
-      '--h': `${Rh * 100}%`,
-      '--x-w': `${Rx * 100 + Rw * 100}%`,
-      '--y-h': `${Ry * 100 + Rh * 100}%`,
-    }"
-  ></div>
 </template>
 
 <script lang="ts" setup>
@@ -278,13 +270,33 @@ function registerAll() {
   right: 0;
   bottom: 0;
 }
+
 .wrap-box {
   position: absolute;
   top: -2px;
   left: -2px;
   right: -1px;
   bottom: -1px;
+  clip-path: polygon(
+    0 0,
+    0 100%,
+    var(--x) 100%,
+    var(--x) var(--y),
+    var(--x-w) var(--y),
+    var(--x-w) var(--y-h),
+    var(--x) var(--y-h),
+    var(--x) 100%,
+    100% 100%,
+    100% 0
+  );
 }
+.cliping {
+  background-color: rgba(1, 1, 1, 0.8);
+}
+.clipped {
+  background-color: var(--pot-bg-color-block);
+}
+
 .crop-box {
   box-sizing: border-box;
   position: absolute;
@@ -292,37 +304,6 @@ function registerAll() {
   top: 0;
   border: 1px solid var(--pot-text-color-yellow);
 }
-.cliping {
-  background-color: rgba(1, 1, 1, 0.8);
-  clip-path: polygon(
-    0 0,
-    0 100%,
-    var(--x) 100%,
-    var(--x) var(--y),
-    var(--x-w) var(--y),
-    var(--x-w) var(--y-h),
-    var(--x) var(--y-h),
-    var(--x) 100%,
-    100% 100%,
-    100% 0
-  );
-}
-.clipped {
-  background-color: var(--pot-bg-color-block);
-  clip-path: polygon(
-    0 0,
-    0 100%,
-    var(--x) 100%,
-    var(--x) var(--y),
-    var(--x-w) var(--y),
-    var(--x-w) var(--y-h),
-    var(--x) var(--y-h),
-    var(--x) 100%,
-    100% 100%,
-    100% 0
-  );
-}
-
 .move-point {
   width: 100%;
   height: 100%;
