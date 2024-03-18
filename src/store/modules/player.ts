@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const usePlayerStore = defineStore('player', () => {
   const videoSrc = ref('/capture.mp4') // /capture.mp4
   const videoHeight = ref(0)
-  const clientHeight = ref(0)
+  const videoClientHeight = ref(0)
   const duration = ref(0)
   const currentTime = ref(0)
   const startTime = ref(0)
@@ -12,12 +12,12 @@ export const usePlayerStore = defineStore('player', () => {
 
   // video的缩放比例
   const radio = computed(() => {
-    return videoHeight.value / clientHeight.value
+    return videoHeight.value / videoClientHeight.value
   })
 
   function initPlayer(vH: number, cH: number, du: number) {
     videoHeight.value = vH
-    clientHeight.value = cH
+    videoClientHeight.value = cH
     duration.value = Number(du.toFixed(2))
     currentTime.value = 0
     startTime.value = 0
@@ -25,8 +25,8 @@ export const usePlayerStore = defineStore('player', () => {
     playing.value = false
   }
 
-  function changeclientHeight(cH: number) {
-    clientHeight.value = cH
+  function changeVideoClientHeight(cH: number) {
+    videoClientHeight.value = cH
   }
 
   function changeCurrentTime(cu: number) {
@@ -52,7 +52,7 @@ export const usePlayerStore = defineStore('player', () => {
   return {
     videoSrc,
     videoHeight,
-    clientHeight,
+    videoClientHeight,
     radio,
     duration,
     currentTime,
@@ -60,7 +60,7 @@ export const usePlayerStore = defineStore('player', () => {
     endTime,
     playing,
     initPlayer,
-    changeclientHeight,
+    changeVideoClientHeight,
     changeCurrentTime,
     changeStartTime,
     changeEndTime,

@@ -39,20 +39,22 @@
 </template>
 
 <script lang="ts" setup>
-import emitter from '@/utils/bus'
-import {
-  CROPSTART,
-  CROPCONFIRM,
-  CROPCANCEL,
-  CROPRESET,
-  SQUARETURNON,
-} from '@/utils/eventName'
+import { useCrop } from '@/hooks/useCrop'
 
-import { useCropStore } from '@/store/modules/crop'
-import { usePlayerStore } from '@/store/modules/player'
-
-const cropStore = useCropStore()
-const playerStore = usePlayerStore()
+const {
+  cropStore,
+  playerStore,
+  wrapWidth,
+  wrapHeight,
+  cropBoxTransX,
+  cropBoxTransY,
+  cropBoxTransW,
+  cropBoxTransH,
+  Rx,
+  Ry,
+  Rw,
+  Rh,
+} = useCrop()
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -64,72 +66,12 @@ const bmRef = ref()
 const lmRef = ref()
 const rmRef = ref()
 
-const wrapWidth = ref(0)
-const wrapHeight = ref(0)
-const cropBoxTransX = ref(0) // 记录每一次成功偏移的x
-const cropBoxTransY = ref(0) // 记录每一次成功偏移的y
-const cropBoxTransW = ref(0)
-const cropBoxTransH = ref(0)
-const Rx = ref(0)
-const Ry = ref(0)
-const Rw = ref(0)
-const Rh = ref(0)
-watch(cropBoxTransX, () => {
-  Rx.value = cropBoxTransX.value / wrapWidth.value
-})
-
-watch(cropBoxTransY, () => {
-  Ry.value = cropBoxTransY.value / wrapHeight.value
-})
-
-watch(cropBoxTransW, () => {
-  Rw.value = cropBoxTransW.value / wrapWidth.value
-})
-
-watch(cropBoxTransH, () => {
-  Rh.value = cropBoxTransH.value / wrapHeight.value
-})
-
-const cropCanchange = ref(false)
-const cropCanmove = ref(false)
-
 watch(
   () => playerStore.videoSrc,
   () => {
     cropStore.cropReset()
   },
 )
-
-emitter.on(CROPSTART, () => {
-  resetCropData()
-  cropStore.cropStrat()
-})
-emitter.on(CROPCONFIRM, () => {
-  playerStore.changeclientHeight(wrapHeight.value)
-  cropStore.cropConfirm(
-    cropBoxTransX.value,
-    cropBoxTransY.value,
-    cropBoxTransW.value,
-    cropBoxTransH.value,
-  )
-})
-emitter.on(CROPCANCEL, () => {
-  cropStore.cropCancel()
-  cropBoxTransX.value = cropStore.cropX
-  cropBoxTransY.value = cropStore.cropY
-  cropBoxTransW.value = cropStore.cropW
-  cropBoxTransH.value = cropStore.cropH
-})
-emitter.on(CROPRESET, () => {
-  cropStore.cropReset()
-})
-emitter.on(SQUARETURNON, () => {
-  if (cropBoxTransW.value > cropBoxTransH.value) {
-    cropBoxTransW.value = cropBoxTransH.value
-  } else {
-    cropBoxTransH.value = cropBoxTransW.value
-  }
-})
 
 onMounted(() => {
   let flag = 0 // 用于初始化Rw和Rh 使其不为0
@@ -154,14 +96,8 @@ onMounted(() => {
   registerRM()
 })
 
-// 当工作区域大小发生改变时，wrapWidth和wrapHeight会发生改变
-// 所以需要resetCropData，以确保CropData的数据正确
-function resetCropData() {
-  cropBoxTransX.value = Math.floor(Rx.value * wrapWidth.value)
-  cropBoxTransY.value = Math.floor(Ry.value * wrapHeight.value)
-  cropBoxTransW.value = Math.floor(Rw.value * wrapWidth.value)
-  cropBoxTransH.value = Math.floor(Rh.value * wrapHeight.value)
-}
+const cropCanchange = ref(false)
+const cropCanmove = ref(false)
 
 function openMove() {
   cropCanmove.value = true

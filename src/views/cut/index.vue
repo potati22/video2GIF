@@ -13,33 +13,30 @@
         ></PotRadio>
       </div>
       <div class="row">
-        <PotButton class="btn cancel" @click="cancel">取消</PotButton>
-        <PotButton type="yellow" class="btn apply" @click="confirm"
+        <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
+        <PotButton type="yellow" class="btn apply" @click="cropConfirm"
           >确认</PotButton
         >
       </div>
       <div class="row">
-        <PotButton class="btn reset" @click="reset">重置</PotButton>
+        <PotButton class="btn reset" @click="cropReset">重置</PotButton>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import emitter from '@/utils/bus'
-import {
-  CROPSTART,
-  CROPCONFIRM,
-  CROPCANCEL,
-  CROPRESET,
-  SQUARETURNON,
-} from '@/utils/eventName'
+import { useCrop } from '@/hooks/useCrop'
 
-import { useCropStore } from '@/store/modules/crop'
-import { usePlayerStore } from '@/store/modules/player'
-
-const cropStore = useCropStore()
-const playerStore = usePlayerStore()
+const {
+  cropStore,
+  playerStore,
+  cropStart,
+  cropConfirm,
+  cropCancel,
+  cropReset,
+  cropSquareOn,
+} = useCrop()
 
 const sizeRadio = ref('free')
 const sizeRadioOptions = [
@@ -57,7 +54,7 @@ const sizeRadioOptions = [
 
 watch(sizeRadio, (newVal) => {
   if (newVal === '1:1') {
-    squareTurnOn()
+    cropSquareOn()
   }
 })
 
@@ -78,24 +75,7 @@ function start() {
     })
     return
   }
-  emitter.emit(CROPSTART)
-}
-
-function confirm() {
-  emitter.emit(CROPCONFIRM)
-}
-
-function cancel() {
-  emitter.emit(CROPCANCEL)
-}
-
-function reset() {
-  emitter.emit(CROPRESET)
-}
-
-function squareTurnOn() {
-  cropStore.changeSquare(true)
-  emitter.emit(SQUARETURNON)
+  cropStart()
 }
 </script>
 
