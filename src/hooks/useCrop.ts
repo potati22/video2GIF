@@ -1,6 +1,10 @@
 import { useCropStore } from '@/store/modules/crop'
 import { usePlayerStore } from '@/store/modules/player'
 
+const cropsquare = ref(false) // 是否1：1宽高比
+const cropping = ref(false)
+const cropped = ref(false)
+
 const wrapWidth = ref(0)
 const wrapHeight = ref(0)
 
@@ -36,12 +40,14 @@ export function useCrop() {
 
   function cropStart() {
     resetCropBoxTrans()
-    cropStore.cropStrat()
+    cropping.value = true
   }
 
   function cropConfirm() {
+    cropping.value = false
+    cropped.value = true
     playerStore.changeVideoClientHeight(wrapHeight.value)
-    cropStore.cropConfirm(
+    cropStore.changeCropData(
       cropBoxTransX.value,
       cropBoxTransY.value,
       cropBoxTransW.value,
@@ -50,7 +56,7 @@ export function useCrop() {
   }
 
   function cropCancel() {
-    cropStore.cropCancel()
+    cropping.value = false
     cropBoxTransX.value = cropStore.cropX
     cropBoxTransY.value = cropStore.cropY
     cropBoxTransW.value = cropStore.cropW
@@ -58,15 +64,17 @@ export function useCrop() {
   }
 
   function cropReset() {
-    cropStore.cropReset()
+    cropping.value = false
+    cropped.value = false
     cropBoxTransX.value = 0
     cropBoxTransY.value = 0
     cropBoxTransW.value = 100
     cropBoxTransH.value = 100
+    cropStore.changeCropData(0, 0, 100, 100)
   }
 
   function cropSquareOn() {
-    cropStore.changeSquare(true)
+    cropsquare.value = true
     if (cropBoxTransW.value > cropBoxTransH.value) {
       cropBoxTransW.value = cropBoxTransH.value
     } else {
@@ -82,6 +90,9 @@ export function useCrop() {
   }
 
   return {
+    cropsquare,
+    cropping,
+    cropped,
     wrapWidth,
     wrapHeight,
     cropBoxTransX,
@@ -97,7 +108,5 @@ export function useCrop() {
     cropCancel,
     cropReset,
     cropSquareOn,
-    cropStore,
-    playerStore,
   }
 }

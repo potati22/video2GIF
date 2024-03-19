@@ -12,9 +12,9 @@
       '--y-h': `${Ry * 100 + Rh * 100}%`,
     }"
   >
-    <div v-show="cropStore.cropping" class="wrap-box cliping"></div>
+    <div v-show="cropping" class="wrap-box cliping"></div>
     <div
-      v-show="cropStore.cropping"
+      v-show="cropping"
       ref="cropRef"
       class="crop-box"
       :style="{
@@ -31,19 +31,20 @@
       <div ref="rmRef" class="scale-point rm"></div>
       <div ref="bmRef" class="scale-point bm"></div>
     </div>
-    <div
-      v-show="!cropStore.cropping && cropStore.cropped"
-      class="wrap-box clipped"
-    ></div>
+    <div v-show="!cropping && cropped" class="wrap-box clipped"></div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { usePlayerStore } from '@/store/modules/player'
 import { useCrop } from '@/hooks/useCrop'
 
+const playerStore = usePlayerStore()
+
 const {
-  cropStore,
-  playerStore,
+  cropsquare,
+  cropping,
+  cropped,
   wrapWidth,
   wrapHeight,
   cropBoxTransX,
@@ -54,6 +55,7 @@ const {
   Ry,
   Rw,
   Rh,
+  cropReset,
 } = useCrop()
 
 let wrapBoxResizeObserver: ResizeObserver
@@ -69,7 +71,7 @@ const rmRef = ref()
 watch(
   () => playerStore.videoSrc,
   () => {
-    cropStore.cropReset()
+    cropReset()
   },
 )
 
@@ -109,7 +111,7 @@ function closeMove() {
 
 function openChange() {
   cropCanchange.value = true
-  cropStore.changeSquare(false)
+  cropsquare.value = false
 }
 
 function closeChange() {

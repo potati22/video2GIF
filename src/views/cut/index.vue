@@ -1,9 +1,9 @@
 <template>
   <div class="cut-box">
-    <div v-show="!cropStore.cropping" class="row">
+    <div v-show="!cropping" class="row">
       <PotButton class="btn start" @click="start">开始裁剪</PotButton>
     </div>
-    <div v-show="cropStore.cropping">
+    <div v-show="cropping">
       <div class="row">
         <span>宽高比：</span>
         <PotRadio
@@ -26,11 +26,14 @@
 </template>
 
 <script lang="ts" setup>
+import { usePlayerStore } from '@/store/modules/player'
 import { useCrop } from '@/hooks/useCrop'
 
+const playerStore = usePlayerStore()
+
 const {
-  cropStore,
-  playerStore,
+  cropping,
+  cropsquare,
   cropStart,
   cropConfirm,
   cropCancel,
@@ -58,14 +61,11 @@ watch(sizeRadio, (newVal) => {
   }
 })
 
-watch(
-  () => cropStore.square,
-  (newVal) => {
-    if (newVal === false) {
-      sizeRadio.value = 'free'
-    }
-  },
-)
+watch(cropsquare, (newVal) => {
+  if (newVal === false) {
+    sizeRadio.value = 'free'
+  }
+})
 
 function start() {
   if (!playerStore.videoSrc) {
