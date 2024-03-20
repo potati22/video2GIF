@@ -1,11 +1,11 @@
 <template>
-  <div class="keyframe-box" :style="{ width: trackStore.canvasWidth + 'px' }">
+  <div class="keyframe-box" :style="{ width: trackStore.trackWidth + 'px' }">
     <div v-show="playerStore.videoSrc" class="wrap">
       <div
         class="select-box"
         :style="{
-          left: clipStore.clipLeft + 'px',
-          right: clipStore.clipRight + 'px',
+          left: clipLeft + 'px',
+          right: clipRight + 'px',
         }"
       >
         <div ref="leftRef" class="select-left"></div>
@@ -15,8 +15,8 @@
       <div
         class="shadow"
         :style="{
-          '--left': clipStore.clipLeft + 'px',
-          '--right': trackStore.trackWidth - clipStore.clipRight + 'px',
+          '--left': clipLeft + 'px',
+          '--right': trackStore.trackWidth - clipRight + 'px',
         }"
       ></div>
     </div>
@@ -24,48 +24,26 @@
 </template>
 
 <script lang="ts" setup>
-import { useTrackStore } from '@/store/modules/track'
-import { usePlayerStore } from '@/store/modules/player'
-import { useClipStore } from '@/store/modules/clip'
-import { useTimeTrack } from '@/hooks/useTimeTrack'
-import { useVideo } from '@/hooks/useVideo'
+import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
 
-import emitter from '@/utils/bus'
-import { CLIPBACK } from '@/utils/eventName'
-
-const trackStore = useTrackStore()
-const playerStore = usePlayerStore()
-const clipStore = useClipStore()
-
-const { getCurrentTimefromOffsetX, getOffsetXfromCurrentTime } = useTimeTrack()
-const { videoSkip } = useVideo()
+const {
+  playerStore,
+  trackStore,
+  clipping,
+  clipLeft,
+  clipRight,
+  changeStartTimeByClipLeft,
+  changeEndTimeByClipRight,
+  resetClip,
+} = useKeyFrameWrap()
 
 const leftRef = ref()
 const rightRef = ref()
 let leftFlag = false
 let rightFlag = false
 
-watch(
-  () => playerStore.videoSrc,
-  () => {
-    clipStore.clipRest()
-  },
-)
-
-watch(
-  () => trackStore.scaleLevel,
-  () => {
-    clipStore.changeClipLeft(getOffsetXfromCurrentTime(playerStore.startTime))
-    clipStore.changeClipRight(
-      trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime),
-    )
-  },
-)
-
-emitter.on(CLIPBACK, () => {
-  playerStore.changeStartTime(0)
-  playerStore.changeEndTime(playerStore.duration)
-  clipStore.clipRest()
+watch([() => playerStore.videoSrc, () => trackStore.scaleLevel], () => {
+  resetClip()
 })
 
 onMounted(() => {
@@ -76,37 +54,27 @@ onMounted(() => {
 
 function registerAll() {
   window.addEventListener('mouseup', () => {
-    if (leftFlag) {
-      const currentTime = getCurrentTimefromOffsetX(clipStore.clipLeft)
-      videoSkip(currentTime)
-      playerStore.changeStartTime(currentTime)
-    }
-    if (rightFlag) {
-      const currentTime = getCurrentTimefromOffsetX(
-        trackStore.trackWidth - clipStore.clipRight,
-      )
-      videoSkip(currentTime)
-
-      playerStore.changeEndTime(currentTime)
-    }
+    leftFlag && changeStartTimeByClipLeft()
+    rightFlag && changeEndTimeByClipRight()
     leftFlag = rightFlag = false
+    // clipping.value = false 该语句放在TimeStripe中进行 保证TimeStripe到达最终位置后再显示
   })
 }
 
 function registerLeft() {
   function mouseDown() {
-    clipStore.changeClipping(true)
+    clipping.value = true
     leftFlag = true
     rightFlag = false
   }
 
   function mouseMove(e: MouseEvent) {
-    if (!clipStore.clipping) return
+    if (!clipping.value) return
 
-    let offsetLeft = clipStore.clipLeft + e.movementX
+    let offsetLeft = clipLeft.value + e.movementX
     if (offsetLeft < 0) return
-    if (offsetLeft + clipStore.clipRight > trackStore.trackWidth - 100) return
-    clipStore.changeClipLeft(offsetLeft)
+    if (offsetLeft + clipRight.value > trackStore.trackWidth - 100) return
+    clipLeft.value = offsetLeft
   }
 
   leftRef.value.addEventListener('mousedown', mouseDown)
@@ -115,18 +83,18 @@ function registerLeft() {
 
 function registerRight() {
   function mouseDown() {
-    clipStore.changeClipping(true)
+    clipping.value = true
     leftFlag = false
     rightFlag = true
   }
 
   function mouseMove(e: MouseEvent) {
-    if (!clipStore.clipping) return
+    if (!clipping.value) return
 
-    let offsetRight = clipStore.clipRight - e.movementX
+    let offsetRight = clipRight.value - e.movementX
     if (offsetRight < 0) return
-    if (offsetRight + clipStore.clipLeft > trackStore.trackWidth - 100) return
-    clipStore.changeClipRight(offsetRight)
+    if (offsetRight + clipLeft.value > trackStore.trackWidth - 100) return
+    clipRight.value = offsetRight
   }
 
   rightRef.value.addEventListener('mousedown', mouseDown)

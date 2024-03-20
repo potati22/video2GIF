@@ -1,7 +1,7 @@
 <template>
   <div class="control-box">
     <div class="left-box">
-      <PotIcon icon-class="back" @click="clipBack" />
+      <PotIcon icon-class="back" @click="restoreClip" />
     </div>
     <div class="center-box">
       <span>{{ formatTime3(playerStore.currentTime) }}</span>
@@ -15,7 +15,6 @@
         icon-class="pause"
         @click="videoPause"
       />
-
       <span>{{ formatTime3(playerStore.duration) }}</span>
     </div>
     <div class="right-box">
@@ -27,21 +26,13 @@
 </template>
 
 <script lang="ts" setup>
-import emitter from '@/utils/bus'
 import { formatTime3 } from '@/utils/formatTime'
-import { CLIPBACK } from '@/utils/eventName'
 
-import { usePlayerStore } from '@/store/modules/player'
-import { useTrackStore } from '@/store/modules/track'
 import { useVideo } from '@/hooks/useVideo'
+import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
 
-const playerStore = usePlayerStore()
-const trackStore = useTrackStore()
 const { videoPlay, videoPause } = useVideo()
-
-function clipBack() {
-  emitter.emit(CLIPBACK)
-}
+const { playerStore, trackStore, restoreClip } = useKeyFrameWrap()
 </script>
 
 <style lang="scss" scoped>

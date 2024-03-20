@@ -21,7 +21,6 @@
     "@potati/theme-chalk": "^1.0.3",
     "@types/node": "^20.10.4",
     "element-plus": "^2.4.4",
-    "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "vue": "3.4.18",
     "vue-router": "^4.2.5"
