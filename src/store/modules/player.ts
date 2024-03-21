@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 export const usePlayerStore = defineStore('player', () => {
+  const videoRef: Ref<HTMLVideoElement> = ref(null)
   const videoSrc = ref('/capture.mp4') // /capture.mp4
   const videoHeight = ref(0)
   const videoClientHeight = ref(0)
@@ -14,6 +15,10 @@ export const usePlayerStore = defineStore('player', () => {
   const radio = computed(() => {
     return videoHeight.value / videoClientHeight.value
   })
+
+  function setVideoRef(video: HTMLVideoElement) {
+    videoRef.value = video
+  }
 
   function initPlayer(vH: number, cH: number, du: number) {
     videoHeight.value = vH
@@ -50,6 +55,7 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   return {
+    videoRef,
     videoSrc,
     videoHeight,
     videoClientHeight,
@@ -59,6 +65,7 @@ export const usePlayerStore = defineStore('player', () => {
     startTime,
     endTime,
     playing,
+    setVideoRef,
     initPlayer,
     changeVideoClientHeight,
     changeCurrentTime,

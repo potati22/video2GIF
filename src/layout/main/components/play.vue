@@ -25,18 +25,18 @@ import { useVideo } from '@/hooks/useVideo'
 import type { Ref } from 'vue'
 
 const playerStore = usePlayerStore()
+const { videoOnLoadedMetaData } = useVideo()
+
+const videoRef: Ref<HTMLVideoElement> = ref()
 
 const outerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
 const workAreaWidth = ref(0)
 
-const videoRef: Ref<HTMLVideoElement> = ref()
-
-const { initVideo } = useVideo()
-
 onMounted(() => {
+  playerStore.setVideoRef(unref(videoRef))
+  videoRef.value.onloadedmetadata = videoOnLoadedMetaData
   controlWorkArea()
-  initVideo(videoRef)
 })
 
 // 监听outerBox的变化
