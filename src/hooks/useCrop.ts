@@ -1,108 +1,46 @@
-import { useCropStore } from '@/store/modules/crop'
-import { usePlayerStore } from '@/store/modules/player'
+import { CropInstance } from '@/layout/main/components/Crop'
+import type { Ref } from 'vue'
 
-const cropsquare = ref(false) // 是否1：1宽高比
-const cropping = ref(false)
-const cropped = ref(false)
-
-const wrapWidth = ref(0)
-const wrapHeight = ref(0)
-
-const cropBoxTransX = ref(0)
-const cropBoxTransY = ref(0)
-const cropBoxTransW = ref(0)
-const cropBoxTransH = ref(0)
-
-const Rx = ref(0)
-const Ry = ref(0)
-const Rw = ref(0)
-const Rh = ref(0)
-
-watch(cropBoxTransX, () => {
-  Rx.value = cropBoxTransX.value / wrapWidth.value
-})
-
-watch(cropBoxTransY, () => {
-  Ry.value = cropBoxTransY.value / wrapHeight.value
-})
-
-watch(cropBoxTransW, () => {
-  Rw.value = cropBoxTransW.value / wrapWidth.value
-})
-
-watch(cropBoxTransH, () => {
-  Rh.value = cropBoxTransH.value / wrapHeight.value
-})
-
-export function useCrop() {
-  const cropStore = useCropStore()
-  const playerStore = usePlayerStore()
-
+export function useCrop(cropRef: Ref<CropInstance>) {
   function cropStart() {
-    resetCropBoxTrans()
-    cropping.value = true
+    cropRef.value.resetCropBox()
+    cropRef.value.changeCropping(true)
   }
 
   function cropConfirm() {
-    cropping.value = false
-    cropped.value = true
-    playerStore.changeVideoClientHeight(wrapHeight.value)
-    cropStore.changeCropData(
-      cropBoxTransX.value,
-      cropBoxTransY.value,
-      cropBoxTransW.value,
-      cropBoxTransH.value,
-    )
-  }
-
-  function cropCancel() {
-    cropping.value = false
-    cropBoxTransX.value = cropStore.cropX
-    cropBoxTransY.value = cropStore.cropY
-    cropBoxTransW.value = cropStore.cropW
-    cropBoxTransH.value = cropStore.cropH
-  }
-
-  function cropReset() {
-    cropping.value = false
-    cropped.value = false
-    cropBoxTransX.value = 0
-    cropBoxTransY.value = 0
-    cropBoxTransW.value = 100
-    cropBoxTransH.value = 100
-    cropStore.changeCropData(0, 0, 100, 100)
-  }
-
-  function cropSquareOn() {
-    cropsquare.value = true
-    if (cropBoxTransW.value > cropBoxTransH.value) {
-      cropBoxTransW.value = cropBoxTransH.value
-    } else {
-      cropBoxTransH.value = cropBoxTransW.value
+    cropRef.value.changeCropping(false)
+    cropRef.value.changeCropped(true)
+    return {
+      wrapHeight: cropRef.value.wrapHeight,
+      cropBoxTransX: cropRef.value.cropBoxTransX,
+      cropBoxTransY: cropRef.value.cropBoxTransY,
+      cropBoxTransW: cropRef.value.cropBoxTransW,
+      cropBoxTransH: cropRef.value.cropBoxTransH,
     }
   }
 
-  function resetCropBoxTrans() {
-    cropBoxTransX.value = Math.floor(Rx.value * wrapWidth.value)
-    cropBoxTransY.value = Math.floor(Ry.value * wrapHeight.value)
-    cropBoxTransW.value = Math.floor(Rw.value * wrapWidth.value)
-    cropBoxTransH.value = Math.floor(Rh.value * wrapHeight.value)
+  function cropCancel(x: number, y: number, w: number, h: number) {
+    cropRef.value.changeCropping(false)
+    cropRef.value.changeCropBox(x, y, w, h)
+  }
+
+  function cropReset() {
+    cropRef.value.changeCropping(false)
+    cropRef.value.changeCropped(false)
+    cropRef.value.changeCropBox(0, 0, 100, 100)
+    return {
+      cropBoxTransX: 0,
+      cropBoxTransY: 0,
+      cropBoxTransW: 100,
+      cropBoxTransH: 100,
+    }
+  }
+
+  function cropSquareOn() {
+    cropRef.value.changeCropSquare(true)
   }
 
   return {
-    cropsquare,
-    cropping,
-    cropped,
-    wrapWidth,
-    wrapHeight,
-    cropBoxTransX,
-    cropBoxTransY,
-    cropBoxTransW,
-    cropBoxTransH,
-    Rx,
-    Ry,
-    Rw,
-    Rh,
     cropStart,
     cropConfirm,
     cropCancel,

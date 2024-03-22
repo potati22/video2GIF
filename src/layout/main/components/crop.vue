@@ -36,27 +36,105 @@
 </template>
 
 <script lang="ts" setup>
-import { usePlayerStore } from '@/store/modules/player'
-import { useCrop } from '@/hooks/useCrop'
+const cropSquare = ref(false) // 是否1：1宽高比
+const cropping = ref(false)
+const cropped = ref(false)
 
-const playerStore = usePlayerStore()
+const wrapWidth = ref(0)
+const wrapHeight = ref(0)
 
-const {
-  cropsquare,
-  cropping,
-  cropped,
+const cropBoxTransX = ref(0)
+const cropBoxTransY = ref(0)
+const cropBoxTransW = ref(0)
+const cropBoxTransH = ref(0)
+
+function changeCropping(state: boolean) {
+  cropping.value = state
+}
+
+function changeCropped(state: boolean) {
+  cropped.value = state
+}
+
+function changeCropSquare(state: boolean) {
+  cropSquare.value = state
+}
+
+function changeCropBox(x: number, y: number, w: number, h: number) {
+  cropBoxTransX.value = x
+  cropBoxTransY.value = y
+  cropBoxTransW.value = w
+  cropBoxTransH.value = h
+}
+
+function resetCropBox() {
+  cropBoxTransX.value = Math.floor(Rx.value * wrapWidth.value)
+  cropBoxTransY.value = Math.floor(Ry.value * wrapHeight.value)
+  cropBoxTransW.value = Math.floor(Rw.value * wrapWidth.value)
+  cropBoxTransH.value = Math.floor(Rh.value * wrapHeight.value)
+}
+
+defineExpose({
   wrapWidth,
   wrapHeight,
   cropBoxTransX,
   cropBoxTransY,
   cropBoxTransW,
   cropBoxTransH,
-  Rx,
-  Ry,
-  Rw,
-  Rh,
-  cropReset,
-} = useCrop()
+  changeCropping,
+  changeCropped,
+  changeCropSquare,
+  changeCropBox,
+  resetCropBox,
+})
+
+const emits = defineEmits<{
+  (e: 'croppingChange', state: boolean): void
+  (e: 'croppedChange', state: boolean): void
+  (e: 'cropSquareChange', state: boolean): void
+}>()
+
+watch(cropping, (newVal) => {
+  emits('croppingChange', newVal)
+})
+
+watch(cropped, (newVal) => {
+  emits('croppedChange', newVal)
+})
+
+watch(cropSquare, (newVal) => {
+  emits('cropSquareChange', newVal)
+})
+
+const Rx = ref(0)
+const Ry = ref(0)
+const Rw = ref(0)
+const Rh = ref(0)
+
+watch(cropBoxTransX, () => {
+  Rx.value = cropBoxTransX.value / wrapWidth.value
+})
+
+watch(cropBoxTransY, () => {
+  Ry.value = cropBoxTransY.value / wrapHeight.value
+})
+
+watch(cropBoxTransW, () => {
+  Rw.value = cropBoxTransW.value / wrapWidth.value
+})
+
+watch(cropBoxTransH, () => {
+  Rh.value = cropBoxTransH.value / wrapHeight.value
+})
+
+watch(cropSquare, (newVal) => {
+  if (!newVal) return
+  if (cropBoxTransW.value > cropBoxTransH.value) {
+    cropBoxTransW.value = cropBoxTransH.value
+  } else {
+    cropBoxTransH.value = cropBoxTransW.value
+  }
+})
 
 let wrapBoxResizeObserver: ResizeObserver
 
@@ -67,13 +145,6 @@ const tmRef = ref()
 const bmRef = ref()
 const lmRef = ref()
 const rmRef = ref()
-
-watch(
-  () => playerStore.videoSrc,
-  () => {
-    cropReset()
-  },
-)
 
 onMounted(() => {
   let flag = 0 // 用于初始化Rw和Rh 使其不为0
@@ -111,7 +182,7 @@ function closeMove() {
 
 function openChange() {
   cropCanchange.value = true
-  cropsquare.value = false
+  cropSquare.value = false
 }
 
 function closeChange() {

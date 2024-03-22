@@ -8,7 +8,12 @@
       }"
     >
       <div class="video-outer">
-        <Crop>
+        <Crop
+          ref="cropRef"
+          @cropping-change="(state) => cropStore.changeCropping(state)"
+          @cropped-change="(state) => cropStore.changeCropped(state)"
+          @crop-square-change="(state) => cropStore.changeCropSquare(state)"
+        >
           <video ref="videoRef" :src="playerStore.videoSrc"></video>
         </Crop>
       </div>
@@ -20,14 +25,18 @@
 import Crop from './Crop.vue'
 
 import { usePlayerStore } from '@/store/modules/player'
+import { useCropStore } from '@/store/modules/crop'
 import { useVideo } from '@/hooks/useVideo'
 
 import type { Ref } from 'vue'
+import { CropInstance } from '@/layout/main/components/Crop'
 
 const playerStore = usePlayerStore()
+const cropStore = useCropStore()
 const { videoOnLoadedMetaData } = useVideo()
 
 const videoRef: Ref<HTMLVideoElement> = ref()
+const cropRef: Ref<CropInstance> = ref()
 
 const outerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
@@ -36,6 +45,9 @@ const workAreaWidth = ref(0)
 onMounted(() => {
   playerStore.setVideoRef(unref(videoRef))
   videoRef.value.onloadedmetadata = videoOnLoadedMetaData
+
+  cropStore.setCropRef(cropRef)
+
   controlWorkArea()
 })
 

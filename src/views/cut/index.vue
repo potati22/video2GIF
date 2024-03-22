@@ -1,9 +1,9 @@
 <template>
   <div class="cut-box">
-    <div v-show="!cropping" class="row">
+    <div v-show="!cropStore.cropping" class="row">
       <PotButton class="btn start" @click="start">开始裁剪</PotButton>
     </div>
-    <div v-show="cropping">
+    <div v-show="cropStore.cropping">
       <div class="row">
         <span>宽高比：</span>
         <PotRadio
@@ -13,13 +13,13 @@
         ></PotRadio>
       </div>
       <div class="row">
-        <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
-        <PotButton type="yellow" class="btn apply" @click="cropConfirm"
+        <PotButton class="btn cancel" @click="cancel">取消</PotButton>
+        <PotButton type="yellow" class="btn apply" @click="confirm"
           >确认</PotButton
         >
       </div>
       <div class="row">
-        <PotButton class="btn reset" @click="cropReset">重置</PotButton>
+        <PotButton class="btn reset" @click="reset">重置</PotButton>
       </div>
     </div>
   </div>
@@ -27,19 +27,23 @@
 
 <script lang="ts" setup>
 import { usePlayerStore } from '@/store/modules/player'
+import { useCropStore } from '@/store/modules/crop'
+
 import { useCrop } from '@/hooks/useCrop'
 
 const playerStore = usePlayerStore()
+const cropStore = useCropStore()
 
-const {
-  cropping,
-  cropsquare,
-  cropStart,
-  cropConfirm,
-  cropCancel,
-  cropReset,
-  cropSquareOn,
-} = useCrop()
+const { cropStart, cropConfirm, cropCancel, cropReset, cropSquareOn } = useCrop(
+  cropStore.cropRef,
+)
+
+watch(
+  () => playerStore.videoSrc,
+  () => {
+    reset()
+  },
+)
 
 const sizeRadio = ref('free')
 const sizeRadioOptions = [
@@ -61,11 +65,13 @@ watch(sizeRadio, (newVal) => {
   }
 })
 
-watch(cropsquare, (newVal) => {
-  if (newVal === false) {
+watch(
+  () => cropStore.cropSquare,
+  (newVal) => {
+    if (newVal) return
     sizeRadio.value = 'free'
-  }
-})
+  },
+)
 
 function start() {
   if (!playerStore.videoSrc) {
@@ -76,6 +82,31 @@ function start() {
     return
   }
   cropStart()
+}
+
+function confirm() {
+  const res = cropConfirm()
+  cropStore.changeCropData(
+    res.cropBoxTransX,
+    res.cropBoxTransY,
+    res.cropBoxTransW,
+    res.cropBoxTransH,
+  )
+  playerStore.changeVideoClientHeight(res.wrapHeight)
+}
+
+function cancel() {
+  cropCancel(cropStore.cropX, cropStore.cropY, cropStore.cropW, cropStore.cropH)
+}
+
+function reset() {
+  const res = cropReset()
+  cropStore.changeCropData(
+    res.cropBoxTransX,
+    res.cropBoxTransY,
+    res.cropBoxTransW,
+    res.cropBoxTransH,
+  )
 }
 </script>
 
