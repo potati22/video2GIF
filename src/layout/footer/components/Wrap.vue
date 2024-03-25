@@ -1,6 +1,6 @@
 <template>
-  <div class="keyframe-box" :style="{ width: trackStore.trackWidth + 'px' }">
-    <div v-show="playerStore.videoSrc" class="wrap">
+  <div class="wrap-box" :style="{ width: wrapWidth + 'px' }">
+    <div class="wrap">
       <div
         class="select-box"
         :style="{
@@ -16,7 +16,7 @@
         class="shadow"
         :style="{
           '--left': clipLeft + 'px',
-          '--right': trackStore.trackWidth - clipRight + 'px',
+          '--right': wrapWidth - clipRight + 'px',
         }"
       ></div>
     </div>
@@ -24,27 +24,48 @@
 </template>
 
 <script lang="ts" setup>
-import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
-
-const {
-  playerStore,
-  trackStore,
-  clipping,
-  clipLeft,
-  clipRight,
-  changeStartTimeByClipLeft,
-  changeEndTimeByClipRight,
-  resetClip,
-} = useKeyFrameWrap()
+const props = defineProps({
+  wrapWidth: {
+    type: Number,
+    default: 0,
+    require: true,
+  },
+})
 
 const leftRef = ref()
 const rightRef = ref()
 let leftFlag = false
 let rightFlag = false
 
-watch([() => playerStore.videoSrc, () => trackStore.scaleLevel], () => {
-  resetClip()
+const clipping = ref(false)
+const clipLeft = ref(0)
+const clipRight = ref(0)
+
+function changeClipping(state: boolean) {
+  clipping.value = state
+}
+
+function changeClipLeft(offset: number) {
+  clipLeft.value = offset
+}
+
+function changeClipRight(offset: number) {
+  clipRight.value = offset
+}
+
+defineExpose({
+  clipLeft,
+  clipRight,
+  changeClipping,
+  changeClipLeft,
+  changeClipRight,
 })
+
+const emits = defineEmits<{
+  (e: 'clippingChange', state: boolean): void
+  (e: 'clipLeftChange', offset: number): void
+  (e: 'clipRightChange', offset: number): void
+}>()
 
 onMounted(() => {
   registerLeft()
@@ -54,10 +75,11 @@ onMounted(() => {
 
 function registerAll() {
   window.addEventListener('mouseup', () => {
-    leftFlag && changeStartTimeByClipLeft()
-    rightFlag && changeEndTimeByClipRight()
+    leftFlag && emits('clipLeftChange', clipLeft.value)
+    rightFlag && emits('clipRightChange', clipRight.value)
     leftFlag = rightFlag = false
-    // clipping.value = false 该语句放在TimeStripe中进行 保证TimeStripe到达最终位置后再显示
+    clipping.value = false
+    emits('clippingChange', clipping.value)
   })
 }
 
@@ -66,6 +88,7 @@ function registerLeft() {
     clipping.value = true
     leftFlag = true
     rightFlag = false
+    emits('clippingChange', clipping.value)
   }
 
   function mouseMove(e: MouseEvent) {
@@ -73,7 +96,7 @@ function registerLeft() {
 
     let offsetLeft = clipLeft.value + e.movementX
     if (offsetLeft < 0) return
-    if (offsetLeft + clipRight.value > trackStore.trackWidth - 100) return
+    if (offsetLeft + clipRight.value > props.wrapWidth - 100) return
     clipLeft.value = offsetLeft
   }
 
@@ -86,6 +109,7 @@ function registerRight() {
     clipping.value = true
     leftFlag = false
     rightFlag = true
+    emits('clippingChange', clipping.value)
   }
 
   function mouseMove(e: MouseEvent) {
@@ -93,7 +117,7 @@ function registerRight() {
 
     let offsetRight = clipRight.value - e.movementX
     if (offsetRight < 0) return
-    if (offsetRight + clipLeft.value > trackStore.trackWidth - 100) return
+    if (offsetRight + clipLeft.value > props.wrapWidth - 100) return
     clipRight.value = offsetRight
   }
 
@@ -103,7 +127,7 @@ function registerRight() {
 </script>
 
 <style lang="scss" scoped>
-.keyframe-box {
+.wrap-box {
   min-width: calc(100% - 20px);
   height: 52px;
   margin: 10px 10px;

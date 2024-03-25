@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import Crop from './Crop.vue'
+import Crop from './components/Crop.vue'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
@@ -44,9 +44,9 @@ const workAreaWidth = ref(0)
 
 onMounted(() => {
   playerStore.setVideoRef(unref(videoRef))
-  videoRef.value.onloadedmetadata = videoOnLoadedMetaData
+  playerStore.videoRef.onloadedmetadata = videoOnLoadedMetaData
 
-  cropStore.setCropRef(cropRef)
+  cropStore.setCropRef(unref(cropRef))
 
   controlWorkArea()
 })

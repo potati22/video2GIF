@@ -11,10 +11,10 @@
 </template>
 
 <script lang="ts" setup>
-import Control from './components/Control.vue'
-import TimeLine from './components/TimeLine.vue'
-import TimeStripe from './components/TimeStripe.vue'
-import KeyFrame from './components/KeyFrame.vue'
+import Control from './Control.vue'
+import TimeLine from './TimeLine.vue'
+import TimeStripe from './TimeStripe.vue'
+import KeyFrame from './KeyFrame.vue'
 
 const controlLine = ref()
 let lineCanMove = false

@@ -1,46 +1,51 @@
-import { CropInstance } from '@/layout/main/components/Crop'
-import type { Ref } from 'vue'
+import { usePlayerStore } from '@/store/modules/player'
+import { useCropStore } from '@/store/modules/crop'
 
-export function useCrop(cropRef: Ref<CropInstance>) {
+export function useCrop() {
+  const playerStore = usePlayerStore()
+  const cropStore = useCropStore()
+
   function cropStart() {
-    cropRef.value.resetCropBox()
-    cropRef.value.changeCropping(true)
+    cropStore.cropRef.resetCropBox()
+    cropStore.cropRef.changeCropping(true)
   }
 
   function cropConfirm() {
-    cropRef.value.changeCropping(false)
-    cropRef.value.changeCropped(true)
-    return {
-      wrapHeight: cropRef.value.wrapHeight,
-      cropBoxTransX: cropRef.value.cropBoxTransX,
-      cropBoxTransY: cropRef.value.cropBoxTransY,
-      cropBoxTransW: cropRef.value.cropBoxTransW,
-      cropBoxTransH: cropRef.value.cropBoxTransH,
-    }
+    cropStore.cropRef.changeCropping(false)
+    cropStore.cropRef.changeCropped(true)
+    cropStore.changeCropData(
+      cropStore.cropRef.cropBoxTransX,
+      cropStore.cropRef.cropBoxTransY,
+      cropStore.cropRef.cropBoxTransW,
+      cropStore.cropRef.cropBoxTransH,
+    )
+    playerStore.changeVideoClientHeight(cropStore.cropRef.wrapHeight)
   }
 
-  function cropCancel(x: number, y: number, w: number, h: number) {
-    cropRef.value.changeCropping(false)
-    cropRef.value.changeCropBox(x, y, w, h)
+  function cropCancel() {
+    cropStore.cropRef.changeCropping(false)
+    cropStore.cropRef.changeCropBox(
+      cropStore.cropX,
+      cropStore.cropY,
+      cropStore.cropW,
+      cropStore.cropH,
+    )
   }
 
   function cropReset() {
-    cropRef.value.changeCropping(false)
-    cropRef.value.changeCropped(false)
-    cropRef.value.changeCropBox(0, 0, 100, 100)
-    return {
-      cropBoxTransX: 0,
-      cropBoxTransY: 0,
-      cropBoxTransW: 100,
-      cropBoxTransH: 100,
-    }
+    cropStore.cropRef.changeCropping(false)
+    cropStore.cropRef.changeCropped(false)
+    cropStore.cropRef.changeCropBox(0, 0, 100, 100)
+    cropStore.changeCropData(0, 0, 100, 100)
   }
 
   function cropSquareOn() {
-    cropRef.value.changeCropSquare(true)
+    cropStore.cropRef.changeCropSquare(true)
   }
 
   return {
+    playerStore,
+    cropStore,
     cropStart,
     cropConfirm,
     cropCancel,

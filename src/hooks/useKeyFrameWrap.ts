@@ -1,14 +1,12 @@
+import { useClipStore } from '@/store/modules/clip'
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 
 import { useTimeTrack } from '@/hooks/useTimeTrack'
 import { useVideo } from '@/hooks/useVideo'
 
-const clipping = ref(false)
-const clipLeft = ref(0)
-const clipRight = ref(0)
-
 export function useKeyFrameWrap() {
+  const clipStore = useClipStore()
   const trackStore = useTrackStore()
   const playerStore = usePlayerStore()
 
@@ -16,39 +14,40 @@ export function useKeyFrameWrap() {
     useTimeTrack()
   const { videoSkip } = useVideo()
 
-  function changeStartTimeByClipLeft() {
-    const currentTime = getCurrentTimefromOffsetX(clipLeft.value)
+  function changeStartTimeByClipLeft(offset: number) {
+    const currentTime = getCurrentTimefromOffsetX(offset)
     playerStore.changeStartTime(currentTime)
     videoSkip(currentTime)
   }
 
-  function changeEndTimeByClipRight() {
+  function changeEndTimeByClipRight(offset: number) {
     const currentTime = getCurrentTimefromOffsetX(
-      trackStore.trackWidth - clipRight.value,
+      trackStore.trackWidth - offset,
     )
     playerStore.changeEndTime(currentTime)
     videoSkip(currentTime)
   }
 
   function resetClip() {
-    clipLeft.value = getOffsetXfromCurrentTime(playerStore.startTime)
-    clipRight.value =
-      trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime)
+    clipStore.clipRef.changeClipLeft(
+      getOffsetXfromCurrentTime(playerStore.startTime),
+    )
+    clipStore.clipRef.changeClipRight(
+      trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime),
+    )
   }
 
   function restoreClip() {
     playerStore.changeStartTime(0)
     playerStore.changeEndTime(playerStore.duration)
-    clipLeft.value = 0
-    clipRight.value = 0
+    clipStore.clipRef.changeClipLeft(0)
+    clipStore.clipRef.changeClipRight(0)
   }
 
   return {
+    clipStore,
     trackStore,
     playerStore,
-    clipping,
-    clipLeft,
-    clipRight,
     changeStartTimeByClipLeft,
     changeEndTimeByClipRight,
     resetClip,

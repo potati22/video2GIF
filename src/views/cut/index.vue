@@ -13,35 +13,35 @@
         ></PotRadio>
       </div>
       <div class="row">
-        <PotButton class="btn cancel" @click="cancel">取消</PotButton>
-        <PotButton type="yellow" class="btn apply" @click="confirm"
+        <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
+        <PotButton type="yellow" class="btn apply" @click="cropConfirm"
           >确认</PotButton
         >
       </div>
       <div class="row">
-        <PotButton class="btn reset" @click="reset">重置</PotButton>
+        <PotButton class="btn reset" @click="cropReset">重置</PotButton>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { usePlayerStore } from '@/store/modules/player'
-import { useCropStore } from '@/store/modules/crop'
-
 import { useCrop } from '@/hooks/useCrop'
 
-const playerStore = usePlayerStore()
-const cropStore = useCropStore()
-
-const { cropStart, cropConfirm, cropCancel, cropReset, cropSquareOn } = useCrop(
-  cropStore.cropRef,
-)
+const {
+  playerStore,
+  cropStore,
+  cropStart,
+  cropConfirm,
+  cropCancel,
+  cropReset,
+  cropSquareOn,
+} = useCrop()
 
 watch(
   () => playerStore.videoSrc,
   () => {
-    reset()
+    cropReset()
   },
 )
 
@@ -82,31 +82,6 @@ function start() {
     return
   }
   cropStart()
-}
-
-function confirm() {
-  const res = cropConfirm()
-  cropStore.changeCropData(
-    res.cropBoxTransX,
-    res.cropBoxTransY,
-    res.cropBoxTransW,
-    res.cropBoxTransH,
-  )
-  playerStore.changeVideoClientHeight(res.wrapHeight)
-}
-
-function cancel() {
-  cropCancel(cropStore.cropX, cropStore.cropY, cropStore.cropW, cropStore.cropH)
-}
-
-function reset() {
-  const res = cropReset()
-  cropStore.changeCropData(
-    res.cropBoxTransX,
-    res.cropBoxTransY,
-    res.cropBoxTransW,
-    res.cropBoxTransH,
-  )
 }
 </script>
 

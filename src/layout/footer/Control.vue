@@ -26,13 +26,13 @@
 </template>
 
 <script lang="ts" setup>
+import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
+import { useVideo } from '@/hooks/useVideo'
+
 import { formatTime3 } from '@/utils/formatTime'
 
-import { useVideo } from '@/hooks/useVideo'
-import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
-
 const { videoPlay, videoPause } = useVideo()
-const { playerStore, trackStore, restoreClip } = useKeyFrameWrap()
+const { trackStore, playerStore, restoreClip } = useKeyFrameWrap()
 </script>
 
 <style lang="scss" scoped>

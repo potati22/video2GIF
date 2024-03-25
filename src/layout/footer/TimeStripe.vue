@@ -1,6 +1,6 @@
 <template>
   <div
-    v-show="!clipping"
+    v-show="controlTimeStripeShow"
     ref="timeStripeRef"
     class="time-stripe"
     :style="{ '--left': `${offsetLeft}px` }"
@@ -8,26 +8,35 @@
 </template>
 
 <script lang="ts" setup>
-import { useTimeTrack } from '@/hooks/useTimeTrack'
 import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
+import { useTimeTrack } from '@/hooks/useTimeTrack'
 
+const { clipStore, trackStore, playerStore } = useKeyFrameWrap()
 const { getOffsetXfromCurrentTime } = useTimeTrack()
-const { trackStore, playerStore, clipping } = useKeyFrameWrap()
 
 const offsetX = ref(0)
 // 时间线的偏移距离（起始点为3
 const offsetLeft = computed(() => {
   return 3 + offsetX.value
 })
+const controlTimeStripeShow = ref(true)
+
+watch(
+  () => clipStore.clipping,
+  (newVal) => {
+    if (newVal) {
+      controlTimeStripeShow.value = false
+    }
+  },
+)
 
 watch(
   () => playerStore.currentTime,
   (newVal) => {
     if (!playerStore.playing) {
       offsetX.value = getOffsetXfromCurrentTime(newVal)
-      if (clipping) {
-        // 保证TimeStripe到达最终位置后再显示
-        clipping.value = false
+      if (!controlTimeStripeShow.value) {
+        controlTimeStripeShow.value = true
       }
     }
   },

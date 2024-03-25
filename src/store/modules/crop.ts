@@ -10,7 +10,7 @@ export const useCropStore = defineStore('crop', () => {
   const cropping = ref(false)
   const cropped = ref(false)
 
-  const cropRef = ref()
+  const cropRef: Ref<CropInstance> = ref()
   const cropX = ref(0)
   const cropY = ref(0)
   const cropW = ref(100)
@@ -25,7 +25,7 @@ export const useCropStore = defineStore('crop', () => {
     }
   })
 
-  function setCropRef(crop: Ref<CropInstance>) {
+  function setCropRef(crop: CropInstance) {
     cropRef.value = crop
   }
 
