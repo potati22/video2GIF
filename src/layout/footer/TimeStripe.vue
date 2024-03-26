@@ -1,6 +1,6 @@
 <template>
   <div
-    v-show="controlTimeStripeShow"
+    v-show="timeStripeShow"
     ref="timeStripeRef"
     class="time-stripe"
     :style="{ '--left': `${offsetLeft}px` }"
@@ -8,10 +8,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
+import { useClipStore } from '@/store/modules/clip'
+import { useTrackStore } from '@/store/modules/track'
+import { usePlayerStore } from '@/store/modules/player'
+
 import { useTimeTrack } from '@/hooks/useTimeTrack'
 
-const { clipStore, trackStore, playerStore } = useKeyFrameWrap()
+const clipStore = useClipStore()
+const trackStore = useTrackStore()
+const playerStore = usePlayerStore()
+
 const { getOffsetXfromCurrentTime } = useTimeTrack()
 
 const offsetX = ref(0)
@@ -19,13 +25,16 @@ const offsetX = ref(0)
 const offsetLeft = computed(() => {
   return 3 + offsetX.value
 })
-const controlTimeStripeShow = ref(true)
+const timeStripeShow = ref(true)
+const timeStripeRunSpeed = computed(() => {
+  return trackStore.spaceGap / (trackStore.timeGap * 1000)
+})
 
 watch(
   () => clipStore.clipping,
   (newVal) => {
     if (newVal) {
-      controlTimeStripeShow.value = false
+      timeStripeShow.value = false
     }
   },
 )
@@ -35,8 +44,8 @@ watch(
   (newVal) => {
     if (!playerStore.playing) {
       offsetX.value = getOffsetXfromCurrentTime(newVal)
-      if (!controlTimeStripeShow.value) {
-        controlTimeStripeShow.value = true
+      if (!timeStripeShow.value) {
+        timeStripeShow.value = true
       }
     }
   },
@@ -58,21 +67,36 @@ watch(
 
 function timeStripeRun() {
   const offsetXMax = getOffsetXfromCurrentTime(playerStore.endTime)
-  const step = trackStore.spaceGap / trackStore.timeGap / 50
 
   if (offsetX.value == offsetXMax) {
     offsetX.value = getOffsetXfromCurrentTime(playerStore.startTime)
   }
+  const preOffsetX = offsetX.value
 
-  let timer = null
-  function cb() {
-    if (offsetX.value >= offsetXMax || !playerStore.playing) {
-      clearInterval(timer)
-      return
+  let startTimeStamp, preTimeStamp
+  let done = false
+
+  function step(timestamp) {
+    if (startTimeStamp === undefined) startTimeStamp = timestamp
+
+    const elapsed = timestamp - startTimeStamp
+
+    if (preTimeStamp !== timestamp) {
+      const runed = timeStripeRunSpeed.value * elapsed
+      offsetX.value =
+        preOffsetX + runed > offsetXMax ? offsetXMax : preOffsetX + runed
+      if (!playerStore.playing) {
+        done = true
+      }
     }
-    offsetX.value += step
+
+    if (offsetX.value < offsetXMax) {
+      preTimeStamp = timestamp
+      if (!done) window.requestAnimationFrame(step)
+    }
   }
-  timer = setInterval(cb, 20)
+
+  window.requestAnimationFrame(step)
 }
 </script>
 
