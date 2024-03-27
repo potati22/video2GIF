@@ -16,6 +16,11 @@ const routes = [
     component: () => import('@/views/cut/index.vue'),
   },
   {
+    name: 'Editor',
+    path: '/editor',
+    component: () => import('@/views/editor/index.vue'),
+  },
+  {
     name: 'Download',
     path: '/download',
     component: () => import('@/views/download/index.vue'),

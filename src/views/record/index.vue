@@ -1,10 +1,6 @@
 <template>
-  <div class="record-box">
-    <div class="row">
-      <PotButton class="btn" @click="record"
-        >录制屏幕（最长10秒左右）</PotButton
-      >
-    </div>
+  <div class="row">
+    <PotButton class="btn" @click="record">录制屏幕（最长10秒左右）</PotButton>
   </div>
 </template>
 
@@ -67,15 +63,6 @@ async function record() {
 </script>
 
 <style lang="scss" scoped>
-.record-box {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  padding: 20px 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 .row {
   width: 250px;
   margin-bottom: 15px;

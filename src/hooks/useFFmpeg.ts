@@ -62,18 +62,41 @@ export function useFFmpeg() {
     await ffmpeg.writeFile('logo.png', logouint8arry)
 
     await ffmpeg.exec([
+      '-ss',
+      `${playerStore.startTime}`,
+      '-t',
+      `${playerStore.endTime - playerStore.startTime}`,
       '-i',
       'my.mp4',
       '-vf',
-      'movie=logo.png[watermark];[in][watermark]overlay=100:100',
-      'output1.mp4',
+      `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
+      '-s',
+      `150x150`,
+      readGIFName,
     ])
 
-    const final = await ffmpeg.readFile('output1.mp4', 'binary')
+    await ffmpeg.exec([
+      '-i',
+      readGIFName,
+      '-i',
+      'logo.png',
+      '-filter_complex',
+      `[1:v]scale=50:50[scaled];[0:v][scaled]overlay=0:0`,
+      'output.gif',
+    ])
+
+    /* const final = await ffmpeg.readFile('output1.mp4', 'binary')
 
     console.log(
       URL.createObjectURL(
         new Blob([(final as Uint8Array).buffer], { type: 'video/mp4' }),
+      ),
+    ) */
+    const final = await ffmpeg.readFile('output.gif', 'binary')
+
+    console.log(
+      URL.createObjectURL(
+        new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
       ),
     )
   }

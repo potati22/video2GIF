@@ -1,26 +1,24 @@
 <template>
-  <div class="cut-box">
-    <div v-show="!cropStore.cropping" class="row">
-      <PotButton class="btn start" @click="start">开始裁剪</PotButton>
+  <div v-show="!cropStore.cropping" class="row">
+    <PotButton class="btn start" @click="start">开始裁剪</PotButton>
+  </div>
+  <div v-show="cropStore.cropping">
+    <div class="row">
+      <span>宽高比：</span>
+      <PotRadio
+        v-model="sizeRadio"
+        name="sizeRadio"
+        :options="sizeRadioOptions"
+      ></PotRadio>
     </div>
-    <div v-show="cropStore.cropping">
-      <div class="row">
-        <span>宽高比：</span>
-        <PotRadio
-          v-model="sizeRadio"
-          name="sizeRadio"
-          :options="sizeRadioOptions"
-        ></PotRadio>
-      </div>
-      <div class="row">
-        <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
-        <PotButton type="yellow" class="btn apply" @click="cropConfirm"
-          >确认</PotButton
-        >
-      </div>
-      <div class="row">
-        <PotButton class="btn reset" @click="cropReset">重置</PotButton>
-      </div>
+    <div class="row">
+      <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
+      <PotButton type="yellow" class="btn apply" @click="cropConfirm"
+        >确认</PotButton
+      >
+    </div>
+    <div class="row">
+      <PotButton class="btn reset" @click="cropReset">重置</PotButton>
     </div>
   </div>
 </template>
@@ -86,15 +84,6 @@ function start() {
 </script>
 
 <style lang="scss" scoped>
-.cut-box {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  padding: 20px 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 .row {
   width: 250px;
   margin-bottom: 15px;

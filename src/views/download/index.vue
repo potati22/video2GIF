@@ -1,17 +1,15 @@
 <template>
-  <div class="download-box">
-    <div class="row">
-      <PotButton class="btn" @click="downloadGIF">导出GIF</PotButton>
-      <a
-        ref="gifDownloadRef"
-        :href="gifSrc"
-        download="name.gif"
-        style="display: none"
-      ></a>
-    </div>
-    <div class="row">
-      <PotButton class="btn" @click="testSubtitles">测试字幕</PotButton>
-    </div>
+  <div class="row">
+    <PotButton class="btn" @click="downloadGIF">导出GIF</PotButton>
+    <a
+      ref="gifDownloadRef"
+      :href="gifSrc"
+      download="name.gif"
+      style="display: none"
+    ></a>
+  </div>
+  <div class="row">
+    <PotButton class="btn" @click="testSubtitles">测试字幕</PotButton>
   </div>
 </template>
 
@@ -33,9 +31,11 @@ onUnmounted(() => {
 })
 
 async function testSubtitles() {
+  const startTime = performance.now()
   console.log('start')
   await addSubtitles()
-  console.log('end')
+  const endTime = performance.now()
+  console.log('end', endTime - startTime)
 }
 
 async function downloadGIF() {
@@ -76,15 +76,6 @@ async function downloadGIF() {
 </script>
 
 <style lang="scss" scoped>
-.download-box {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  padding: 20px 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 .row {
   width: 250px;
   margin-bottom: 15px;

@@ -21,6 +21,10 @@ import Play from './Play.vue'
   min-width: 300px;
   border-right: 1px solid var(--pot-border-color);
   background-color: var(--pot-bg-color-block);
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .play {
   flex-grow: 1;

@@ -42,6 +42,12 @@ const menu = [
   },
   {
     id: 3,
+    icon: 'editor-text',
+    title: '文本',
+    path: '/editor',
+  },
+  {
+    id: 4,
     icon: 'download',
     title: '保存',
     path: '/download',
