@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Crop: typeof import('./src/components/web/Crop.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElFooter: typeof import('element-plus/es')['ElFooter']
@@ -17,5 +18,6 @@ declare module 'vue' {
     PotRadio: typeof import('@potati/components')['PotRadio']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Wrap: typeof import('./src/components/web/Wrap.vue')['default']
   }
 }

@@ -32,18 +32,20 @@ const props = defineProps({
   },
 })
 
+const emits = defineEmits<{
+  (e: 'clippingChange', state: boolean): void
+  (e: 'clipLeftChange', offset: number): void
+  (e: 'clipRightChange', offset: number): void
+}>()
+
 const leftRef = ref()
 const rightRef = ref()
-let leftFlag = false
-let rightFlag = false
-
-const clipping = ref(false)
 const clipLeft = ref(0)
 const clipRight = ref(0)
 
-function changeClipping(state: boolean) {
-  clipping.value = state
-}
+let leftFlag = false
+let rightFlag = false
+let clipping = false
 
 function changeClipLeft(offset: number) {
   clipLeft.value = offset
@@ -56,16 +58,9 @@ function changeClipRight(offset: number) {
 defineExpose({
   clipLeft,
   clipRight,
-  changeClipping,
   changeClipLeft,
   changeClipRight,
 })
-
-const emits = defineEmits<{
-  (e: 'clippingChange', state: boolean): void
-  (e: 'clipLeftChange', offset: number): void
-  (e: 'clipRightChange', offset: number): void
-}>()
 
 onMounted(() => {
   registerLeft()
@@ -78,21 +73,21 @@ function registerAll() {
     leftFlag && emits('clipLeftChange', clipLeft.value)
     rightFlag && emits('clipRightChange', clipRight.value)
     leftFlag = rightFlag = false
-    clipping.value = false
-    emits('clippingChange', clipping.value)
+    clipping = false
+    emits('clippingChange', clipping)
   })
 }
 
 function registerLeft() {
   function mouseDown() {
-    clipping.value = true
+    clipping = true
     leftFlag = true
     rightFlag = false
-    emits('clippingChange', clipping.value)
+    emits('clippingChange', clipping)
   }
 
   function mouseMove(e: MouseEvent) {
-    if (!clipping.value) return
+    if (!clipping) return
 
     let offsetLeft = clipLeft.value + e.movementX
     if (offsetLeft < 0) return
@@ -106,14 +101,14 @@ function registerLeft() {
 
 function registerRight() {
   function mouseDown() {
-    clipping.value = true
+    clipping = true
     leftFlag = false
     rightFlag = true
-    emits('clippingChange', clipping.value)
+    emits('clippingChange', clipping)
   }
 
   function mouseMove(e: MouseEvent) {
-    if (!clipping.value) return
+    if (!clipping) return
 
     let offsetRight = clipRight.value - e.movementX
     if (offsetRight < 0) return

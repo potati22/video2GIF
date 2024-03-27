@@ -22,14 +22,14 @@
 </template>
 
 <script lang="ts" setup>
-import Crop from './components/Crop.vue'
+import Crop from '@/components/web/Crop.vue'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
 import { useVideo } from '@/hooks/useVideo'
 
 import type { Ref } from 'vue'
-import { CropInstance } from '@/layout/main/components/Crop'
+import { CropInstance } from '@/components/web/Crop'
 
 const playerStore = usePlayerStore()
 const cropStore = useCropStore()
