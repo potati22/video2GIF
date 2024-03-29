@@ -16,6 +16,7 @@
         >
           <video ref="videoRef" :src="playerStore.videoSrc"></video>
         </Crop>
+        <Editor></Editor>
       </div>
     </div>
   </div>
@@ -23,6 +24,7 @@
 
 <script lang="ts" setup>
 import Crop from '@/components/web/Crop.vue'
+import Editor from '@/components/web/Editor.vue'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
