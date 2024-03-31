@@ -1,26 +1,39 @@
 <template>
-  <div v-show="!editoring" class="row" @click="openEditor">
-    <PotButton class="btn start">开始编辑</PotButton>
+  <div v-show="!editorStore.editoring" class="row" @click="openEditor">
+    <PotButton class="btn">开始编辑</PotButton>
   </div>
-  <div v-show="editoring" class="row">
-    <PotButton class="btn start" @click="() => editorStore.addEditorScale(0.2)"
-      >放大文本</PotButton
-    >
-    <PotButton class="btn start" @click="() => editorStore.delEditorScale(0.2)"
-      >缩小文本</PotButton
-    >
+  <div v-show="editorStore.editoring">
+    <div class="row">
+      <PotButton
+        class="btn scale"
+        @click="() => editorStore.changeEditorTextSize(2)"
+        >放大文本</PotButton
+      >
+      <PotButton
+        class="btn scale"
+        @click="() => editorStore.changeEditorTextSize(-2)"
+        >缩小文本</PotButton
+      >
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useEditorStore } from '@/store/modules/editor'
+import { useCropStore } from '@/store/modules/crop'
 
 const editorStore = useEditorStore()
-
-const editoring = ref(false)
+const cropStore = useCropStore()
 
 function openEditor() {
-  editoring.value = true
+  if (!cropStore.cropped) {
+    ElMessage({
+      message: '请先裁剪视频',
+      type: 'warning',
+    })
+    return
+  }
+  editorStore.changeEditoring(true)
 }
 </script>
 
@@ -33,19 +46,13 @@ function openEditor() {
 }
 
 .btn {
+  width: 250px;
   height: 36px;
 }
-.start {
-  width: 250px;
-}
-.apply {
+.scale {
   width: 120px;
 }
-.cancel {
-  width: 120px;
+.scale:first-child {
   margin-right: 10px;
-}
-.reset {
-  width: 250px;
 }
 </style>

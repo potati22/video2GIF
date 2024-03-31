@@ -32,6 +32,17 @@
       <div ref="bmRef" class="scale-point bm"></div>
     </div>
     <div v-show="!cropping && cropped" class="wrap-box clipped"></div>
+    <div
+      v-show="!cropping && cropped"
+      class="crop-box-copy"
+      :style="{
+        translate: `${wrapWidth * Rx}px ${wrapHeight * Ry}px`,
+        width: `${Rw * 100}%`,
+        height: `${Rh * 100}%`,
+      }"
+    >
+      <slot name="text"></slot>
+    </div>
   </div>
 </template>
 
@@ -312,6 +323,12 @@ function registerAll() {
   left: 0;
   top: 0;
   border: 1px solid var(--pot-text-color-yellow);
+}
+.crop-box-copy {
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 .move-point {
   width: 100%;

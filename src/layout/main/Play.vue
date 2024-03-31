@@ -15,8 +15,10 @@
           @crop-square-change="(state) => cropStore.changeCropSquare(state)"
         >
           <video ref="videoRef" :src="playerStore.videoSrc"></video>
+          <template #text>
+            <Editor></Editor>
+          </template>
         </Crop>
-        <Editor></Editor>
       </div>
     </div>
   </div>

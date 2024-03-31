@@ -24,7 +24,11 @@
 </template>
 
 <script lang="ts" setup>
+import { useEditorStore } from '@/store/modules/editor'
+
 import { useCrop } from '@/hooks/useCrop'
+
+const editorStore = useEditorStore()
 
 const {
   playerStore,
@@ -75,6 +79,13 @@ function start() {
   if (!playerStore.videoSrc) {
     ElMessage({
       message: '工作区没有视频资源~',
+      type: 'warning',
+    })
+    return
+  }
+  if (editorStore.editoring || editorStore.editored) {
+    ElMessage({
+      message: '请先删除文本资源再进行裁剪',
       type: 'warning',
     })
     return
