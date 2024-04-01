@@ -4,26 +4,37 @@
   </div>
   <div v-show="editorStore.editoring">
     <div class="row">
-      <PotButton
-        class="btn scale"
-        @click="() => editorStore.changeEditorTextSize(2)"
-        >放大文本</PotButton
+      <PotButton class="btn scale" @click="incEditorTextSize">放大</PotButton>
+      <PotButton class="btn scale" @click="decEditorTextSize">缩小</PotButton>
+    </div>
+    <div class="row">
+      <PotButton type="yellow" class="btn" @click="confirmEditorText"
+        >确认文本</PotButton
       >
-      <PotButton
-        class="btn scale"
-        @click="() => editorStore.changeEditorTextSize(-2)"
-        >缩小文本</PotButton
-      >
+    </div>
+    <div class="row">
+      <PotButton class="btn" @click="deleteEditorText">删除文本</PotButton>
+    </div>
+    <div class="row">
+      <PotButton class="btn" @click="cancelEditorText">取消</PotButton>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useEditorStore } from '@/store/modules/editor'
 import { useCropStore } from '@/store/modules/crop'
 
-const editorStore = useEditorStore()
+import { useEditor } from '@/hooks/useEditor'
+
 const cropStore = useCropStore()
+const {
+  editorStore,
+  incEditorTextSize,
+  decEditorTextSize,
+  confirmEditorText,
+  deleteEditorText,
+  cancelEditorText,
+} = useEditor()
 
 function openEditor() {
   if (!cropStore.cropped) {
@@ -44,15 +55,14 @@ function openEditor() {
   display: flex;
   align-items: center;
 }
-
 .btn {
-  width: 250px;
+  width: 100%;
   height: 36px;
+}
+.btn:nth-child(2) {
+  margin-left: 10px;
 }
 .scale {
   width: 120px;
-}
-.scale:first-child {
-  margin-right: 10px;
 }
 </style>

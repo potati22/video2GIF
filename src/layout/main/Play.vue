@@ -16,7 +16,12 @@
         >
           <video ref="videoRef" :src="playerStore.videoSrc"></video>
           <template #text>
-            <Editor></Editor>
+            <Editor
+              ref="editorRef"
+              :editoring="editorStore.editoring"
+              :editored="editorStore.editored"
+              :editor-text-size="editorStore.editorTextSize"
+            />
           </template>
         </Crop>
       </div>
@@ -30,17 +35,21 @@ import Editor from '@/components/web/Editor.vue'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
+import { useEditorStore } from '@/store/modules/editor'
 import { useVideo } from '@/hooks/useVideo'
 
 import type { Ref } from 'vue'
 import { CropInstance } from '@/components/web/Crop'
+import { EditorInstance } from '@/components/web/Editor'
 
 const playerStore = usePlayerStore()
 const cropStore = useCropStore()
+const editorStore = useEditorStore()
 const { videoOnLoadedMetaData } = useVideo()
 
 const videoRef: Ref<HTMLVideoElement> = ref()
 const cropRef: Ref<CropInstance> = ref()
+const editorRef: Ref<EditorInstance> = ref()
 
 const outerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
@@ -51,6 +60,8 @@ onMounted(() => {
   playerStore.videoRef.onloadedmetadata = videoOnLoadedMetaData
 
   cropStore.setCropRef(unref(cropRef))
+
+  editorStore.setEditorRef(unref(editorRef))
 
   controlWorkArea()
 })
