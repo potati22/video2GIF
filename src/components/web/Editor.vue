@@ -1,5 +1,10 @@
 <template>
-  <div v-show="editoring || editored" ref="outerRef" class="editor-outer">
+  <div
+    v-show="editoring || editored"
+    id="textPic"
+    ref="outerRef"
+    class="editor-outer"
+  >
     <div
       ref="editorRef"
       class="editor-box"
@@ -24,22 +29,25 @@ const props = defineProps({
   editoring: {
     type: Boolean,
     default: false,
+    require: true,
   },
   editored: {
     type: Boolean,
     default: false,
+    require: true,
   },
   editorTextSize: {
     type: Number,
     default: 14,
+    require: true,
   },
 })
 
 const outerRef: Ref<HTMLDivElement> = ref()
 let editorOuterResizeObserver: ResizeObserver
 // 真实数据
-const outerWidth = ref(100)
-const outerHeight = ref(100)
+const outerWidth = ref(0)
+const outerHeight = ref(0)
 // 展示数据
 const outerClientWidth = ref(0)
 const outerClientHeight = ref(0)
@@ -59,6 +67,8 @@ function getEditorData() {
     y: editorY.value,
     w: editorRef.value.clientWidth,
     h: editorRef.value.clientHeight,
+    bw: outerWidth.value,
+    bh: outerHeight.value,
   }
 }
 
@@ -67,13 +77,19 @@ defineExpose({
 })
 
 onMounted(() => {
-  let flag
+  let shouldRecord = false
   editorOuterResizeObserver = new ResizeObserver((e) => {
-    if (props.editoring && !flag) {
-      outerHeight.value = Math.floor(e[0].contentRect.height)
+    if (!props.editoring && shouldRecord) {
+      // 关闭Editor
+      shouldRecord = false
+      console.log('close Editor')
+    }
+    if (props.editoring && !shouldRecord) {
+      // 开启Editor
       outerWidth.value = Math.floor(e[0].contentRect.width)
-      flag = true
-      console.log('??')
+      outerHeight.value = Math.floor(e[0].contentRect.height)
+      shouldRecord = true
+      console.log('open Editor')
     }
     outerClientWidth.value = Math.floor(e[0].contentRect.width)
     outerClientHeight.value = Math.floor(e[0].contentRect.height)

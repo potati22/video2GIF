@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!editorStore.editoring" class="row" @click="openEditor">
+  <div v-show="!editorStore.editoring" class="row" @click="openEditorCover">
     <PotButton class="btn">开始编辑</PotButton>
   </div>
   <div v-show="editorStore.editoring">
@@ -16,7 +16,7 @@
       <PotButton class="btn" @click="deleteEditorText">删除文本</PotButton>
     </div>
     <div class="row">
-      <PotButton class="btn" @click="cancelEditorText">取消</PotButton>
+      <PotButton class="btn" @click="closeEditor">取消</PotButton>
     </div>
   </div>
 </template>
@@ -29,14 +29,15 @@ import { useEditor } from '@/hooks/useEditor'
 const cropStore = useCropStore()
 const {
   editorStore,
+  openEditor,
+  closeEditor,
   incEditorTextSize,
   decEditorTextSize,
   confirmEditorText,
   deleteEditorText,
-  cancelEditorText,
 } = useEditor()
 
-function openEditor() {
+function openEditorCover() {
   if (!cropStore.cropped) {
     ElMessage({
       message: '请先裁剪视频',
@@ -44,7 +45,7 @@ function openEditor() {
     })
     return
   }
-  editorStore.changeEditoring(true)
+  openEditor()
 }
 </script>
 

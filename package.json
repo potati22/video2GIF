@@ -20,6 +20,7 @@
     "@potati/components": "1.0.6",
     "@potati/theme-chalk": "^1.0.3",
     "@types/node": "^20.10.4",
+    "dom-to-image-more": "^3.3.0",
     "element-plus": "^2.4.4",
     "pinia": "^2.1.7",
     "vue": "3.4.18",

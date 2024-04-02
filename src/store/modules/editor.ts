@@ -13,6 +13,8 @@ export const useEditorStore = defineStore('editor', () => {
     y: 0,
     w: 100,
     h: 100,
+    bw: 100,
+    bh: 100,
   })
 
   function setEditorRef(editor: EditorInstance) {
@@ -32,11 +34,20 @@ export const useEditorStore = defineStore('editor', () => {
     editorTextSize.value += step
   }
 
-  function changeEditorTextData(x: number, y: number, w: number, h: number) {
+  function changeEditorTextData(
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    bw: number,
+    bh: number,
+  ) {
     editorTextData.value.x = x
     editorTextData.value.y = y
     editorTextData.value.w = w
     editorTextData.value.h = h
+    editorTextData.value.bw = bw
+    editorTextData.value.bh = bh
   }
 
   return {
@@ -44,6 +55,7 @@ export const useEditorStore = defineStore('editor', () => {
     editoring,
     editored,
     editorTextSize,
+    editorTextData,
     setEditorRef,
     changeEditoring,
     changeEditored,

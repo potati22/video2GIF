@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { useFFmpeg } from '@/hooks/useFFmpeg'
+import { useEditor } from '@/hooks/useEditor'
 import { usePlayerStore } from '@/store/modules/player'
 
 import type { Ref } from 'vue'
@@ -22,6 +23,7 @@ import type { Ref } from 'vue'
 const playerStore = usePlayerStore()
 
 const { videoToGIF, addSubtitles } = useFFmpeg()
+const { divToImage } = useEditor()
 
 const gifSrc = ref('')
 const gifDownloadRef: Ref<HTMLAnchorElement> = ref()
@@ -31,11 +33,12 @@ onUnmounted(() => {
 })
 
 async function testSubtitles() {
-  const startTime = performance.now()
+  /* const startTime = performance.now()
   console.log('start')
   await addSubtitles()
   const endTime = performance.now()
-  console.log('end', endTime - startTime)
+  console.log('end', endTime - startTime) */
+  divToImage()
 }
 
 async function downloadGIF() {
