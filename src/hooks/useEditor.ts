@@ -1,15 +1,22 @@
-import domtoimage from 'dom-to-image-more'
 import { useEditorStore } from '@/store/modules/editor'
 
 export function useEditor() {
   const editorStore = useEditorStore()
 
   function incEditorTextSize() {
-    editorStore.changeEditorTextSize(2)
+    editorStore.editorRef.changeEditorTextSize(2)
   }
 
   function decEditorTextSize() {
-    editorStore.changeEditorTextSize(-2)
+    editorStore.editorRef.changeEditorTextSize(-2)
+  }
+
+  function changeEditorTextWeight(value: 'normal' | 'bold') {
+    editorStore.editorRef.changeEditorTextWeight(value)
+  }
+
+  function changeEditorTextColor(color: string) {
+    editorStore.editorRef.changeEditorTextColor(color)
   }
 
   function openEditor() {
@@ -21,8 +28,6 @@ export function useEditor() {
   }
 
   function confirmEditorText() {
-    const { x, y, w, h, bw, bh } = editorStore.editorRef.getEditorData()
-    editorStore.changeEditorTextData(x, y, w, h, bw, bh)
     editorStore.changeEditoring(false)
     editorStore.changeEditored(true)
   }
@@ -32,24 +37,15 @@ export function useEditor() {
     editorStore.changeEditored(false)
   }
 
-  function divToImage() {
-    const node = document.getElementById('textPic')
-    domtoimage.toPng(node).then(function (dataUrl) {
-      const link = document.createElement('a')
-      link.download = 'my-image-name.png'
-      link.href = dataUrl
-      link.click()
-    })
-  }
-
   return {
     editorStore,
     openEditor,
     closeEditor,
     incEditorTextSize,
     decEditorTextSize,
+    changeEditorTextWeight,
+    changeEditorTextColor,
     confirmEditorText,
     deleteEditorText,
-    divToImage,
   }
 }

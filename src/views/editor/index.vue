@@ -4,8 +4,22 @@
   </div>
   <div v-show="editorStore.editoring">
     <div class="row">
+      <span class="label">字体大小：</span>
       <PotButton class="btn scale" @click="incEditorTextSize">放大</PotButton>
       <PotButton class="btn scale" @click="decEditorTextSize">缩小</PotButton>
+    </div>
+    <div class="row">
+      <span class="label">字体粗细：</span>
+      <PotButton
+        class="btn bold"
+        :class="{ 'bold-active': textIsBold }"
+        @click="changeEditorTextWeightCopy"
+        >加粗</PotButton
+      >
+    </div>
+    <div class="row">
+      <span class="label">字体颜色：</span>
+      <el-color-picker v-model="textColor" />
     </div>
     <div class="row">
       <PotButton type="yellow" class="btn" @click="confirmEditorText"
@@ -23,7 +37,6 @@
 
 <script lang="ts" setup>
 import { useCropStore } from '@/store/modules/crop'
-
 import { useEditor } from '@/hooks/useEditor'
 
 const cropStore = useCropStore()
@@ -33,9 +46,18 @@ const {
   closeEditor,
   incEditorTextSize,
   decEditorTextSize,
+  changeEditorTextWeight,
+  changeEditorTextColor,
   confirmEditorText,
   deleteEditorText,
 } = useEditor()
+
+const textIsBold = ref(false)
+const textColor = ref('')
+
+watch(textColor, (newVal) => {
+  changeEditorTextColor(newVal)
+})
 
 function openEditorCover() {
   if (!cropStore.cropped) {
@@ -47,6 +69,12 @@ function openEditorCover() {
   }
   openEditor()
 }
+
+function changeEditorTextWeightCopy() {
+  textIsBold.value = !textIsBold.value
+  const value = textIsBold.value ? 'bold' : 'normal'
+  changeEditorTextWeight(value)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -56,14 +84,23 @@ function openEditorCover() {
   display: flex;
   align-items: center;
 }
+.label {
+  margin-right: 10px;
+}
 .btn {
   width: 100%;
   height: 36px;
 }
-.btn:nth-child(2) {
+.btn:nth-of-type(2) {
   margin-left: 10px;
 }
 .scale {
-  width: 120px;
+  width: 80px;
+}
+.bold {
+  width: 80px;
+}
+.bold-active {
+  background-color: var(--pot-button-bg-color-hover);
 }
 </style>

@@ -10,6 +10,8 @@
       class="editor-box"
       :style="{
         '--fs': `${editorTextSize * scale}px`,
+        '--color': `${editorTextColor}`,
+        '--weight': `${editorTextWeight}`,
         '--maxW': `${outerClientWidth}px`,
         '--maxH': `${outerClientHeight}px`,
         '--pad': `${20 * scale}px`,
@@ -36,11 +38,6 @@ const props = defineProps({
     default: false,
     require: true,
   },
-  editorTextSize: {
-    type: Number,
-    default: 14,
-    require: true,
-  },
 })
 
 const outerRef: Ref<HTMLDivElement> = ref()
@@ -60,20 +57,27 @@ const scale = computed(() => {
 const editorRef: Ref<HTMLDivElement> = ref()
 const editorX = ref(0)
 const editorY = ref(0)
+const editorTextSize = ref(14)
+const editorTextColor = ref('#fded70')
+const editorTextWeight = ref('normal')
 
-function getEditorData() {
-  return {
-    x: editorX.value,
-    y: editorY.value,
-    w: editorRef.value.clientWidth,
-    h: editorRef.value.clientHeight,
-    bw: outerWidth.value,
-    bh: outerHeight.value,
-  }
+function changeEditorTextSize(step: number) {
+  if (editorTextSize.value + step < 14) return
+  editorTextSize.value += step
+}
+
+function changeEditorTextColor(color: string) {
+  editorTextColor.value = color
+}
+
+function changeEditorTextWeight(value: 'normal' | 'bold') {
+  editorTextWeight.value = value
 }
 
 defineExpose({
-  getEditorData,
+  changeEditorTextSize,
+  changeEditorTextColor,
+  changeEditorTextWeight,
 })
 
 onMounted(() => {
@@ -153,7 +157,8 @@ function registerEditor() {
 }
 .content {
   line-height: 1;
-  color: red;
+  color: var(--color);
+  font-weight: var(--weight);
   cursor: text;
   font-size: var(--fs);
 }

@@ -10,6 +10,7 @@ declare module 'vue' {
     Crop: typeof import('./src/components/web/Crop.vue')['default']
     Editor: typeof import('./src/components/web/Editor.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
+    ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElFooter: typeof import('element-plus/es')['ElFooter']
     ElHeader: typeof import('element-plus/es')['ElHeader']

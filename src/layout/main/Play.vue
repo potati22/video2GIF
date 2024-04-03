@@ -20,7 +20,6 @@
               ref="editorRef"
               :editoring="editorStore.editoring"
               :editored="editorStore.editored"
-              :editor-text-size="editorStore.editorTextSize"
             />
           </template>
         </Crop>

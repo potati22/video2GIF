@@ -1,9 +1,20 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
+import domtoimage from 'dom-to-image-more'
+
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
 
 const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
+
+async function divToImage(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const node = document.getElementById('textPic')
+    domtoimage.toPng(node).then((dataUrl) => {
+      resolve(dataUrl)
+    }, reject)
+  })
+}
 
 export function useFFmpeg() {
   const ffmpeg = new FFmpeg()
@@ -53,12 +64,14 @@ export function useFFmpeg() {
   }
 
   async function addSubtitles() {
+    const watermarkUrl = await divToImage()
+
     await initFFmpeg()
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile('my.mp4', uint8arry)
 
-    const logouint8arry = await fetchFile('/logo.png')
+    const logouint8arry = await fetchFile(watermarkUrl)
     await ffmpeg.writeFile('logo.png', logouint8arry)
 
     await ffmpeg.exec([
@@ -81,7 +94,7 @@ export function useFFmpeg() {
       '-i',
       'logo.png',
       '-filter_complex',
-      `[1:v]scale=50:50[scaled];[0:v][scaled]overlay=0:0`,
+      `[1:v]scale=150:150[scaled];[0:v][scaled]overlay=0:0`,
       'output.gif',
     ])
 
