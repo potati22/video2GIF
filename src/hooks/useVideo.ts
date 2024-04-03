@@ -29,7 +29,7 @@ export function useVideo() {
   function videoOnUpateTime() {
     const currentTime = Number(playerStore.videoRef.currentTime.toFixed(2))
 
-    if (playerStore.playing && currentTime >= playerStore.endTime) {
+    if (playerStore.playing && currentTime >= playerStore.endTime - 0.15) {
       videoPause()
       playerStore.videoRef.currentTime = playerStore.endTime
       return

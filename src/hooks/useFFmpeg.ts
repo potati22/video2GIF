@@ -4,8 +4,11 @@ import domtoimage from 'dom-to-image-more'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
+import { useEditorStore } from '@/store/modules/editor'
 
 const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
+
+const ffmpeg = new FFmpeg()
 
 async function divToImage(): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -17,9 +20,9 @@ async function divToImage(): Promise<string> {
 }
 
 export function useFFmpeg() {
-  const ffmpeg = new FFmpeg()
   const playerStore = usePlayerStore()
   const cropStore = useCropStore()
+  const editorStore = useEditorStore()
   const writeGIFName = 'enhypen.mp4'
   const readGIFName = 'enhypen2.gif'
 
@@ -34,8 +37,6 @@ export function useFFmpeg() {
   }
 
   async function videoToGIF() {
-    await initFFmpeg()
-
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile(writeGIFName, uint8arry)
 
@@ -56,17 +57,32 @@ export function useFFmpeg() {
       `150x${finalY}`,
       readGIFName,
     ])
-    const final = await ffmpeg.readFile(readGIFName, 'binary')
+
+    if (editorStore.editored) {
+      const watermarkUrl = await divToImage()
+      const logouint8arry = await fetchFile(watermarkUrl)
+      await ffmpeg.writeFile('logo.png', logouint8arry)
+      await ffmpeg.exec([
+        '-i',
+        readGIFName,
+        '-i',
+        'logo.png',
+        '-filter_complex',
+        `[1:v]scale=150:${finalY}[scaled];[0:v][scaled]overlay=0:0`,
+        'output.gif',
+      ])
+    }
+
+    const finalGif = editorStore.editored ? 'output.gif' : readGIFName
+    const final = await ffmpeg.readFile(finalGif, 'binary')
 
     return URL.createObjectURL(
       new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
     )
   }
 
-  async function addSubtitles() {
+  /* async function addSubtitles() {
     const watermarkUrl = await divToImage()
-
-    await initFFmpeg()
 
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile('my.mp4', uint8arry)
@@ -98,13 +114,6 @@ export function useFFmpeg() {
       'output.gif',
     ])
 
-    /* const final = await ffmpeg.readFile('output1.mp4', 'binary')
-
-    console.log(
-      URL.createObjectURL(
-        new Blob([(final as Uint8Array).buffer], { type: 'video/mp4' }),
-      ),
-    ) */
     const final = await ffmpeg.readFile('output.gif', 'binary')
 
     console.log(
@@ -112,11 +121,9 @@ export function useFFmpeg() {
         new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
       ),
     )
-  }
+  } */
 
   async function extractKeyFrame() {
-    await initFFmpeg()
-
     const uint8arry = await fetchFile(playerStore.videoSrc)
     await ffmpeg.writeFile(writeGIFName, uint8arry)
 
@@ -131,17 +138,6 @@ export function useFFmpeg() {
       '100x50',
       `key/frame-%02d.jpeg`,
     ])
-    /* await ffmpeg.exec([
-      '-i',
-      'enhypen.mp4',
-      '-vf',
-      `select='eq(pict_type\,I)'`,
-      '-vsync',
-      '2',
-      '-s',
-      '100x50',
-      `key/frame-%02d.jpeg`,
-    ]) */
 
     const keyFramesList = await ffmpeg.listDir('key')
     const res: Array<Blob> = []
@@ -161,6 +157,5 @@ export function useFFmpeg() {
     initFFmpeg,
     videoToGIF,
     extractKeyFrame,
-    addSubtitles,
   }
 }

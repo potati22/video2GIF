@@ -8,9 +8,6 @@
       style="display: none"
     ></a>
   </div>
-  <div class="row">
-    <PotButton class="btn" @click="testSubtitles">测试字幕</PotButton>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +18,7 @@ import type { Ref } from 'vue'
 
 const playerStore = usePlayerStore()
 
-const { videoToGIF, addSubtitles } = useFFmpeg()
+const { videoToGIF } = useFFmpeg()
 
 const gifSrc = ref('')
 const gifDownloadRef: Ref<HTMLAnchorElement> = ref()
@@ -29,14 +26,6 @@ const gifDownloadRef: Ref<HTMLAnchorElement> = ref()
 onUnmounted(() => {
   gifSrc.value && URL.revokeObjectURL(gifSrc.value)
 })
-
-async function testSubtitles() {
-  const startTime = performance.now()
-  console.log('start')
-  await addSubtitles()
-  const endTime = performance.now()
-  console.log('end', endTime - startTime)
-}
 
 async function downloadGIF() {
   if (!playerStore.videoSrc) {
