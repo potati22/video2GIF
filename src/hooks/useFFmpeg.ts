@@ -10,6 +10,74 @@ const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
 
 const ffmpeg = new FFmpeg()
 
+let isFFmpegInited: boolean = false
+
+async function initFFmpeg() {
+  const res = await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+  })
+  if (res) isFFmpegInited = true
+}
+
+async function writeVideo(src: string) {
+  const videoName = 'enhypen.mp4'
+
+  const uint8arry = await fetchFile(src)
+  await ffmpeg.writeFile(videoName, uint8arry)
+
+  return videoName
+}
+
+async function cropInVideo(
+  videoName: string,
+  start: number,
+  end: number,
+  w: number,
+  h: number,
+  x: number,
+  y: number,
+  gifH: number,
+) {
+  const gifCropName = 'enhypen2.gif'
+
+  await ffmpeg.exec([
+    '-ss',
+    `${start}`,
+    '-t',
+    `${end - start}`,
+    '-i',
+    videoName,
+    '-vf',
+    `crop=${w}:${h}:${x}:${y}`,
+    '-s',
+    `150x${gifH}`,
+    gifCropName,
+  ])
+
+  return gifCropName
+}
+
+async function textInGIF(gifCropName: string, gifH: number) {
+  const gifTextName = 'enhypen3.gif'
+
+  const watermarkUrl = await divToImage()
+  const logouint8arry = await fetchFile(watermarkUrl)
+  await ffmpeg.writeFile('logo.png', logouint8arry)
+
+  await ffmpeg.exec([
+    '-i',
+    gifCropName,
+    '-i',
+    'logo.png',
+    '-filter_complex',
+    `[1:v]scale=150:${gifH}[scaled];[0:v][scaled]overlay=0:0`,
+    gifTextName,
+  ])
+
+  return gifTextName
+}
+
 async function divToImage(): Promise<string> {
   return new Promise((resolve, reject) => {
     const node = document.getElementById('textPic')
@@ -23,115 +91,45 @@ export function useFFmpeg() {
   const playerStore = usePlayerStore()
   const cropStore = useCropStore()
   const editorStore = useEditorStore()
-  const writeGIFName = 'enhypen.mp4'
-  const readGIFName = 'enhypen2.gif'
-
-  async function initFFmpeg() {
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.wasm`,
-        'application/wasm',
-      ),
-    })
-  }
 
   async function videoToGIF() {
-    const uint8arry = await fetchFile(playerStore.videoSrc)
-    await ffmpeg.writeFile(writeGIFName, uint8arry)
+    if (!isFFmpegInited) await initFFmpeg()
 
-    const finalY = Math.floor(
+    let finalGif: string = ''
+    const gifH = Math.floor(
       (150 * cropStore.cropData.height) / cropStore.cropData.width,
     )
 
-    await ffmpeg.exec([
-      '-ss',
-      `${playerStore.startTime}`,
-      '-t',
-      `${playerStore.endTime - playerStore.startTime}`,
-      '-i',
-      writeGIFName,
-      '-vf',
-      `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
-      '-s',
-      `150x${finalY}`,
-      readGIFName,
-    ])
+    const videoName = await writeVideo(playerStore.videoSrc)
+    finalGif = await cropInVideo(
+      videoName,
+      playerStore.startTime,
+      playerStore.endTime,
+      cropStore.cropData.width,
+      cropStore.cropData.height,
+      cropStore.cropData.x,
+      cropStore.cropData.y,
+      gifH,
+    )
 
-    if (editorStore.editored) {
-      const watermarkUrl = await divToImage()
-      const logouint8arry = await fetchFile(watermarkUrl)
-      await ffmpeg.writeFile('logo.png', logouint8arry)
-      await ffmpeg.exec([
-        '-i',
-        readGIFName,
-        '-i',
-        'logo.png',
-        '-filter_complex',
-        `[1:v]scale=150:${finalY}[scaled];[0:v][scaled]overlay=0:0`,
-        'output.gif',
-      ])
-    }
+    if (editorStore.editored) finalGif = await textInGIF(finalGif, gifH)
 
-    const finalGif = editorStore.editored ? 'output.gif' : readGIFName
     const final = await ffmpeg.readFile(finalGif, 'binary')
-
     return URL.createObjectURL(
       new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
     )
   }
 
-  /* async function addSubtitles() {
-    const watermarkUrl = await divToImage()
-
-    const uint8arry = await fetchFile(playerStore.videoSrc)
-    await ffmpeg.writeFile('my.mp4', uint8arry)
-
-    const logouint8arry = await fetchFile(watermarkUrl)
-    await ffmpeg.writeFile('logo.png', logouint8arry)
-
-    await ffmpeg.exec([
-      '-ss',
-      `${playerStore.startTime}`,
-      '-t',
-      `${playerStore.endTime - playerStore.startTime}`,
-      '-i',
-      'my.mp4',
-      '-vf',
-      `crop=${cropStore.cropData.width}:${cropStore.cropData.height}:${cropStore.cropData.x}:${cropStore.cropData.y}`,
-      '-s',
-      `150x150`,
-      readGIFName,
-    ])
-
-    await ffmpeg.exec([
-      '-i',
-      readGIFName,
-      '-i',
-      'logo.png',
-      '-filter_complex',
-      `[1:v]scale=150:150[scaled];[0:v][scaled]overlay=0:0`,
-      'output.gif',
-    ])
-
-    const final = await ffmpeg.readFile('output.gif', 'binary')
-
-    console.log(
-      URL.createObjectURL(
-        new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
-      ),
-    )
-  } */
-
   async function extractKeyFrame() {
-    const uint8arry = await fetchFile(playerStore.videoSrc)
-    await ffmpeg.writeFile(writeGIFName, uint8arry)
+    if (!isFFmpegInited) await initFFmpeg()
+
+    const videoName = await writeVideo(playerStore.videoSrc)
 
     await ffmpeg.createDir('key')
 
     await ffmpeg.exec([
       '-i',
-      writeGIFName,
+      videoName,
       '-vf',
       'fps=1/0.5',
       '-s',

@@ -13,10 +13,12 @@
 <script setup lang="ts">
 import { useFFmpeg } from '@/hooks/useFFmpeg'
 import { usePlayerStore } from '@/store/modules/player'
+import { useCropStore } from '@/store/modules/crop'
 
 import type { Ref } from 'vue'
 
 const playerStore = usePlayerStore()
+const cropStore = useCropStore()
 
 const { videoToGIF } = useFFmpeg()
 
@@ -31,6 +33,14 @@ async function downloadGIF() {
   if (!playerStore.videoSrc) {
     ElMessage({
       message: '工作区没有视频资源~',
+      type: 'warning',
+    })
+    return
+  }
+
+  if (!cropStore.cropped) {
+    ElMessage({
+      message: '先去裁剪吧',
       type: 'warning',
     })
     return
