@@ -13,14 +13,19 @@ const ffmpeg = new FFmpeg()
 let isFFmpegInited: boolean = false
 
 async function initFFmpeg() {
-  const res = await ffmpeg.load({
+  isFFmpegInited = await ffmpeg.load({
     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
     wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
   })
-  if (res) isFFmpegInited = true
+  return isFFmpegInited
 }
 
 async function writeVideo(src: string) {
+  if (!isFFmpegInited) {
+    console.error('initFFmpeg() first plz')
+    return
+  }
+
   const videoName = 'enhypen.mp4'
 
   const uint8arry = await fetchFile(src)
@@ -93,8 +98,6 @@ export function useFFmpeg() {
   const editorStore = useEditorStore()
 
   async function videoToGIF() {
-    if (!isFFmpegInited) await initFFmpeg()
-
     let finalGif: string = ''
     const gifH = Math.floor(
       (150 * cropStore.cropData.height) / cropStore.cropData.width,
@@ -116,13 +119,11 @@ export function useFFmpeg() {
 
     const final = await ffmpeg.readFile(finalGif, 'binary')
     return URL.createObjectURL(
-      new Blob([(final as Uint8Array).buffer], { type: 'image/gif' }),
+      new Blob([final as Uint8Array], { type: 'image/gif' }),
     )
   }
 
   async function extractKeyFrame() {
-    if (!isFFmpegInited) await initFFmpeg()
-
     const videoName = await writeVideo(playerStore.videoSrc)
 
     await ffmpeg.createDir('key')
@@ -145,7 +146,7 @@ export function useFFmpeg() {
         `key/${keyFramesList[i].name}`,
         'binary',
       )
-      res.push(new Blob([(final as Uint8Array).buffer], { type: 'image/jpeg' }))
+      res.push(new Blob([final as Uint8Array], { type: 'image/jpeg' }))
     }
 
     return res
