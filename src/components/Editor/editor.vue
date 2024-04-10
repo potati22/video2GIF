@@ -26,32 +26,24 @@
 
 <script lang="ts" setup>
 import type { Ref } from 'vue'
+import { EditorProps } from './editor'
 
-const props = defineProps({
-  editoring: {
-    type: Boolean,
-    default: false,
-    require: true,
-  },
-  editored: {
-    type: Boolean,
-    default: false,
-    require: true,
-  },
+const props = withDefaults(defineProps<EditorProps>(), {
+  editoring: false,
+  editored: false,
 })
 
 const outerRef: Ref<HTMLDivElement> = ref()
 let editorOuterResizeObserver: ResizeObserver
-// 真实数据
-const outerWidth = ref(0)
-const outerHeight = ref(0)
-// 展示数据
+// 最初数据
+const baseHeight = ref(0)
+// 实时数据
 const outerClientWidth = ref(0)
 const outerClientHeight = ref(0)
 
 // 布局发生改变时
 const scale = computed(() => {
-  return outerClientHeight.value / outerHeight.value
+  return outerClientHeight.value / baseHeight.value
 })
 
 const editorRef: Ref<HTMLDivElement> = ref()
@@ -86,14 +78,11 @@ onMounted(() => {
     if (!props.editoring && shouldRecord) {
       // 关闭Editor
       shouldRecord = false
-      console.log('close Editor')
     }
     if (props.editoring && !shouldRecord) {
       // 开启Editor
-      outerWidth.value = Math.floor(e[0].contentRect.width)
-      outerHeight.value = Math.floor(e[0].contentRect.height)
+      baseHeight.value = Math.floor(e[0].contentRect.height)
       shouldRecord = true
-      console.log('open Editor')
     }
     outerClientWidth.value = Math.floor(e[0].contentRect.width)
     outerClientHeight.value = Math.floor(e[0].contentRect.height)
@@ -138,6 +127,7 @@ function registerEditor() {
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
 }
 .editor-box {
   box-sizing: border-box;

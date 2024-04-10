@@ -6,24 +6,22 @@ export function useCrop() {
   const cropStore = useCropStore()
 
   function cropStart() {
-    cropStore.cropRef.resetCropBox()
-    cropStore.cropRef.changeCropping(true)
+    cropStore.changeCropping(true)
   }
 
   function cropConfirm() {
-    cropStore.cropRef.changeCropping(false)
-    cropStore.cropRef.changeCropped(true)
+    cropStore.changeCropping(false)
+    cropStore.changeCropped(true)
     cropStore.changeCropData(
       cropStore.cropRef.cropBoxTransX,
       cropStore.cropRef.cropBoxTransY,
       cropStore.cropRef.cropBoxTransW,
       cropStore.cropRef.cropBoxTransH,
     )
-    playerStore.changeVideoClientHeight(cropStore.cropRef.wrapHeight)
   }
 
   function cropCancel() {
-    cropStore.cropRef.changeCropping(false)
+    cropStore.changeCropping(false)
     cropStore.cropRef.changeCropBox(
       cropStore.cropX,
       cropStore.cropY,
@@ -33,8 +31,8 @@ export function useCrop() {
   }
 
   function cropReset() {
-    cropStore.cropRef.changeCropping(false)
-    cropStore.cropRef.changeCropped(false)
+    cropStore.changeCropping(false)
+    cropStore.changeCropped(false)
     cropStore.cropRef.changeCropBox(0, 0, 100, 100)
     cropStore.changeCropData(0, 0, 100, 100)
   }

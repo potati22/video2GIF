@@ -24,19 +24,13 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-  wrapWidth: {
-    type: Number,
-    default: 0,
-    require: true,
-  },
+import { WrapProps, WrapEmits } from './wrap'
+
+const props = withDefaults(defineProps<WrapProps>(), {
+  wrapWidth: 0,
 })
 
-const emits = defineEmits<{
-  (e: 'clippingChange', state: boolean): void
-  (e: 'clipLeftChange', offset: number): void
-  (e: 'clipRightChange', offset: number): void
-}>()
+const emits = defineEmits<WrapEmits>()
 
 const leftRef = ref()
 const rightRef = ref()

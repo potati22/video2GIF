@@ -4,12 +4,12 @@
     ref="wrapRef"
     class="wrap-outer"
     :style="{
-      '--x': `${Rx * 100}%`,
-      '--y': `${Ry * 100}%`,
-      '--w': `${Rw * 100}%`,
-      '--h': `${Rh * 100}%`,
-      '--x-w': `${Rx * 100 + Rw * 100}%`,
-      '--y-h': `${Ry * 100 + Rh * 100}%`,
+      '--x': `${cropBoxTransX * scale}px`,
+      '--y': `${cropBoxTransY * scale}px`,
+      '--w': `${cropBoxTransW * scale}px`,
+      '--h': `${cropBoxTransH * scale}px`,
+      '--x-w': `${(cropBoxTransX + cropBoxTransW) * scale}px`,
+      '--y-h': `${(cropBoxTransY + cropBoxTransH) * scale}px`,
     }"
   >
     <div v-show="cropping" class="wrap-box cliping"></div>
@@ -18,9 +18,9 @@
       ref="cropRef"
       class="crop-box"
       :style="{
-        translate: `${wrapWidth * Rx}px ${wrapHeight * Ry}px`,
-        width: `${Rw * 100}%`,
-        height: `${Rh * 100}%`,
+        translate: `${cropBoxTransX * scale}px ${cropBoxTransY * scale}px`,
+        width: `${cropBoxTransW * scale}px`,
+        height: `${cropBoxTransH * scale}px`,
       }"
     >
       <div ref="moveRef" class="move-point">
@@ -36,9 +36,9 @@
       v-show="!cropping && cropped"
       class="crop-box-copy"
       :style="{
-        translate: `${wrapWidth * Rx}px ${wrapHeight * Ry}px`,
-        width: `${Rw * 100}%`,
-        height: `${Rh * 100}%`,
+        translate: `${cropBoxTransX * scale}px ${cropBoxTransY * scale}px`,
+        width: `${cropBoxTransW * scale}px`,
+        height: `${cropBoxTransH * scale}px`,
       }"
     >
       <slot name="text"></slot>
@@ -47,25 +47,29 @@
 </template>
 
 <script lang="ts" setup>
+import { CropProps, CropEmits } from './crop'
+
+const props = withDefaults(defineProps<CropProps>(), {
+  cropping: false,
+  cropped: false,
+  baseHeight: 0,
+})
+
+const emits = defineEmits<CropEmits>()
+
 const cropSquare = ref(false) // 是否1：1宽高比
-const cropping = ref(false)
-const cropped = ref(false)
 
 const wrapWidth = ref(0)
 const wrapHeight = ref(0)
 
 const cropBoxTransX = ref(0)
 const cropBoxTransY = ref(0)
-const cropBoxTransW = ref(0)
-const cropBoxTransH = ref(0)
+const cropBoxTransW = ref(100)
+const cropBoxTransH = ref(100)
 
-function changeCropping(state: boolean) {
-  cropping.value = state
-}
-
-function changeCropped(state: boolean) {
-  cropped.value = state
-}
+const scale = computed(() => {
+  return wrapHeight.value / props.baseHeight
+})
 
 function changeCropSquare(state: boolean) {
   cropSquare.value = state
@@ -78,67 +82,17 @@ function changeCropBox(x: number, y: number, w: number, h: number) {
   cropBoxTransH.value = h
 }
 
-function resetCropBox() {
-  cropBoxTransX.value = Math.floor(Rx.value * wrapWidth.value)
-  cropBoxTransY.value = Math.floor(Ry.value * wrapHeight.value)
-  cropBoxTransW.value = Math.floor(Rw.value * wrapWidth.value)
-  cropBoxTransH.value = Math.floor(Rh.value * wrapHeight.value)
-}
-
 defineExpose({
-  wrapWidth,
-  wrapHeight,
   cropBoxTransX,
   cropBoxTransY,
   cropBoxTransW,
   cropBoxTransH,
-  changeCropping,
-  changeCropped,
   changeCropSquare,
   changeCropBox,
-  resetCropBox,
-})
-
-const emits = defineEmits<{
-  (e: 'croppingChange', state: boolean): void
-  (e: 'croppedChange', state: boolean): void
-  (e: 'cropSquareChange', state: boolean): void
-}>()
-
-watch(cropping, (newVal) => {
-  emits('croppingChange', newVal)
-})
-
-watch(cropped, (newVal) => {
-  emits('croppedChange', newVal)
 })
 
 watch(cropSquare, (newVal) => {
   emits('cropSquareChange', newVal)
-})
-
-const Rx = ref(0)
-const Ry = ref(0)
-const Rw = ref(0)
-const Rh = ref(0)
-
-watch(cropBoxTransX, () => {
-  Rx.value = cropBoxTransX.value / wrapWidth.value
-})
-
-watch(cropBoxTransY, () => {
-  Ry.value = cropBoxTransY.value / wrapHeight.value
-})
-
-watch(cropBoxTransW, () => {
-  Rw.value = cropBoxTransW.value / wrapWidth.value
-})
-
-watch(cropBoxTransH, () => {
-  Rh.value = cropBoxTransH.value / wrapHeight.value
-})
-
-watch(cropSquare, (newVal) => {
   if (!newVal) return
   if (cropBoxTransW.value > cropBoxTransH.value) {
     cropBoxTransW.value = cropBoxTransH.value
@@ -158,16 +112,9 @@ const lmRef = ref()
 const rmRef = ref()
 
 onMounted(() => {
-  let flag = 0 // 用于初始化Rw和Rh 使其不为0
   wrapBoxResizeObserver = new ResizeObserver((e) => {
     wrapWidth.value = Math.floor(e[0].contentRect.width)
     wrapHeight.value = Math.floor(e[0].contentRect.height)
-    if (flag === 0 && wrapWidth.value !== 0) {
-      // 触发响应watch 给Rw和Rh赋值
-      cropBoxTransW.value = 100
-      cropBoxTransH.value = 100
-      ++flag
-    }
   })
   wrapBoxResizeObserver.observe(unref(wrapRef), {
     box: 'content-box',

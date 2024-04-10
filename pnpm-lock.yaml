@@ -8,9 +8,9 @@ specifiers:
   '@ffmpeg/core': ^0.12.4
   '@ffmpeg/ffmpeg': ^0.12.7
   '@ffmpeg/util': ^0.12.1
-  '@potati/components': 1.0.6
+  '@potati/components': 2.0.2
   '@potati/resolver': 1.1.2
-  '@potati/theme-chalk': ^1.0.3
+  '@potati/theme-chalk': 2.0.1
   '@types/node': ^20.10.4
   '@types/vue-router': ^2.0.0
   '@typescript-eslint/eslint-plugin': 6.0.0
@@ -43,8 +43,8 @@ dependencies:
   '@ffmpeg/core': 0.12.4
   '@ffmpeg/ffmpeg': 0.12.7
   '@ffmpeg/util': 0.12.1
-  '@potati/components': 1.0.6_vynooss7snzjs5v2mmqjvvb5wq
-  '@potati/theme-chalk': 1.0.3
+  '@potati/components': 2.0.2_3x5zanvuwkuwfxedvh4g4tczlm
+  '@potati/theme-chalk': 2.0.1
   '@types/node': 20.10.4
   dom-to-image-more: 3.3.0
   element-plus: 2.4.4_vue@3.4.18
@@ -611,13 +611,13 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /@potati/components/1.0.6_vynooss7snzjs5v2mmqjvvb5wq:
-    resolution: {integrity: sha512-9/QRd9tu28lIfP9EodW/pp2Zx7RriS/KAKhjtRxKZUfZH5MrADXbMNBQhEDlRlILgFdRWx4QfohaSEgssMyBUw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/@potati/components/-/components-1.0.6.tgz}
+  /@potati/components/2.0.2_3x5zanvuwkuwfxedvh4g4tczlm:
+    resolution: {integrity: sha512-oKBK32Ayk704CokRMptiyP0iBB06coqWxSsSUDBcY461jBvq6gwnaqj4heh35gIhhbZkJFQ5E39qv6T8LCG9JQ==}
     peerDependencies:
-      '@potati/theme-chalk': ^1.0.3
+      '@potati/theme-chalk': ^2.0.1
       element-plus: ^2.4.4
     dependencies:
-      '@potati/theme-chalk': 1.0.3
+      '@potati/theme-chalk': 2.0.1
       element-plus: 2.4.4_vue@3.4.18
     dev: false
 
@@ -625,8 +625,8 @@ packages:
     resolution: {integrity: sha512-xstfygMGv9uDnJ/xolESnM91ODGbX0JlL99QydfrGAPmdretWaziajIXXWCZqIbPW8x4EA/paxFTlkhHEUUJYA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/@potati/resolver/-/resolver-1.1.2.tgz}
     dev: true
 
-  /@potati/theme-chalk/1.0.3:
-    resolution: {integrity: sha512-D0Ngh6kpLaz0EHZ2ohkOatTARz/8WyApNDlBRkFlkfE0BRKgY66e0BlKCMval6+Gln3PUQWIoAdLTG7M3h/7AA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/@potati/theme-chalk/-/theme-chalk-1.0.3.tgz}
+  /@potati/theme-chalk/2.0.1:
+    resolution: {integrity: sha512-VkBQYNeyuZj0eLe5f4sGdwXF59Vf1BvNDqfPNum6lN4gDZUnfdkdN2o/2uvBdTHf8Vy5K6z8FmK9oBUlrZcA7w==}
     dev: false
 
   /@rollup/pluginutils/5.1.0:

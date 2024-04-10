@@ -5,11 +5,10 @@
   <div v-show="cropStore.cropping">
     <div class="row">
       <span>宽高比：</span>
-      <PotRadio
-        v-model="sizeRadio"
-        name="sizeRadio"
-        :options="sizeRadioOptions"
-      ></PotRadio>
+      <PotRadioGroup v-model="sizeRadio">
+        <PotRadio value="1:1">1:1</PotRadio>
+        <PotRadio value="free">自由</PotRadio>
+      </PotRadioGroup>
     </div>
     <div class="row">
       <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
@@ -48,18 +47,6 @@ watch(
 )
 
 const sizeRadio = ref('free')
-const sizeRadioOptions = [
-  {
-    label: '1:1',
-    value: '1:1',
-    id: 1,
-  },
-  {
-    label: '自由',
-    value: 'free',
-    id: 0,
-  },
-]
 
 watch(sizeRadio, (newVal) => {
   if (newVal === '1:1') {

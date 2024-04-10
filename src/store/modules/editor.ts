@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { EditorInstance } from '@/components/web/Editor'
+import { EditorInstance } from '@/components/Editor/editor'
 
 export const useEditorStore = defineStore('editor', () => {
   const editorRef: Ref<EditorInstance> = ref()

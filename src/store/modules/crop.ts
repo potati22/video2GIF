@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { usePlayerStore } from '@/store/modules/player'
 
-import { CropInstance } from '@/components/web/Crop'
+import { CropInstance } from '@/components/Crop/crop'
 
 export const useCropStore = defineStore('crop', () => {
   const playerStore = usePlayerStore()

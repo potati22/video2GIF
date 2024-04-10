@@ -9,13 +9,8 @@
       <PotButton class="btn scale" @click="decEditorTextSize">缩小</PotButton>
     </div>
     <div class="row">
-      <span class="label">字体粗细：</span>
-      <PotButton
-        class="btn bold"
-        :class="{ 'bold-active': textIsBold }"
-        @click="changeEditorTextWeightCopy"
-        >加粗</PotButton
-      >
+      <span class="label">字体加粗：</span>
+      <PotSwitch v-model="textIsBold"></PotSwitch>
     </div>
     <div class="row">
       <span class="label">字体颜色：</span>
@@ -53,8 +48,12 @@ const {
 } = useEditor()
 
 const textIsBold = ref(false)
-const textColor = ref('')
+watch(textIsBold, (newVal) => {
+  const value = newVal ? 'bold' : 'normal'
+  changeEditorTextWeight(value)
+})
 
+const textColor = ref('')
 watch(textColor, (newVal) => {
   changeEditorTextColor(newVal)
 })
@@ -68,12 +67,6 @@ function openEditorCover() {
     return
   }
   openEditor()
-}
-
-function changeEditorTextWeightCopy() {
-  textIsBold.value = !textIsBold.value
-  const value = textIsBold.value ? 'bold' : 'normal'
-  changeEditorTextWeight(value)
 }
 </script>
 
@@ -96,11 +89,5 @@ function changeEditorTextWeightCopy() {
 }
 .scale {
   width: 80px;
-}
-.bold {
-  width: 80px;
-}
-.bold-active {
-  background-color: var(--pot-button-bg-color-hover);
 }
 </style>

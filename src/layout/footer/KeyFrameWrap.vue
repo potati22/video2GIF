@@ -11,12 +11,12 @@
 </template>
 
 <script lang="ts" setup>
-import Wrap from '@/components/web/Wrap.vue'
+import Wrap from '@/components/Wrap/wrap.vue'
 
 import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
 
 import type { Ref } from 'vue'
-import { WrapInstance } from '@/components/web/Wrap'
+import { WrapInstance } from '@/components/Wrap/wrap'
 
 const {
   clipStore,

@@ -10,8 +10,9 @@
       <div class="video-outer">
         <Crop
           ref="cropRef"
-          @cropping-change="(state) => cropStore.changeCropping(state)"
-          @cropped-change="(state) => cropStore.changeCropped(state)"
+          :cropped="cropStore.cropped"
+          :cropping="cropStore.cropping"
+          :base-height="playerStore.videoClientHeight"
           @crop-square-change="(state) => cropStore.changeCropSquare(state)"
         >
           <video ref="videoRef" :src="playerStore.videoSrc"></video>
@@ -29,8 +30,8 @@
 </template>
 
 <script lang="ts" setup>
-import Crop from '@/components/web/Crop.vue'
-import Editor from '@/components/web/Editor.vue'
+import Crop from '@/components/Crop/crop.vue'
+import Editor from '@/components/Editor/editor.vue'
 
 import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
@@ -38,8 +39,8 @@ import { useEditorStore } from '@/store/modules/editor'
 import { useVideo } from '@/hooks/useVideo'
 
 import type { Ref } from 'vue'
-import { CropInstance } from '@/components/web/Crop'
-import { EditorInstance } from '@/components/web/Editor'
+import { CropInstance } from '@/components/Crop/crop'
+import { EditorInstance } from '@/components/Editor/editor'
 
 const playerStore = usePlayerStore()
 const cropStore = useCropStore()
