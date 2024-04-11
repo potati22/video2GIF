@@ -1,8 +1,6 @@
-import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
 
 export function useCrop() {
-  const playerStore = usePlayerStore()
   const cropStore = useCropStore()
 
   function cropStart() {
@@ -33,21 +31,15 @@ export function useCrop() {
   function cropReset() {
     cropStore.changeCropping(false)
     cropStore.changeCropped(false)
-    cropStore.cropRef.changeCropBox(0, 0, 100, 100)
-    cropStore.changeCropData(0, 0, 100, 100)
-  }
-
-  function cropSquareOn() {
-    cropStore.cropRef.changeCropSquare(true)
+    cropStore.cropRef.changeCropBox(0, 0, 400, 400)
+    cropStore.changeCropData(0, 0, 400, 400)
   }
 
   return {
-    playerStore,
     cropStore,
     cropStart,
     cropConfirm,
     cropCancel,
     cropReset,
-    cropSquareOn,
   }
 }

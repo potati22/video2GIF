@@ -10,10 +10,10 @@
       <div class="video-outer">
         <Crop
           ref="cropRef"
+          v-model:crop-square="cropStore.cropSquare"
           :cropped="cropStore.cropped"
           :cropping="cropStore.cropping"
-          :base-height="playerStore.videoClientHeight"
-          @crop-square-change="(state) => cropStore.changeCropSquare(state)"
+          :base-height="playerStore.videoHeight"
         >
           <video ref="videoRef" :src="playerStore.videoSrc"></video>
           <template #text>

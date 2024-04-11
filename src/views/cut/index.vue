@@ -5,7 +5,7 @@
   <div v-show="cropStore.cropping">
     <div class="row">
       <span>宽高比：</span>
-      <PotRadioGroup v-model="sizeRadio">
+      <PotRadioGroup v-model="sizeType">
         <PotRadio value="1:1">1:1</PotRadio>
         <PotRadio value="free">自由</PotRadio>
       </PotRadioGroup>
@@ -23,21 +23,15 @@
 </template>
 
 <script lang="ts" setup>
+import { usePlayerStore } from '@/store/modules/player'
 import { useEditorStore } from '@/store/modules/editor'
 
 import { useCrop } from '@/hooks/useCrop'
 
 const editorStore = useEditorStore()
+const playerStore = usePlayerStore()
 
-const {
-  playerStore,
-  cropStore,
-  cropStart,
-  cropConfirm,
-  cropCancel,
-  cropReset,
-  cropSquareOn,
-} = useCrop()
+const { cropStore, cropStart, cropConfirm, cropCancel, cropReset } = useCrop()
 
 watch(
   () => playerStore.videoSrc,
@@ -46,21 +40,15 @@ watch(
   },
 )
 
-const sizeRadio = ref('free')
-
-watch(sizeRadio, (newVal) => {
-  if (newVal === '1:1') {
-    cropSquareOn()
-  }
-})
-
-watch(
-  () => cropStore.cropSquare,
-  (newVal) => {
-    if (newVal) return
-    sizeRadio.value = 'free'
+const sizeType = computed({
+  get() {
+    return cropStore.cropSquare ? '1:1' : 'free'
   },
-)
+  set(newVal) {
+    const state = newVal === '1:1' ? true : false
+    cropStore.changeCropSquare(state)
+  },
+})
 
 function start() {
   if (!playerStore.videoSrc) {

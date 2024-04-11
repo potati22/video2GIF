@@ -11,7 +11,6 @@ export function useVideo() {
         // 此时可以获取正确的duration值
         playerStore.initPlayer(
           playerStore.videoRef.videoHeight,
-          playerStore.videoRef.clientHeight,
           playerStore.videoRef.duration,
         )
       }
@@ -19,7 +18,6 @@ export function useVideo() {
     } else {
       playerStore.initPlayer(
         playerStore.videoRef.videoHeight,
-        playerStore.videoRef.clientHeight,
         playerStore.videoRef.duration,
       )
     }

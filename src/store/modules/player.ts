@@ -4,25 +4,18 @@ export const usePlayerStore = defineStore('player', () => {
   const videoRef: Ref<HTMLVideoElement> = ref(null)
   const videoSrc = ref('/capture.mp4') // /capture.mp4
   const videoHeight = ref(0)
-  const videoClientHeight = ref(0)
   const duration = ref(0)
   const currentTime = ref(0)
   const startTime = ref(0)
   const endTime = ref(0)
   const playing = ref(false)
 
-  // video的缩放比例
-  const radio = computed(() => {
-    return videoHeight.value / videoClientHeight.value
-  })
-
   function setVideoRef(video: HTMLVideoElement) {
     videoRef.value = video
   }
 
-  function initPlayer(vH: number, cH: number, du: number) {
+  function initPlayer(vH: number, du: number) {
     videoHeight.value = vH
-    videoClientHeight.value = cH
     duration.value = Number(du.toFixed(2))
     currentTime.value = 0
     startTime.value = 0
@@ -50,16 +43,10 @@ export const usePlayerStore = defineStore('player', () => {
     videoSrc.value = src
   }
 
-  function changeVideoClientHeight(cH: number) {
-    videoClientHeight.value = cH
-  }
-
   return {
     videoRef,
     videoSrc,
     videoHeight,
-    videoClientHeight,
-    radio,
     duration,
     currentTime,
     startTime,
@@ -67,7 +54,6 @@ export const usePlayerStore = defineStore('player', () => {
     playing,
     setVideoRef,
     initPlayer,
-    changeVideoClientHeight,
     changeCurrentTime,
     changeStartTime,
     changeEndTime,

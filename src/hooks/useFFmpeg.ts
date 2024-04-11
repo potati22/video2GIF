@@ -99,19 +99,17 @@ export function useFFmpeg() {
 
   async function videoToGIF() {
     let finalGif: string = ''
-    const gifH = Math.floor(
-      (150 * cropStore.cropData.height) / cropStore.cropData.width,
-    )
+    const gifH = Math.floor((150 * cropStore.cropH) / cropStore.cropW)
 
     const videoName = await writeVideo(playerStore.videoSrc)
     finalGif = await cropInVideo(
       videoName,
       playerStore.startTime,
       playerStore.endTime,
-      cropStore.cropData.width,
-      cropStore.cropData.height,
-      cropStore.cropData.x,
-      cropStore.cropData.y,
+      cropStore.cropW,
+      cropStore.cropH,
+      cropStore.cropX,
+      cropStore.cropY,
       gifH,
     )
 
