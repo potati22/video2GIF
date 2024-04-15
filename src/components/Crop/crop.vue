@@ -1,28 +1,8 @@
 <template>
   <slot></slot>
-  <div
-    ref="wrapRef"
-    class="wrap-outer"
-    :style="{
-      '--x': `${cropBoxTransX * scale}px`,
-      '--y': `${cropBoxTransY * scale}px`,
-      '--w': `${cropBoxTransW * scale}px`,
-      '--h': `${cropBoxTransH * scale}px`,
-      '--x-w': `${(cropBoxTransX + cropBoxTransW) * scale}px`,
-      '--y-h': `${(cropBoxTransY + cropBoxTransH) * scale}px`,
-    }"
-  >
+  <div ref="wrapRef" class="wrap-outer" :style="wrapStyle">
     <div v-show="cropping" class="wrap-box cliping"></div>
-    <div
-      v-show="cropping"
-      ref="cropRef"
-      class="crop-box"
-      :style="{
-        translate: `${cropBoxTransX * scale}px ${cropBoxTransY * scale}px`,
-        width: `${cropBoxTransW * scale}px`,
-        height: `${cropBoxTransH * scale}px`,
-      }"
-    >
+    <div v-show="cropping" ref="cropRef" class="crop-box" :style="cropStyle">
       <div ref="moveRef" class="move-point">
         <PotIcon icon-class="move" />
       </div>
@@ -32,15 +12,7 @@
       <div ref="bmRef" class="scale-point bm"></div>
     </div>
     <div v-show="!cropping && cropped" class="wrap-box clipped"></div>
-    <div
-      v-show="!cropping && cropped"
-      class="crop-box-copy"
-      :style="{
-        translate: `${cropBoxTransX * scale}px ${cropBoxTransY * scale}px`,
-        width: `${cropBoxTransW * scale}px`,
-        height: `${cropBoxTransH * scale}px`,
-      }"
-    >
+    <div v-show="!cropping && cropped" class="crop-box-copy" :style="cropStyle">
       <slot name="text"></slot>
     </div>
   </div>
@@ -68,6 +40,30 @@ const cropBoxTransH = ref(400)
 
 const scale = computed(() => {
   return wrapHeight.value / props.baseHeight
+})
+
+const showX = computed(() => Math.floor(cropBoxTransX.value * scale.value))
+const showY = computed(() => Math.floor(cropBoxTransY.value * scale.value))
+const showW = computed(() => Math.floor(cropBoxTransW.value * scale.value))
+const showH = computed(() => Math.floor(cropBoxTransH.value * scale.value))
+
+const wrapStyle = computed(() => {
+  return {
+    '--x': `${showX.value + 2}px`,
+    '--y': `${showY.value + 2}px`,
+    '--w': `${showW.value}px`,
+    '--h': `${showH.value}px`,
+    '--x-w': `${showX.value + showW.value + 1}px`,
+    '--y-h': `${showY.value + showH.value + 1}px`,
+  }
+})
+
+const cropStyle = computed(() => {
+  return {
+    translate: `${showX.value}px ${showY.value}px`,
+    width: `${showW.value}px`,
+    height: `${showH.value}px`,
+  }
 })
 
 function changeCropBox(x: number, y: number, w: number, h: number) {

@@ -35,6 +35,7 @@ export function useEditor() {
   function deleteEditorText() {
     editorStore.changeEditoring(false)
     editorStore.changeEditored(false)
+    editorStore.editorRef.resetEditor()
   }
 
   return {

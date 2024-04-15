@@ -21,6 +21,7 @@
               ref="editorRef"
               :editoring="editorStore.editoring"
               :editored="editorStore.editored"
+              :base-height="cropStore.cropH"
             />
           </template>
         </Crop>
