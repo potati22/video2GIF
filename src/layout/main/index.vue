@@ -1,7 +1,11 @@
 <template>
   <div class="video-box">
     <div class="options">
-      <RouterView></RouterView>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
     <div class="play"><Play /></div>
   </div>
