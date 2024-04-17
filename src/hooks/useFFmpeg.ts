@@ -17,6 +17,10 @@ async function initFFmpeg() {
     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
     wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
   })
+
+  // 用于保存生成的帧数据的文件夹
+  await ffmpeg.createDir('key')
+
   return isFFmpegInited
 }
 
@@ -123,8 +127,6 @@ export function useFFmpeg() {
 
   async function extractKeyFrame() {
     const videoName = await writeVideo(playerStore.videoSrc)
-
-    await ffmpeg.createDir('key')
 
     await ffmpeg.exec([
       '-i',

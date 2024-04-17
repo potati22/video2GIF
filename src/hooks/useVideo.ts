@@ -27,18 +27,18 @@ export function useVideo() {
   function videoOnUpateTime() {
     const currentTime = Number(playerStore.videoRef.currentTime.toFixed(2))
 
-    if (playerStore.playing && currentTime >= playerStore.endTime - 0.15) {
-      videoPause()
-      playerStore.videoRef.currentTime = playerStore.endTime
-      return
-    }
-
     playerStore.changeCurrentTime(currentTime)
   }
 
   function videoPause() {
     playerStore.changePlaying(false)
     playerStore.videoRef.pause()
+  }
+
+  function videoPauseByAuto() {
+    playerStore.changePlaying(false)
+    playerStore.videoRef.pause()
+    playerStore.videoRef.currentTime = playerStore.endTime
   }
 
   function videoPlay() {
@@ -54,5 +54,11 @@ export function useVideo() {
     playerStore.videoRef.currentTime = time
   }
 
-  return { videoOnLoadedMetaData, videoPlay, videoPause, videoSkip }
+  return {
+    videoOnLoadedMetaData,
+    videoPlay,
+    videoPause,
+    videoPauseByAuto,
+    videoSkip,
+  }
 }

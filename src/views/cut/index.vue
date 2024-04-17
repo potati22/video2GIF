@@ -34,7 +34,7 @@ const playerStore = usePlayerStore()
 const { cropStore, cropStart, cropConfirm, cropCancel, cropReset } = useCrop()
 
 watch(
-  () => playerStore.videoSrc,
+  () => playerStore.videoSrcAlreadyChange,
   () => {
     cropReset()
   },

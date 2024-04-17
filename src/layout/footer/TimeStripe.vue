@@ -13,12 +13,14 @@ import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 
 import { useTimeTrack } from '@/hooks/useTimeTrack'
+import { useVideo } from '@/hooks/useVideo'
 
 const clipStore = useClipStore()
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
 
 const { getOffsetXfromCurrentTime } = useTimeTrack()
+const { videoPauseByAuto } = useVideo()
 
 const offsetX = ref(0)
 // 时间线的偏移距离（起始点为3
@@ -90,7 +92,9 @@ function timeStripeRun() {
       }
     }
 
-    if (offsetX.value < offsetXMax) {
+    if (offsetX.value == offsetXMax) {
+      videoPauseByAuto()
+    } else {
       preTimeStamp = timestamp
       if (!done) window.requestAnimationFrame(step)
     }

@@ -33,7 +33,10 @@ onMounted(() => {
   clipStore.setClipRef(unref(wrapRef))
 })
 
-watch([() => playerStore.videoSrc, () => trackStore.scaleLevel], () => {
-  resetClip()
-})
+watch(
+  [() => playerStore.videoSrcAlreadyChange, () => trackStore.scaleLevel],
+  () => {
+    resetClip()
+  },
+)
 </script>

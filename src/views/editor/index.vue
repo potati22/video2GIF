@@ -32,9 +32,13 @@
 
 <script lang="ts" setup>
 import { useCropStore } from '@/store/modules/crop'
+import { usePlayerStore } from '@/store/modules/player'
+
 import { useEditor } from '@/hooks/useEditor'
 
 const cropStore = useCropStore()
+const playerStore = usePlayerStore()
+
 const {
   editorStore,
   openEditor,
@@ -46,6 +50,13 @@ const {
   confirmEditorText,
   deleteEditorText,
 } = useEditor()
+
+watch(
+  () => playerStore.videoSrcAlreadyChange,
+  () => {
+    deleteEditorText()
+  },
+)
 
 const textIsBold = ref(false)
 watch(textIsBold, (newVal) => {
