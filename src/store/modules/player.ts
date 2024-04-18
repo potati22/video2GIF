@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const usePlayerStore = defineStore('player', () => {
   const videoRef: Ref<HTMLVideoElement> = ref(null)
-  const videoSrc = ref('/capture.mp4') // /capture.mp4
+  const videoSrc = ref('') // /capture.mp4
   const videoSrcAlreadyChange = ref('') // 用于确保新的video的已加载完成
   const videoHeight = ref(0)
   const duration = ref(0)

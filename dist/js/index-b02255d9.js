@@ -1,25 +1,23 @@
 import {
-  d as i,
-  u as d,
+  d,
+  u as i,
   c as _,
   a as l,
-  b as p,
-  w as u,
-  E as g,
-  e as m,
-  f as v,
-  o as b,
-  g as f,
+  w as p,
+  E as u,
+  b as m,
+  e as g,
+  o as v,
+  f,
   _ as x,
-} from './index-f9d078f6.js'
-/* empty css               */ const h = { class: 'record-box' },
-  k = { class: 'row' },
-  y = i({
+} from './index-4a1dc37e.js'
+/* empty css               */ const k = { class: 'row' },
+  b = d({
     __name: 'index',
-    setup(w) {
-      const o = d()
+    setup(h) {
+      const o = i()
       async function r() {
-        const s = g.service({
+        const s = u.service({
           lock: !0,
           text: '👩🏻‍💻Working...',
           background: 'rgba(0, 0, 0, 0.7)',
@@ -47,21 +45,19 @@ import {
         }, 1e4)
       }
       return (s, t) => {
-        const a = v
+        const a = g
         return (
-          b(),
-          _('div', h, [
-            l('div', k, [
-              p(
-                a,
-                { class: 'btn', onClick: r },
-                { default: u(() => [f('录制屏幕（最长10秒左右）')]), _: 1 },
-              ),
-            ]),
+          v(),
+          _('div', k, [
+            l(
+              a,
+              { class: 'btn', onClick: r },
+              { default: p(() => [f('录制屏幕（最长10秒左右）')]), _: 1 },
+            ),
           ])
         )
       }
     },
   })
-const R = x(y, [['__scopeId', 'data-v-8b504bc7']])
-export { R as default }
+const E = x(b, [['__scopeId', 'data-v-75e5d1d3']])
+export { E as default }

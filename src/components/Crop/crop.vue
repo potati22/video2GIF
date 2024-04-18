@@ -119,6 +119,10 @@ onMounted(() => {
   registerRM()
 })
 
+onUnmounted(() => {
+  wrapBoxResizeObserver.unobserve(unref(wrapRef))
+})
+
 const cropCanchange = ref(false)
 const cropCanmove = ref(false)
 

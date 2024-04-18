@@ -97,6 +97,10 @@ onMounted(() => {
   registerEditor()
 })
 
+onUnmounted(() => {
+  editorOuterResizeObserver.unobserve(unref(outerRef))
+})
+
 function registerEditor() {
   let editorCanMove = false
 
