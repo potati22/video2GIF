@@ -109,7 +109,7 @@ function timeStripeRun() {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: var(--left);
+  transform: translateX(var(--left));
   width: 13px;
   background-image: url('@/assets/img/time-stripe.svg');
   z-index: 10;

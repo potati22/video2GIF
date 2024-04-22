@@ -60,7 +60,7 @@ const wrapStyle = computed(() => {
 
 const cropStyle = computed(() => {
   return {
-    translate: `${showX.value}px ${showY.value}px`,
+    transform: `translate(${showX.value}px, ${showY.value}px)`,
     width: `${showW.value}px`,
     height: `${showH.value}px`,
   }

@@ -28,16 +28,19 @@ const { videoSkip } = useVideo()
 const timeLineRef: Ref<HTMLCanvasElement> = ref()
 let timeLineCtx: CanvasRenderingContext2D
 
-watch([() => playerStore.duration, () => trackStore.scaleLevel], () => {
-  nextTick(() => {
-    drawTimeLine(
-      timeLineCtx,
-      playerStore.duration,
-      trackStore.timeGap,
-      trackStore.spaceGap,
-    )
-  })
-})
+watch(
+  [() => playerStore.videoSrcAlreadyChange, () => trackStore.scaleLevel],
+  () => {
+    nextTick(() => {
+      drawTimeLine(
+        timeLineCtx,
+        playerStore.duration,
+        trackStore.timeGap,
+        trackStore.spaceGap,
+      )
+    })
+  },
+)
 
 onMounted(() => {
   timeLineCtx = timeLineRef.value.getContext('2d')
