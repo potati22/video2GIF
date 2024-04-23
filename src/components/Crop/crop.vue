@@ -19,6 +19,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
 import { CropProps, CropEmits } from './crop'
 
 const props = withDefaults(defineProps<CropProps>(), {
@@ -93,8 +94,6 @@ watch(
   },
 )
 
-let wrapBoxResizeObserver: ResizeObserver
-
 const cropRef = ref()
 const wrapRef = ref()
 const moveRef = ref()
@@ -103,24 +102,24 @@ const bmRef = ref()
 const lmRef = ref()
 const rmRef = ref()
 
-onMounted(() => {
-  wrapBoxResizeObserver = new ResizeObserver((e) => {
-    wrapWidth.value = Math.floor(e[0].contentRect.width)
-    wrapHeight.value = Math.floor(e[0].contentRect.height)
-  })
-  wrapBoxResizeObserver.observe(unref(wrapRef), {
+useGlobalResizeObserver(
+  wrapRef,
+  {
     box: 'content-box',
-  })
+  },
+  (e) => {
+    wrapWidth.value = Math.floor(e.contentRect.width)
+    wrapHeight.value = Math.floor(e.contentRect.height)
+  },
+)
+
+onMounted(() => {
   registerAll()
   registerCrop()
   registerTM()
   registerBM()
   registerLM()
   registerRM()
-})
-
-onUnmounted(() => {
-  wrapBoxResizeObserver.unobserve(unref(wrapRef))
 })
 
 const cropCanchange = ref(false)

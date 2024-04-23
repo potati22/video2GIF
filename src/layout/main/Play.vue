@@ -38,6 +38,7 @@ import { usePlayerStore } from '@/store/modules/player'
 import { useCropStore } from '@/store/modules/crop'
 import { useEditorStore } from '@/store/modules/editor'
 import { useVideo } from '@/hooks/useVideo'
+import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
 
 import type { Ref } from 'vue'
 import { CropInstance } from '@/components/Crop/crop'
@@ -56,23 +57,16 @@ const outerBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
 const workAreaWidth = ref(0)
 
-onMounted(() => {
-  playerStore.setVideoRef(unref(videoRef))
-  playerStore.videoRef.onloadedmetadata = videoOnLoadedMetaData
-
-  cropStore.setCropRef(unref(cropRef))
-
-  editorStore.setEditorRef(unref(editorRef))
-
-  controlWorkArea()
-})
-
 // 监听outerBox的变化
 // 保证工作区的长宽比恒为2：1
-function controlWorkArea() {
-  const outerBoxResizeObserver: ResizeObserver = new ResizeObserver((e) => {
-    const H = Math.floor(e[0].contentRect.height)
-    const W = Math.floor(e[0].contentRect.width)
+useGlobalResizeObserver(
+  outerBox,
+  {
+    box: 'content-box',
+  },
+  (e) => {
+    const H = Math.floor(e.contentRect.height)
+    const W = Math.floor(e.contentRect.width)
     if (2 * H <= W) {
       workAreaHeight.value = H
       workAreaWidth.value = 2 * H
@@ -80,15 +74,16 @@ function controlWorkArea() {
       workAreaWidth.value = W
       workAreaHeight.value = Math.floor(W / 2)
     }
-  })
-  outerBoxResizeObserver.observe(unref(outerBox), {
-    box: 'content-box',
-  })
+  },
+)
 
-  onUnmounted(() => {
-    outerBoxResizeObserver.unobserve(unref(outerBox))
-  })
-}
+onMounted(() => {
+  playerStore.setVideoRef(unref(videoRef))
+  playerStore.videoRef.onloadedmetadata = videoOnLoadedMetaData
+
+  cropStore.setCropRef(unref(cropRef))
+  editorStore.setEditorRef(unref(editorRef))
+})
 </script>
 
 <style lang="scss" scoped>

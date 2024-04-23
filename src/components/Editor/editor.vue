@@ -12,6 +12,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
+
 import type { Ref } from 'vue'
 import { EditorProps } from './editor'
 
@@ -22,7 +24,6 @@ const props = withDefaults(defineProps<EditorProps>(), {
 })
 
 const outerRef: Ref<HTMLDivElement> = ref()
-let editorOuterResizeObserver: ResizeObserver
 // 实时数据
 const outerClientWidth = ref(0)
 const outerClientHeight = ref(0)
@@ -78,27 +79,23 @@ defineExpose({
   resetEditor,
 })
 
-onMounted(() => {
-  let dataIsInited = false
-  editorOuterResizeObserver = new ResizeObserver((e) => {
-    outerClientWidth.value = Math.floor(e[0].contentRect.width)
-    outerClientHeight.value = Math.floor(e[0].contentRect.height)
-    if (!dataIsInited && outerClientHeight.value !== 0) {
-      dataIsInited = true
-      editorTextSize.value = Math.floor(
-        (14 * props.baseHeight) / outerClientHeight.value,
-      )
-      editorPadding.value = Math.floor(
-        (20 * props.baseHeight) / outerClientHeight.value,
-      )
-    }
-  })
-  editorOuterResizeObserver.observe(unref(outerRef), { box: 'content-box' })
-  registerEditor()
+let dataIsInited = false
+useGlobalResizeObserver(outerRef, { box: 'content-box' }, (e) => {
+  outerClientWidth.value = Math.floor(e.contentRect.width)
+  outerClientHeight.value = Math.floor(e.contentRect.height)
+  if (!dataIsInited && outerClientHeight.value !== 0) {
+    dataIsInited = true
+    editorTextSize.value = Math.floor(
+      (14 * props.baseHeight) / outerClientHeight.value,
+    )
+    editorPadding.value = Math.floor(
+      (20 * props.baseHeight) / outerClientHeight.value,
+    )
+  }
 })
 
-onUnmounted(() => {
-  editorOuterResizeObserver.unobserve(unref(outerRef))
+onMounted(() => {
+  registerEditor()
 })
 
 function registerEditor() {
