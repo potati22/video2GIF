@@ -1,4 +1,5 @@
 import { useId } from './useId'
+import { useThrottle } from './useThrottle'
 
 const namespace = 'gro-key'
 const elementCbs = {}
@@ -14,6 +15,7 @@ export function useGlobalResizeObserver(
   elRef: Ref<Element>,
   options: ResizeObserverOptions,
   callback: (entry: ResizeObserverEntry) => void,
+  isThrottle: number = 0,
 ) {
   let element: Element
 
@@ -21,7 +23,10 @@ export function useGlobalResizeObserver(
     element = unref(elRef)
     const elementKey = useId(namespace)
     element.setAttribute(namespace, elementKey)
+
+    if (isThrottle !== 0) callback = useThrottle(callback, isThrottle)
     elementCbs[elementKey] = callback
+
     observer.observe(element, options)
   })
 
