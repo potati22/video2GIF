@@ -9,56 +9,58 @@ import { usePlayerStore } from '@/store/modules/player'
 
 const playerStore = usePlayerStore()
 
-async function record() {
+function record() {
+  // 主动释放之前创建的URL对象 否则只会在document卸载时自动释放
+  if (playerStore.videoSrc) URL.revokeObjectURL(playerStore.videoSrc)
+
   const loading = ElLoading.service({
     lock: true,
     text: '👩🏻‍💻Working...',
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  let stream: MediaStream
-
-  if (playerStore.videoSrc) {
-    // 主动释放之前创建的URL对象 否则只会在document卸载时自动释放
-    URL.revokeObjectURL(playerStore.videoSrc)
-  }
-
-  // 提示用户去选择和授权需要捕获的内容，并将其展示在一个MediaStream里
-  const res = await navigator.mediaDevices
-    .getDisplayMedia({
-      video: true,
+  askForRecord()
+    .then((videoStream) => recording(videoStream))
+    .then((videoSrc) => {
+      playerStore.changeVideoSrc(videoSrc)
+      loading.close()
     })
-    .then((res) => res)
-    .catch(() => null)
-
-  if (!res) {
-    loading.close()
-    ElMessage({
-      message: '你拒绝了屏幕共享',
-      type: 'warning',
+    .catch(() => {
+      loading.close()
+      ElMessage({
+        message: '发生错误',
+        type: 'warning',
+      })
     })
-    return
-  } else {
-    stream = res
-  }
+}
 
-  // 对指定的MediaStream对象进行录制
-  const recorder = new MediaRecorder(stream)
-
-  // dataavailable事件比stop事件先触发
-  recorder.addEventListener('dataavailable', (evt) => {
-    playerStore.changeVideoSrc(URL.createObjectURL(evt.data))
-    clearTimeout(stopTimer)
-    loading.close()
+// 提示用户去选择和授权需要捕获的内容，并将其展示在一个MediaStream里
+function askForRecord() {
+  return navigator.mediaDevices.getDisplayMedia({
+    video: true,
   })
+}
 
-  recorder.start() // 开始记录
+// 录制视频内容
+function recording(stream: MediaStream): Promise<string> {
+  return new Promise((resolve) => {
+    // 对指定的MediaStream对象进行录制
+    const recorder = new MediaRecorder(stream)
 
-  // 录制10s后自动断开
-  const stopTimer = setTimeout(() => {
-    recorder.stop() // recoder.stop后录制停止 但流没有停止
-    stream.getTracks().forEach((item) => item.stop()) // 选项卡的录制标志与流有关
-  }, 10000)
+    // dataavailable事件比stop事件先触发
+    recorder.addEventListener('dataavailable', (evt) => {
+      clearTimeout(stopTimer)
+      resolve(URL.createObjectURL(evt.data))
+    })
+
+    recorder.start() // 开始记录
+
+    // 录制10s后自动断开
+    const stopTimer = setTimeout(() => {
+      recorder.stop() // recoder.stop后 录制停止 但流没有停止
+      stream.getTracks().forEach((item) => item.stop()) // 选项卡的录制标志与流有关
+    }, 10000)
+  })
 }
 </script>
 
