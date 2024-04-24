@@ -70,7 +70,7 @@ watch(
 function timeStripeRun() {
   const offsetXMax = getOffsetXfromCurrentTime(playerStore.endTime)
 
-  if (offsetX.value == offsetXMax) {
+  if (offsetX.value >= offsetXMax) {
     offsetX.value = getOffsetXfromCurrentTime(playerStore.startTime)
   }
   const preOffsetX = offsetX.value
