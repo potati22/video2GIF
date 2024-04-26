@@ -32,43 +32,43 @@ onMounted(() => {
 
 watch(
   () => playerStore.videoSrcAlreadyChange,
-  () => {
-    initKeyFrames()
+  async () => {
+    keyFrames = await getKeyFrames()
+    drawKeyFrames()
   },
 )
 
 watch(
   () => trackStore.scaleLevel,
   () => {
-    if (keyFrames.length === 0) return
     drawKeyFrames()
   },
 )
 
-async function initKeyFrames() {
+async function getKeyFrames() {
   const loading = ElLoading.service({
     lock: true,
     text: '👩🏻‍💻Working...',
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  try {
-    keyFrames = await extractKeyFrame()
-  } catch (err) {
-    ElMessage({
-      message: 'ffmpeg错误了',
-      type: 'error',
+  const keyFrames: Blob[] = await extractKeyFrame()
+    .then((res) => res)
+    .catch((err) => {
+      ElMessage({
+        message: 'ffmpeg错误了',
+        type: 'error',
+      })
+      console.log(err)
+      return []
     })
-    console.log(err)
-    loading.close()
-    return
-  }
+    .finally(() => loading.close())
 
-  drawKeyFrames()
-  loading.close()
+  return keyFrames
 }
 
 async function drawKeyFrames() {
+  if (keyFrames.length === 0) return
   /**
    * 每0.5秒生成一张100*50大小图片
    * trackStore.timeGap * 2: 1个timpGap需要表达k张图片的信息
