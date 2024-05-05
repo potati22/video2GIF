@@ -16,6 +16,6 @@ app.use(router)
 
 app.mount('#app')
 
-window.addEventListener('beforeunload', (e) => {
+/* window.addEventListener('beforeunload', (e) => {
   e.preventDefault()
-})
+}) */

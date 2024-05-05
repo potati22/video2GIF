@@ -1,59 +1,28 @@
 <template>
   <div ref="outerBox" class="outer-box">
     <div
+      ref="videoBox"
       class="work-area"
       :style="{
         '--height': workAreaHeight + 'px',
         '--width': workAreaWidth + 'px',
       }"
-    >
-      <div class="video-outer">
-        <Crop
-          ref="cropRef"
-          v-model:crop-square="cropStore.cropSquare"
-          :cropped="cropStore.cropped"
-          :cropping="cropStore.cropping"
-          :base-height="playerStore.videoHeight"
-        >
-          <video ref="videoRef" :src="playerStore.videoSrc"></video>
-          <template #text>
-            <Editor
-              ref="editorRef"
-              :editoring="editorStore.editoring"
-              :editored="editorStore.editored"
-              :base-height="cropStore.cropH"
-            />
-          </template>
-        </Crop>
-      </div>
-    </div>
+    ></div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import Crop from '@/components/Crop/crop.vue'
-import Editor from '@/components/Editor/editor.vue'
-
-import { usePlayerStore } from '@/store/modules/player'
-import { useCropStore } from '@/store/modules/crop'
-import { useEditorStore } from '@/store/modules/editor'
 import { useVideo } from '@/hooks/useVideo'
 import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
+import { MainStage } from '@/2d/Stage'
+import { Video2D } from '@/2d/Video'
 
 import type { Ref } from 'vue'
-import { CropInstance } from '@/components/Crop/crop'
-import { EditorInstance } from '@/components/Editor/editor'
 
-const playerStore = usePlayerStore()
-const cropStore = useCropStore()
-const editorStore = useEditorStore()
-const { videoOnLoadedMetaData } = useVideo()
-
-const videoRef: Ref<HTMLVideoElement> = ref()
-const cropRef: Ref<CropInstance> = ref()
-const editorRef: Ref<EditorInstance> = ref()
+const { videoInit } = useVideo()
 
 const outerBox: Ref<HTMLElement> = ref()
+const videoBox: Ref<HTMLElement> = ref()
 const workAreaHeight = ref(0)
 const workAreaWidth = ref(0)
 
@@ -74,15 +43,22 @@ useGlobalResizeObserver(
       workAreaWidth.value = W
       workAreaHeight.value = Math.floor(W / 2)
     }
+    MainStage.resize()
   },
 )
 
-onMounted(() => {
-  playerStore.setVideoRef(unref(videoRef))
-  playerStore.videoRef.onloadedmetadata = videoOnLoadedMetaData
+onMounted(async () => {
+  await MainStage.init({
+    background: '#212123',
+    resizeTo: videoBox.value,
+  })
+  videoBox.value.appendChild(MainStage.app.canvas)
 
-  cropStore.setCropRef(unref(cropRef))
-  editorStore.setEditorRef(unref(editorRef))
+  await MainStage.loadBackground('/no-video.png')
+
+  await Video2D.loadVideo()
+  MainStage.addChild(Video2D.container, Video2D.adjustVideo.bind(Video2D))
+  videoInit(Video2D.resource)
 })
 </script>
 
@@ -101,21 +77,9 @@ onMounted(() => {
   width: var(--width);
   height: var(--height);
   background-color: var(--pot-bg-color-block);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
-.video-outer {
-  display: inline-block; // 行内块元素 宽度只能为内容宽度 故为video宽度
-  height: 80%;
-  position: relative;
-  background-color: var(--pot-bg-color-block);
-}
+
 video {
-  height: 100%;
-  background-image: url('@/assets/img/no-video.png');
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
+  display: none;
 }
 </style>

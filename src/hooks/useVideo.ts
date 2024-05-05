@@ -3,7 +3,9 @@ import { usePlayerStore } from '@/store/modules/player'
 export function useVideo() {
   const playerStore = usePlayerStore()
 
-  function videoOnLoadedMetaData() {
+  function videoInit(video: HTMLVideoElement) {
+    playerStore.setVideoRef(video)
+
     if (playerStore.videoRef.duration === Infinity) {
       playerStore.videoRef.ontimeupdate = () => {
         playerStore.videoRef.ontimeupdate = videoOnUpateTime
@@ -55,7 +57,7 @@ export function useVideo() {
   }
 
   return {
-    videoOnLoadedMetaData,
+    videoInit,
     videoPlay,
     videoPause,
     videoPauseByAuto,
