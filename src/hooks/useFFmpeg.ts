@@ -3,7 +3,6 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import domtoimage from 'dom-to-image-more'
 
 import { usePlayerStore } from '@/store/modules/player'
-import { useCropStore } from '@/store/modules/crop'
 import { useEditorStore } from '@/store/modules/editor'
 
 const ffmpeg = new FFmpeg()
@@ -96,7 +95,6 @@ async function divToImage(): Promise<string> {
 
 export function useFFmpeg() {
   const playerStore = usePlayerStore()
-  const cropStore = useCropStore()
   const editorStore = useEditorStore()
 
   async function videoToGIF() {

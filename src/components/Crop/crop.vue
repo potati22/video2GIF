@@ -1,8 +1,8 @@
 <template>
-  <slot></slot>
   <div ref="wrapRef" class="wrap-outer" :style="wrapStyle">
-    <div v-show="cropping" class="wrap-box cliping"></div>
-    <div v-show="cropping" ref="cropRef" class="crop-box" :style="cropStyle">
+    <slot></slot>
+    <div class="wrap-box"></div>
+    <div class="crop-box" :style="cropStyle">
       <div ref="moveRef" class="move-point">
         <PotIcon icon-class="move" />
       </div>
@@ -11,59 +11,42 @@
       <div ref="rmRef" class="scale-point rm"></div>
       <div ref="bmRef" class="scale-point bm"></div>
     </div>
-    <div v-show="!cropping && cropped" class="wrap-box clipped"></div>
-    <div v-show="!cropping && cropped" class="crop-box-copy" :style="cropStyle">
-      <slot name="text"></slot>
-    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
 import { CropProps, CropEmits } from './crop'
+import type { Ref } from 'vue'
 
 const props = withDefaults(defineProps<CropProps>(), {
-  cropping: false,
-  cropped: false,
   cropSquare: false,
-  baseHeight: 0,
+  width: 0,
+  height: 0,
 })
 
 const emits = defineEmits<CropEmits>()
 
-const wrapWidth = ref(0)
-const wrapHeight = ref(0)
-
 const cropBoxTransX = ref(0)
 const cropBoxTransY = ref(0)
-const cropBoxTransW = ref(400)
-const cropBoxTransH = ref(400)
-
-const scale = computed(() => {
-  return wrapHeight.value / props.baseHeight
-})
-
-const showX = computed(() => Math.floor(cropBoxTransX.value * scale.value))
-const showY = computed(() => Math.floor(cropBoxTransY.value * scale.value))
-const showW = computed(() => Math.floor(cropBoxTransW.value * scale.value))
-const showH = computed(() => Math.floor(cropBoxTransH.value * scale.value))
+const cropBoxTransW = ref(100)
+const cropBoxTransH = ref(100)
 
 const wrapStyle = computed(() => {
   return {
-    '--x': `${showX.value + 2}px`,
-    '--y': `${showY.value + 2}px`,
-    '--w': `${showW.value}px`,
-    '--h': `${showH.value}px`,
-    '--x-w': `${showX.value + showW.value + 1}px`,
-    '--y-h': `${showY.value + showH.value + 1}px`,
+    '--x': `${cropBoxTransX.value}px`,
+    '--y': `${cropBoxTransY.value}px`,
+    '--w': `${cropBoxTransW.value}px`,
+    '--h': `${cropBoxTransH.value}px`,
+    '--x-w': `${cropBoxTransX.value + cropBoxTransW.value}px`,
+    '--y-h': `${cropBoxTransY.value + cropBoxTransH.value}px`,
   }
 })
 
 const cropStyle = computed(() => {
   return {
-    transform: `translate(${showX.value}px, ${showY.value}px)`,
-    width: `${showW.value}px`,
-    height: `${showH.value}px`,
+    transform: `translate(${cropBoxTransX.value}px, ${cropBoxTransY.value}px)`,
+    width: `${cropBoxTransW.value}px`,
+    height: `${cropBoxTransH.value}px`,
   }
 })
 
@@ -94,24 +77,12 @@ watch(
   },
 )
 
-const cropRef = ref()
-const wrapRef = ref()
-const moveRef = ref()
-const tmRef = ref()
-const bmRef = ref()
-const lmRef = ref()
-const rmRef = ref()
-
-useGlobalResizeObserver(
-  wrapRef,
-  {
-    box: 'content-box',
-  },
-  (e) => {
-    wrapWidth.value = Math.floor(e.contentRect.width)
-    wrapHeight.value = Math.floor(e.contentRect.height)
-  },
-)
+const wrapRef: Ref<HTMLDivElement> = ref()
+const moveRef: Ref<HTMLDivElement> = ref()
+const tmRef: Ref<HTMLDivElement> = ref()
+const bmRef: Ref<HTMLDivElement> = ref()
+const lmRef: Ref<HTMLDivElement> = ref()
+const rmRef: Ref<HTMLDivElement> = ref()
 
 onMounted(() => {
   registerAll()
@@ -122,36 +93,36 @@ onMounted(() => {
   registerRM()
 })
 
-const cropCanchange = ref(false)
-const cropCanmove = ref(false)
+let cropCanchange = false
+let cropCanmove = false
 
 function openMove() {
-  cropCanmove.value = true
+  cropCanmove = true
 }
 
 function closeMove() {
-  cropCanmove.value = false
+  cropCanmove = false
 }
 
 function openChange() {
-  cropCanchange.value = true
+  cropCanchange = true
   emits('update:cropSquare', false)
 }
 
 function closeChange() {
-  cropCanchange.value = false
+  cropCanchange = false
 }
 
 function registerCrop() {
   function mouseMove(e: MouseEvent) {
-    if (!cropCanmove.value) return
-    const x = cropBoxTransX.value * scale.value + e.movementX
-    const y = cropBoxTransY.value * scale.value + e.movementY
-    const maxX = wrapWidth.value - cropRef.value.clientWidth - 3
-    const maxY = wrapHeight.value - cropRef.value.clientHeight - 3
+    if (!cropCanmove) return
+    const x = cropBoxTransX.value + e.movementX
+    const y = cropBoxTransY.value + e.movementY
+    const maxX = props.width - cropBoxTransW.value
+    const maxY = props.height - cropBoxTransH.value
     if (x <= 0 || x >= maxX || y <= 0 || y >= maxY) return
-    cropBoxTransX.value += Math.floor(e.movementX / scale.value)
-    cropBoxTransY.value += Math.floor(e.movementY / scale.value)
+    cropBoxTransX.value = x
+    cropBoxTransY.value = y
   }
 
   moveRef.value.addEventListener('mousedown', openMove)
@@ -160,14 +131,14 @@ function registerCrop() {
 
 function registerTM() {
   function mouseMove(e: MouseEvent) {
-    if (!cropCanchange.value) return
-    const h = cropBoxTransH.value * scale.value - e.movementY
-    const y = cropBoxTransY.value * scale.value + e.movementY
-    const maxH = wrapHeight.value - 3
-    const maxY = wrapHeight.value - h - 3
+    if (!cropCanchange) return
+    const h = cropBoxTransH.value - e.movementY
+    const y = cropBoxTransY.value + e.movementY
+    const maxH = props.height
+    const maxY = props.height - h
     if (h < 0 || h >= maxH || y < 0 || y >= maxY) return
-    cropBoxTransH.value -= Math.floor(e.movementY / scale.value)
-    cropBoxTransY.value += Math.floor(e.movementY / scale.value)
+    cropBoxTransH.value = h
+    cropBoxTransY.value = y
   }
 
   tmRef.value.addEventListener('mousedown', openChange)
@@ -176,11 +147,11 @@ function registerTM() {
 
 function registerBM() {
   function mouseMove(e: MouseEvent) {
-    if (!cropCanchange.value) return
-    const h = cropBoxTransH.value * scale.value + e.movementY
-    const maxH = wrapHeight.value - cropBoxTransY.value * scale.value - 3
+    if (!cropCanchange) return
+    const h = cropBoxTransH.value + e.movementY
+    const maxH = props.height - cropBoxTransY.value
     if (h < 0 || h >= maxH) return
-    cropBoxTransH.value += Math.floor(e.movementY / scale.value)
+    cropBoxTransH.value = h
   }
 
   bmRef.value.addEventListener('mousedown', openChange)
@@ -189,14 +160,14 @@ function registerBM() {
 
 function registerLM() {
   function mouseMove(e: MouseEvent) {
-    if (!cropCanchange.value) return
-    const w = cropBoxTransW.value * scale.value - e.movementX
-    const x = cropBoxTransX.value * scale.value + e.movementX
-    const maxW = wrapWidth.value - 3
-    const maxX = wrapWidth.value - w - 3
+    if (!cropCanchange) return
+    const w = cropBoxTransW.value - e.movementX
+    const x = cropBoxTransX.value + e.movementX
+    const maxW = props.width
+    const maxX = props.width - w
     if (w < 0 || w >= maxW || x < 0 || x >= maxX) return
-    cropBoxTransW.value -= Math.floor(e.movementX / scale.value)
-    cropBoxTransX.value += Math.floor(e.movementX / scale.value)
+    cropBoxTransW.value = w
+    cropBoxTransX.value = x
   }
 
   lmRef.value.addEventListener('mousedown', openChange)
@@ -205,11 +176,11 @@ function registerLM() {
 
 function registerRM() {
   function mouseMove(e: MouseEvent) {
-    if (!cropCanchange.value) return
-    const w = cropBoxTransW.value * scale.value + e.movementX
-    const maxW = wrapWidth.value - cropBoxTransX.value * scale.value - 3
+    if (!cropCanchange) return
+    const w = cropBoxTransW.value + e.movementX
+    const maxW = props.width - cropBoxTransX.value
     if (w < 0 || w >= maxW) return
-    cropBoxTransW.value += Math.floor(e.movementX / scale.value)
+    cropBoxTransW.value = w
   }
 
   rmRef.value.addEventListener('mousedown', openChange)
@@ -226,19 +197,17 @@ function registerAll() {
 
 <style lang="scss" scoped>
 .wrap-outer {
+  display: inline-block;
+  position: relative;
+}
+
+.wrap-box {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-}
-
-.wrap-box {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -1px;
-  bottom: -1px;
+  background-color: rgba(1, 1, 1, 0.8);
   clip-path: polygon(
     0 0,
     0 100%,
@@ -252,12 +221,6 @@ function registerAll() {
     100% 0
   );
 }
-.cliping {
-  background-color: rgba(1, 1, 1, 0.8);
-}
-.clipped {
-  background-color: var(--pot-bg-color-block);
-}
 
 .crop-box {
   box-sizing: border-box;
@@ -266,12 +229,7 @@ function registerAll() {
   top: 0;
   border: 1px solid var(--pot-text-color-yellow);
 }
-.crop-box-copy {
-  box-sizing: border-box;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
+
 .move-point {
   width: 100%;
   height: 100%;

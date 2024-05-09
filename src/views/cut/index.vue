@@ -1,71 +1,113 @@
 <template>
-  <div v-show="!cropStore.cropping" class="row">
-    <PotButton class="btn start" @click="start">开始裁剪</PotButton>
+  <div class="row">
+    <PotButton class="start" @click="cropStart">开始裁剪</PotButton>
   </div>
-  <div v-show="cropStore.cropping">
-    <div class="row">
-      <span>宽高比：</span>
-      <PotRadioGroup v-model="sizeType">
-        <PotRadio value="1:1">1:1</PotRadio>
-        <PotRadio value="free">自由</PotRadio>
-      </PotRadioGroup>
-    </div>
-    <div class="row">
-      <PotButton class="btn cancel" @click="cropCancel">取消</PotButton>
-      <PotButton type="yellow" class="btn apply" @click="cropConfirm"
-        >确认</PotButton
+  <el-dialog
+    v-model="cropping"
+    width="700"
+    title="裁剪"
+    :close-on-click-modal="false"
+  >
+    <div class="crop-box">
+      <Crop
+        ref="cropRef"
+        :height="imgHeight"
+        :width="imgWidth"
+        :crop-square="false"
       >
+        <img :src="imgSrc" />
+      </Crop>
     </div>
-    <div class="row">
-      <PotButton class="btn reset" @click="cropReset">重置</PotButton>
-    </div>
-  </div>
+    <template #footer>
+      <div>
+        <PotButton type="yellow" style="margin-right: 20px" @click="cropConfirm"
+          >确定</PotButton
+        >
+        <PotButton @click="cropCancel">取消</PotButton>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
+import Crop from '@/components/Crop/crop.vue'
+
 import { usePlayerStore } from '@/store/modules/player'
-import { useEditorStore } from '@/store/modules/editor'
+import emitter from '@/utils/eventBus'
 
-import { useCrop } from '@/hooks/useCrop'
+import type { Ref } from 'vue'
+import type { CropInstance } from '@/components/Crop/crop'
 
-const editorStore = useEditorStore()
 const playerStore = usePlayerStore()
 
-const { cropStore, cropStart, cropConfirm, cropCancel, cropReset } = useCrop()
+const cropping = ref(false)
 
-watch(
-  () => playerStore.videoSrcAlreadyChange,
-  () => {
-    cropReset()
-  },
-)
+const imgSrc: Ref<string> = ref('')
+const imgWidth: Ref<number> = ref(0)
+const imgHeight: number = 300
+let imgScale: number = 1 // imageSize / videoSize
 
-const sizeType = computed({
-  get() {
-    return cropStore.cropSquare ? '1:1' : 'free'
-  },
-  set(newVal) {
-    const state = newVal === '1:1' ? true : false
-    cropStore.changeCropSquare(state)
-  },
+watch(cropping, (newVal) => {
+  if (!newVal) return
+  imgScale = imgHeight / playerStore.videoRef.videoHeight
+  const res = videoToImage(
+    playerStore.videoRef,
+    playerStore.videoRef.videoWidth,
+    playerStore.videoRef.videoHeight,
+    imgScale,
+  )
+  imgSrc.value = res.src
+  imgWidth.value = res.width
 })
 
-function start() {
-  if (!playerStore.videoSrc) {
-    ElMessage({
-      message: '工作区没有视频资源~',
-      type: 'warning',
-    })
-    return
+function videoToImage(
+  video: HTMLVideoElement,
+  videoWidth: number,
+  videoHeight: number,
+  scale: number,
+) {
+  const canvas = document.createElement('canvas')
+  canvas.width = videoWidth * scale
+  canvas.height = videoHeight * scale
+
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height)
+
+  return {
+    src: canvas.toDataURL('image/png'),
+    width: canvas.width,
+    height: canvas.height,
   }
-  if (editorStore.editoring || editorStore.editored) {
-    ElMessage({
-      message: '请先删除文本资源再进行裁剪',
-      type: 'warning',
-    })
-    return
-  }
-  cropStart()
+}
+
+const cropRef: Ref<CropInstance> = ref()
+const cropTemp = {
+  x: 0,
+  y: 0,
+  w: 100,
+  h: 100,
+}
+
+function cropStart() {
+  cropping.value = true
+}
+
+function cropConfirm() {
+  cropping.value = false
+  cropTemp.x = cropRef.value.cropBoxTransX
+  cropTemp.y = cropRef.value.cropBoxTransY
+  cropTemp.w = cropRef.value.cropBoxTransW
+  cropTemp.h = cropRef.value.cropBoxTransH
+  emitter.emit('videoCrop', {
+    x: Math.floor(cropTemp.x / imgScale),
+    y: Math.floor(cropTemp.y / imgScale),
+    w: Math.floor(cropTemp.w / imgScale),
+    h: Math.floor(cropTemp.h / imgScale),
+  })
+}
+
+function cropCancel() {
+  cropping.value = false
+  cropRef.value.changeCropBox(cropTemp.x, cropTemp.y, cropTemp.w, cropTemp.h)
 }
 </script>
 
@@ -76,21 +118,12 @@ function start() {
   display: flex;
   align-items: center;
 }
-
-.btn {
-  height: 36px;
-}
 .start {
   width: 250px;
+  height: 36px;
 }
-.apply {
-  width: 120px;
-}
-.cancel {
-  width: 120px;
-  margin-right: 10px;
-}
-.reset {
-  width: 250px;
+.crop-box {
+  display: flex;
+  justify-content: center;
 }
 </style>

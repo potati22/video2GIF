@@ -14,12 +14,15 @@
 <script lang="ts" setup>
 import { useVideo } from '@/hooks/useVideo'
 import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
+
 import { MainStage } from '@/2d/Stage'
 import { Video2D } from '@/2d/Video'
 
+import emitter from '@/utils/eventBus'
+
 import type { Ref } from 'vue'
 
-const { videoInit } = useVideo()
+const { playerStore, videoInit } = useVideo()
 
 const outerBox: Ref<HTMLElement> = ref()
 const videoBox: Ref<HTMLElement> = ref()
@@ -55,10 +58,21 @@ onMounted(async () => {
   videoBox.value.appendChild(MainStage.app.canvas)
 
   await MainStage.loadBackground('/no-video.png')
-
-  await Video2D.loadVideo()
   MainStage.addChild(Video2D.container, Video2D.adjustVideo.bind(Video2D))
-  videoInit(Video2D.resource)
+})
+
+emitter.on('videoCrop', ({ x, y, w, h }) => {
+  Video2D.cropVideo(x, y, w, h)
+  Video2D.adjustVideo(MainStage.app.screen.width, MainStage.app.screen.height)
+})
+
+emitter.on('videoChange', async (loading) => {
+  MainStage.background.visible = false
+
+  await Video2D.loadVideo(playerStore.videoSrc)
+  videoInit(Video2D.videoResource)
+  console.log('kkkk')
+  loading.close()
 })
 </script>
 

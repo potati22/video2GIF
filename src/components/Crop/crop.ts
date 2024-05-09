@@ -1,10 +1,9 @@
 import type Crop from './crop.vue'
 
 export interface CropProps {
-  cropping: boolean
-  cropped: boolean
   cropSquare: boolean
-  baseHeight: number
+  width: number
+  height: number
 }
 
 export type CropEmits = {

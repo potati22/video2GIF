@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import { usePlayerStore } from '@/store/modules/player'
+import emitter from '@/utils/eventBus'
 
 const playerStore = usePlayerStore()
 
@@ -23,7 +24,8 @@ function record() {
     .then((videoStream) => recording(videoStream))
     .then((videoSrc) => {
       playerStore.changeVideoSrc(videoSrc)
-      loading.close()
+      console.log(videoSrc)
+      emitter.emit('videoChange', loading)
     })
     .catch(() => {
       loading.close()

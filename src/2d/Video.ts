@@ -1,40 +1,79 @@
-import { Container, Sprite, Assets } from 'pixi.js'
+import {
+  Container,
+  Sprite,
+  Assets,
+  Texture,
+  Loader,
+  TextureSource,
+} from 'pixi.js'
 
 class Video {
-  resource: HTMLVideoElement
-  isLoaded: boolean
   container: Container
-  originalWidth: number
-  originalHeight: number
+  isLoaded: boolean
+
+  videoTexture: Texture
+  videoSprite: Sprite
+  videoResource: HTMLVideoElement
 
   constructor() {
     this.container = new Container()
   }
 
-  async loadVideo() {
-    const texture = await Assets.load({
-      src: '/capture.mp4',
+  async loadVideo(videoUrl: string) {
+    return new Promise((resolve) => {
+      this.isLoaded = false
+
+      const video = document.createElement('video')
+      video.muted = false
+      video.src = videoUrl
+      video.oncanplay = () => {
+        video.play()
+        this.videoTexture = Texture.from(video)
+        this.videoResource = this.videoTexture.source.resource
+
+        this.videoSprite = new Sprite(this.videoTexture)
+        this.container.addChild(this.videoSprite)
+        this.isLoaded = true
+        resolve(true)
+      }
+    })
+    /* this.videoTexture = await Assets.load({
+      src: videoUrl,
       data: {
         preload: true,
         autoPlay: false,
       },
-    })
+    }) */
+    /* this.videoResource = this.videoTexture.source.resource
 
-    this.resource = texture.source.resource
-
-    const sprite = new Sprite(texture)
-
-    this.container.addChild(sprite)
-    this.originalHeight = this.container.height
-    this.originalWidth = this.container.width
-    this.isLoaded = true
+    this.videoSprite = new Sprite(this.videoTexture)
+    this.container.addChild(this.videoSprite)
+    this.isLoaded = true */
   }
 
   adjustVideo(sw: number, sh: number) {
     if (!this.isLoaded) return
 
-    // 让背景图和舞台大小适应 因为项目特点高度一定小于宽度 所以以高度为基准
-    this.container.scale = sh / this.originalHeight
+    // 让video的显示高度为工作区高度的0.8
+    this.container.scale = (sh * 0.8) / this.videoSprite.height
+
+    // 让video水平垂直居中
+    this.container.x = sw / 2 - this.container.width / 2
+    this.container.y = sh / 2 - this.container.height / 2
+  }
+
+  cropVideo(x: number, y: number, w: number, h: number) {
+    this.videoTexture.frame.x = x
+    this.videoTexture.frame.y = y
+    this.videoTexture.frame.width = w
+    this.videoTexture.frame.height = h
+    this.videoTexture.noFrame = false
+    this.videoTexture.updateUvs()
+
+    this.container.removeChild(this.videoSprite)
+
+    this.videoSprite = new Sprite(this.videoTexture)
+    this.container.addChild(this.videoSprite)
   }
 }
 

@@ -3,26 +3,27 @@ import { defineStore } from 'pinia'
 export const usePlayerStore = defineStore('player', () => {
   const videoRef: Ref<HTMLVideoElement> = ref(null)
   const videoSrc = ref('') // /capture.mp4
-  const videoSrcAlreadyChange = ref('') // 用于确保新的video的已加载完成
-  const videoHeight = ref(0)
+
   const duration = ref(0)
   const currentTime = ref(0)
   const startTime = ref(0)
   const endTime = ref(0)
   const playing = ref(false)
 
+  function changeVideoSrc(src: string) {
+    videoSrc.value = src
+  }
+
   function setVideoRef(video: HTMLVideoElement) {
     videoRef.value = video
   }
 
-  function initPlayer(vH: number, du: number) {
-    videoHeight.value = vH
-    duration.value = Number(du.toFixed(2))
+  function initPlayer() {
+    duration.value = Number(videoRef.value.duration.toFixed(2))
     currentTime.value = 0
     startTime.value = 0
     endTime.value = duration.value
     playing.value = false
-    videoSrcAlreadyChange.value = videoSrc.value
   }
 
   function changeCurrentTime(cu: number) {
@@ -41,15 +42,9 @@ export const usePlayerStore = defineStore('player', () => {
     playing.value = state
   }
 
-  function changeVideoSrc(src: string) {
-    videoSrc.value = src
-  }
-
   return {
     videoRef,
     videoSrc,
-    videoSrcAlreadyChange,
-    videoHeight,
     duration,
     currentTime,
     startTime,

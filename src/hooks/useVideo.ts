@@ -11,17 +11,11 @@ export function useVideo() {
         playerStore.videoRef.ontimeupdate = videoOnUpateTime
         playerStore.videoRef.currentTime = 0
         // 此时可以获取正确的duration值
-        playerStore.initPlayer(
-          playerStore.videoRef.videoHeight,
-          playerStore.videoRef.duration,
-        )
+        playerStore.initPlayer()
       }
       playerStore.videoRef.currentTime = 1e101
     } else {
-      playerStore.initPlayer(
-        playerStore.videoRef.videoHeight,
-        playerStore.videoRef.duration,
-      )
+      playerStore.initPlayer()
     }
   }
 
@@ -57,6 +51,7 @@ export function useVideo() {
   }
 
   return {
+    playerStore,
     videoInit,
     videoPlay,
     videoPause,
