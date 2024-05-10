@@ -12,13 +12,12 @@
 import KeyFrameWrap from './KeyFrameWrap.vue'
 
 import { useTrackStore } from '@/store/modules/track'
-import { usePlayerStore } from '@/store/modules/player'
 import { useFFmpeg } from '@/hooks/useFFmpeg'
+import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
 
 const trackStore = useTrackStore()
-const playerStore = usePlayerStore()
 const { extractKeyFrame } = useFFmpeg()
 
 const keyFrameRef: Ref<HTMLCanvasElement> = ref()
@@ -30,13 +29,11 @@ onMounted(() => {
   keyFrameCtx = keyFrameRef.value.getContext('2d')
 })
 
-watch(
-  () => playerStore.videoSrcAlreadyChange,
-  async () => {
-    keyFrames = await getKeyFrames()
-    drawKeyFrames()
-  },
-)
+emitter.on('videoLoaded', async (loading) => {
+  await getKeyFrames()
+  drawKeyFrames()
+  loading.close()
+})
 
 watch(
   () => trackStore.scaleLevel,
@@ -52,7 +49,7 @@ async function getKeyFrames() {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  const keyFrames: Blob[] = await extractKeyFrame()
+  keyFrames = await extractKeyFrame()
     .then((res) => res)
     .catch((err) => {
       ElMessage({
@@ -63,8 +60,6 @@ async function getKeyFrames() {
       return []
     })
     .finally(() => loading.close())
-
-  return keyFrames
 }
 
 async function drawKeyFrames() {

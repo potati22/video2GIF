@@ -16,6 +16,7 @@ import { useTimeTrack } from '@/hooks/useTimeTrack'
 import { useVideo } from '@/hooks/useVideo'
 
 import { formatTime3 } from '@/utils/formatTime'
+import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
 
@@ -28,8 +29,17 @@ const { videoSkip } = useVideo()
 const timeLineRef: Ref<HTMLCanvasElement> = ref()
 let timeLineCtx: CanvasRenderingContext2D
 
+emitter.on('videoLoaded', () => {
+  drawTimeLine(
+    timeLineCtx,
+    playerStore.duration,
+    trackStore.timeGap,
+    trackStore.spaceGap,
+  )
+})
+
 watch(
-  [() => playerStore.videoSrcAlreadyChange, () => trackStore.scaleLevel],
+  () => trackStore.scaleLevel,
   () => {
     nextTick(() => {
       drawTimeLine(

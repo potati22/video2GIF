@@ -22,7 +22,7 @@ import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
 
-const { playerStore, videoInit } = useVideo()
+const { playerStore, videoCreate } = useVideo()
 
 const outerBox: Ref<HTMLElement> = ref()
 const videoBox: Ref<HTMLElement> = ref()
@@ -58,21 +58,26 @@ onMounted(async () => {
   videoBox.value.appendChild(MainStage.app.canvas)
 
   await MainStage.loadBackground('/no-video.png')
-  MainStage.addChild(Video2D.container, Video2D.adjustVideo.bind(Video2D))
+  MainStage.resizeBackground(
+    MainStage.app.screen.width,
+    MainStage.app.screen.height,
+  )
+
+  MainStage.addChild(Video2D.container, Video2D.resizeVideo.bind(Video2D))
 })
 
 emitter.on('videoCrop', ({ x, y, w, h }) => {
   Video2D.cropVideo(x, y, w, h)
-  Video2D.adjustVideo(MainStage.app.screen.width, MainStage.app.screen.height)
+  Video2D.resizeVideo(MainStage.app.screen.width, MainStage.app.screen.height)
 })
 
-emitter.on('videoChange', async (loading) => {
+emitter.on('videoRecorded', async (loading) => {
   MainStage.background.visible = false
 
-  await Video2D.loadVideo(playerStore.videoSrc)
-  videoInit(Video2D.videoResource)
-  console.log('kkkk')
-  loading.close()
+  await videoCreate(playerStore.videoSrc)
+  Video2D.loadVideo(playerStore.videoRef)
+  Video2D.resizeVideo(MainStage.app.screen.width, MainStage.app.screen.height)
+  emitter.emit('videoLoaded', loading)
 })
 </script>
 

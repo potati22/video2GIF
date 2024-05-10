@@ -14,6 +14,7 @@
 import Wrap from '@/components/Wrap/wrap.vue'
 
 import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
+import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
 import { WrapInstance } from '@/components/Wrap/wrap'
@@ -21,7 +22,6 @@ import { WrapInstance } from '@/components/Wrap/wrap'
 const {
   clipStore,
   trackStore,
-  playerStore,
   changeStartTimeByClipLeft,
   changeEndTimeByClipRight,
   resetClip,
@@ -33,8 +33,12 @@ onMounted(() => {
   clipStore.setClipRef(unref(wrapRef))
 })
 
+emitter.on('videoLoaded', () => {
+  resetClip()
+})
+
 watch(
-  [() => playerStore.videoSrcAlreadyChange, () => trackStore.scaleLevel],
+  () => trackStore.scaleLevel,
   () => {
     resetClip()
   },

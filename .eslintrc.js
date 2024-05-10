@@ -25,5 +25,6 @@ module.exports = {
     'vue/multi-word-component-names': 0,
     'no-var': 'error',
     '@typescript-eslint/no-explicit-any': ['off'],
+    '@typescript-eslint/ban-ts-comment': 0,
   },
 }

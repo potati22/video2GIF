@@ -1,11 +1,4 @@
-import {
-  Container,
-  Sprite,
-  Assets,
-  Texture,
-  Loader,
-  TextureSource,
-} from 'pixi.js'
+import { Container, Sprite, Texture } from 'pixi.js'
 
 class Video {
   container: Container
@@ -19,39 +12,23 @@ class Video {
     this.container = new Container()
   }
 
-  async loadVideo(videoUrl: string) {
-    return new Promise((resolve) => {
-      this.isLoaded = false
+  async loadVideo(video: HTMLVideoElement) {
+    this.isLoaded = false
 
-      const video = document.createElement('video')
-      video.muted = false
-      video.src = videoUrl
-      video.oncanplay = () => {
-        video.play()
-        this.videoTexture = Texture.from(video)
-        this.videoResource = this.videoTexture.source.resource
+    this.videoTexture = Texture.from(video)
+    // @ts-ignore: autoPlay为VideoSource成员 可以访问
+    this.videoTexture.source.autoPlay = false
+    // @ts-ignore: preload为VideoSource成员 可以访问
+    // this.videoTexture.source.preload = true
 
-        this.videoSprite = new Sprite(this.videoTexture)
-        this.container.addChild(this.videoSprite)
-        this.isLoaded = true
-        resolve(true)
-      }
-    })
-    /* this.videoTexture = await Assets.load({
-      src: videoUrl,
-      data: {
-        preload: true,
-        autoPlay: false,
-      },
-    }) */
-    /* this.videoResource = this.videoTexture.source.resource
-
+    this.videoResource = this.videoTexture.source.resource
     this.videoSprite = new Sprite(this.videoTexture)
     this.container.addChild(this.videoSprite)
-    this.isLoaded = true */
+
+    this.isLoaded = true
   }
 
-  adjustVideo(sw: number, sh: number) {
+  resizeVideo(sw: number, sh: number) {
     if (!this.isLoaded) return
 
     // 让video的显示高度为工作区高度的0.8

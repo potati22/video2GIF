@@ -7,7 +7,8 @@ type Event = {
     w: number
     h: number
   }
-  videoChange: any
+  videoRecorded: any
+  videoLoaded: any
 }
 
 const emitter = mitt<Event>()

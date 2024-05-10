@@ -3,20 +3,36 @@ import { usePlayerStore } from '@/store/modules/player'
 export function useVideo() {
   const playerStore = usePlayerStore()
 
-  function videoInit(video: HTMLVideoElement) {
-    playerStore.setVideoRef(video)
+  async function videoCreate(videoUrl: string): Promise<true> {
+    return new Promise((resolve) => {
+      const video = document.createElement('video')
+      playerStore.setVideoRef(video)
 
-    if (playerStore.videoRef.duration === Infinity) {
-      playerStore.videoRef.ontimeupdate = () => {
-        playerStore.videoRef.ontimeupdate = videoOnUpateTime
-        playerStore.videoRef.currentTime = 0
-        // 此时可以获取正确的duration值
-        playerStore.initPlayer()
+      video.oncanplaythrough = () => {
+        video.oncanplaythrough = null
+
+        if (video.duration === Infinity) {
+          video.ontimeupdate = () => {
+            video.ontimeupdate = videoOnUpateTime
+            video.currentTime = 0
+            // 此时可以获取正确的duration值
+            playerStore.initPlayer()
+          }
+          video.currentTime = 1e101
+        } else {
+          video.ontimeupdate = videoOnUpateTime
+          playerStore.initPlayer()
+        }
+
+        resolve(true)
       }
-      playerStore.videoRef.currentTime = 1e101
-    } else {
-      playerStore.initPlayer()
-    }
+
+      // 先让video自动播放，保证pixi能获取到帧数据
+      // 当pixi创建完texture之后，再对texture设置autoPlay为false
+      video.muted = true
+      video.autoplay = true
+      video.src = videoUrl
+    })
   }
 
   // 监听video的currentTime变化
@@ -52,7 +68,7 @@ export function useVideo() {
 
   return {
     playerStore,
-    videoInit,
+    videoCreate,
     videoPlay,
     videoPause,
     videoPauseByAuto,

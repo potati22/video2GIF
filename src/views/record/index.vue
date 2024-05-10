@@ -24,8 +24,7 @@ function record() {
     .then((videoStream) => recording(videoStream))
     .then((videoSrc) => {
       playerStore.changeVideoSrc(videoSrc)
-      console.log(videoSrc)
-      emitter.emit('videoChange', loading)
+      emitter.emit('videoRecorded', loading)
     })
     .catch(() => {
       loading.close()
