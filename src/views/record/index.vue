@@ -20,6 +20,8 @@ function record() {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
+  /* playerStore.changeVideoSrc('/capture.mp4')
+  emitter.emit('videoRecorded', loading) */
   askForRecord()
     .then((videoStream) => recording(videoStream))
     .then((videoSrc) => {

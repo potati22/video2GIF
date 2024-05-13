@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from 'pixi.js'
+import { Container, Sprite, Texture, Graphics } from 'pixi.js'
 
 class Video {
   container: Container
@@ -7,6 +7,9 @@ class Video {
   videoTexture: Texture
   videoSprite: Sprite
   videoResource: HTMLVideoElement
+  private firstFrameHeight: number
+  private currentFrameHeight: number
+  private videoMask: Graphics
 
   constructor() {
     this.container = new Container()
@@ -24,13 +27,37 @@ class Video {
     this.videoResource = this.videoTexture.source.resource
     this.videoSprite = new Sprite(this.videoTexture)
     this.container.addChild(this.videoSprite)
+    this.resolveVideoHeightChange()
 
     this.isLoaded = true
+  }
+
+  // 录制的视频可能会出现 前几帧的画面比后面的画面尺寸大 的情况
+  // 目前不知道是哪里的原因：texture、sprite的尺寸会变 但container的尺寸不变（保持最大）
+  // 当前通过给container加上mask来解决
+  private resolveVideoHeightChange() {
+    this.firstFrameHeight = this.videoSprite.height
+    this.videoMask = new Graphics()
+    this.videoMask.rect(0, 0, this.videoSprite.width, this.videoSprite.height)
+    this.videoMask.fill(0xff0000)
+    this.container.addChild(this.videoMask)
+    this.container.mask = this.videoMask
+
+    this.videoResource.onresize = () => {
+      if (
+        !this.currentFrameHeight &&
+        this.videoSprite.height < this.firstFrameHeight
+      ) {
+        this.currentFrameHeight = this.videoSprite.height
+        this.videoMask.height = this.videoSprite.height
+      }
+    }
   }
 
   resizeVideo(sw: number, sh: number) {
     if (!this.isLoaded) return
 
+    this.container.updateLocalTransform()
     // 让video的显示高度为工作区高度的0.8
     this.container.scale = (sh * 0.8) / this.videoSprite.height
 
