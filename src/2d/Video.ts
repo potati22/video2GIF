@@ -1,4 +1,10 @@
-import { Container, Sprite, Texture, Graphics } from 'pixi.js'
+import { Container, Sprite, Texture, Graphics, Text, TextStyle } from 'pixi.js'
+
+interface MyTextStyle {
+  fill: string
+  fontWeight: 'bold' | 'normal'
+  fontSize: number
+}
 
 class Video {
   container: Container
@@ -8,7 +14,6 @@ class Video {
   videoSprite: Sprite
   videoResource: HTMLVideoElement
   private firstFrameHeight: number
-  private currentFrameHeight: number
   private videoMask: Graphics
 
   constructor() {
@@ -27,6 +32,8 @@ class Video {
     this.videoResource = this.videoTexture.source.resource
     this.videoSprite = new Sprite(this.videoTexture)
     this.container.addChild(this.videoSprite)
+    this.container.setChildIndex(this.videoSprite, 0)
+
     this.resolveVideoHeightChange()
 
     this.isLoaded = true
@@ -44,12 +51,9 @@ class Video {
     this.container.mask = this.videoMask
 
     this.videoResource.onresize = () => {
-      if (
-        !this.currentFrameHeight &&
-        this.videoSprite.height < this.firstFrameHeight
-      ) {
-        this.currentFrameHeight = this.videoSprite.height
+      if (this.videoSprite.height < this.firstFrameHeight) {
         this.videoMask.height = this.videoSprite.height
+        this.videoResource.onresize = null
       }
     }
   }
@@ -78,6 +82,44 @@ class Video {
 
     this.videoSprite = new Sprite(this.videoTexture)
     this.container.addChild(this.videoSprite)
+    this.container.setChildIndex(this.videoSprite, 0)
+  }
+
+  addText(str: string, style: MyTextStyle) {
+    const textStyle = new TextStyle(style)
+    const text = new Text({ text: str, style: textStyle })
+    this.container.addChild(text)
+    this.moveText(text)
+    return text
+  }
+
+  deleteText(text: Text) {
+    this.container.removeChild(text)
+  }
+
+  private moveText(text: Text) {
+    text.interactive = true
+    let canMove = false
+
+    text.onmousedown = () => {
+      canMove = true
+    }
+    text.onmousemove = (e) => {
+      if (!canMove) return
+      const x = text.x + e.movementX
+      const y = text.y + e.movementY
+      const maxX = this.videoSprite.width - text.width
+      const maxY = this.videoSprite.height - text.height
+      if (x < 0 || x > maxX || y < 0 || y > maxY) {
+        canMove = false
+      } else {
+        text.x = x
+        text.y = y
+      }
+    }
+    text.onmouseup = () => {
+      canMove = false
+    }
   }
 }
 

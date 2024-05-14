@@ -1,104 +1,113 @@
 <template>
-  <div v-show="!editorStore.editoring" class="row" @click="openEditorCover">
-    <PotButton class="btn">开始编辑</PotButton>
-  </div>
-  <div v-show="editorStore.editoring">
-    <div class="row">
-      <span class="label">字体大小：</span>
-      <PotButton class="btn scale" @click="incEditorTextSize">放大</PotButton>
-      <PotButton class="btn scale" @click="decEditorTextSize">缩小</PotButton>
+  <div class="text-box">
+    <div class="text-block-col">
+      <p>文本内容:</p>
+      <textarea v-model="textContent" rows="3" maxlength="50"></textarea>
     </div>
-    <div class="row">
-      <span class="label">字体加粗：</span>
-      <PotSwitch v-model="textIsBold"></PotSwitch>
-    </div>
-    <div class="row">
-      <span class="label">字体颜色：</span>
+    <div class="text-block-row">
+      <span>文本颜色:</span>
       <el-color-picker v-model="textColor" />
     </div>
-    <div class="row">
-      <PotButton type="yellow" class="btn" @click="confirmEditorText"
-        >确认文本</PotButton
-      >
+    <div class="text-block-row">
+      <span>文本大小:</span>
+      <el-input-number v-model="textSize" :min="26" :max="104" />
     </div>
-    <div class="row">
-      <PotButton class="btn" @click="deleteEditorText">删除文本</PotButton>
+    <div class="text-block-row">
+      <span>文本加粗:</span>
+      <PotSwitch v-model="textIsBold"></PotSwitch>
     </div>
-    <div class="row">
-      <PotButton class="btn" @click="closeEditor">取消</PotButton>
-    </div>
+    <PotButton v-show="!hasText" class="btn" type="yellow" @click="addText"
+      >添加文本</PotButton
+    >
+    <PotButton v-show="hasText" class="btn" @click="deleteText"
+      >删除文本</PotButton
+    >
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useCropStore } from '@/store/modules/crop'
-import { usePlayerStore } from '@/store/modules/player'
+import { Video2D } from '@/2d/Video'
 
-import { useEditor } from '@/hooks/useEditor'
+let text
 
-const cropStore = useCropStore()
-const playerStore = usePlayerStore()
-
-const {
-  editorStore,
-  openEditor,
-  closeEditor,
-  incEditorTextSize,
-  decEditorTextSize,
-  changeEditorTextWeight,
-  changeEditorTextColor,
-  confirmEditorText,
-  deleteEditorText,
-} = useEditor()
-
-watch(
-  () => playerStore.videoSrcAlreadyChange,
-  () => {
-    deleteEditorText()
-  },
-)
-
+const hasText = ref(false)
+const textContent = ref('')
+const textColor = ref('#ffffff')
+const textSize = ref(26)
 const textIsBold = ref(false)
-watch(textIsBold, (newVal) => {
-  const value = newVal ? 'bold' : 'normal'
-  changeEditorTextWeight(value)
+
+watch(textContent, (newVal) => {
+  if (!hasText.value) return
+  text.text = newVal
 })
 
-const textColor = ref('')
 watch(textColor, (newVal) => {
-  changeEditorTextColor(newVal)
+  if (!hasText.value) return
+  text.style.fill = newVal
 })
 
-function openEditorCover() {
-  if (!cropStore.cropped) {
-    ElMessage({
-      message: '请先裁剪视频',
-      type: 'warning',
-    })
-    return
-  }
-  openEditor()
+watch(textSize, (newVal) => {
+  if (!hasText.value) return
+  text.style.fontSize = newVal
+})
+
+watch(textIsBold, (newVal) => {
+  if (!hasText.value) return
+  text.style.fontWeight = newVal ? 'bold' : 'normal'
+})
+
+function addText() {
+  hasText.value = true
+  text = Video2D.addText(textContent.value, {
+    fill: textColor.value,
+    fontWeight: textIsBold.value ? 'bold' : 'normal',
+    fontSize: textSize.value,
+  })
+}
+
+function deleteText() {
+  hasText.value = false
+  Video2D.deleteText(text)
+  text = null
 }
 </script>
 
 <style lang="scss" scoped>
-.row {
+.text-box {
   width: 250px;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
 }
-.label {
-  margin-right: 10px;
+.text-block-col,
+.text-block-row {
+  color: #f9f9f9;
+}
+.text-block-col {
+  margin-bottom: 15px;
+  p {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+}
+.text-block-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 25px;
+  span {
+    margin-right: 15px;
+    font-weight: bold;
+  }
+}
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid #f9f9f9;
+  resize: none;
+}
+textarea:focus-visible {
+  outline: none;
 }
 .btn {
   width: 100%;
-  height: 36px;
-}
-.btn:nth-of-type(2) {
-  margin-left: 10px;
-}
-.scale {
-  width: 80px;
 }
 </style>
