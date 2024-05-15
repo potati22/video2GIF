@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { WrapInstance } from '@/components/web/Wrap'
+import { WrapInstance } from '@/components/Wrap/wrap'
 
 export const useClipStore = defineStore('clip', () => {
   const clipRef: Ref<WrapInstance> = ref()

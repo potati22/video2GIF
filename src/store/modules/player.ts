@@ -20,10 +20,10 @@ export const usePlayerStore = defineStore('player', () => {
 
   function initPlayer() {
     duration.value = Number(videoRef.value.duration.toFixed(2))
-    currentTime.value = 0
-    startTime.value = 0
-    endTime.value = duration.value
-    playing.value = false
+    changeCurrentTime(0)
+    changeStartTime(0)
+    changeEndTime(duration.value)
+    changePlaying(false)
   }
 
   function changeCurrentTime(cu: number) {

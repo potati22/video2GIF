@@ -18,7 +18,6 @@ specifiers:
   '@vitejs/plugin-vue': ^4.2.3
   commitlint-config-cz: 0.13.3
   cz-customizable: 6.3.0
-  dom-to-image-more: ^3.3.0
   element-plus: ^2.4.4
   eslint: 8.44.0
   eslint-config-prettier: 8.8.0
@@ -48,7 +47,6 @@ dependencies:
   '@potati/components': 2.0.3_7sjyaamtew2q7xvix7nfz6uee4
   '@potati/theme-chalk': 2.0.2
   '@types/node': 20.10.4
-  dom-to-image-more: 3.3.0
   element-plus: 2.4.4_vue@3.4.18
   mitt: 3.0.1
   pinia: 2.1.7_ooowal5p2hbo2kx3ujxopjdwai
@@ -2097,10 +2095,6 @@ packages:
       domhandler: 4.3.1
       entities: 2.2.0
     dev: true
-
-  /dom-to-image-more/3.3.0:
-    resolution: {integrity: sha512-4k0oxVfQ4Nrv4/Iva6FpsXTAtPCp5JnZNO/n/hsuOpe3ANlMiK50URZDQKzJslthQD8k76z9vHS3usIzmJoFVw==}
-    dev: false
 
   /domelementtype/1.3.1:
     resolution: {integrity: sha512-BSKB+TSpMpFI/HOxCNr1O8aMOTZ8hT3pM3GQ0w/mWRmkhEDSFJkkyzz4XQsBV44BChwGkrDfMyjVD0eA2aFV3w==}

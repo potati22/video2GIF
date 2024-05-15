@@ -16,6 +16,8 @@ class Video {
   private firstFrameHeight: number
   private videoMask: Graphics
 
+  texts: Set<Text> = new Set()
+
   constructor() {
     this.container = new Container()
   }
@@ -89,12 +91,14 @@ class Video {
     const textStyle = new TextStyle(style)
     const text = new Text({ text: str, style: textStyle })
     this.container.addChild(text)
+    this.texts.add(text)
     this.moveText(text)
     return text
   }
 
   deleteText(text: Text) {
     this.container.removeChild(text)
+    this.texts.delete(text)
   }
 
   private moveText(text: Text) {
@@ -103,8 +107,9 @@ class Video {
 
     text.onmousedown = () => {
       canMove = true
+      this.container.interactive = true
     }
-    text.onmousemove = (e) => {
+    this.container.onmousemove = (e) => {
       if (!canMove) return
       const x = text.x + e.movementX
       const y = text.y + e.movementY
@@ -117,8 +122,9 @@ class Video {
         text.y = y
       }
     }
-    text.onmouseup = () => {
+    this.container.onmouseup = () => {
       canMove = false
+      this.container.interactive = false
     }
   }
 }

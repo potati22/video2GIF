@@ -1,9 +1,9 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
-import domtoimage from 'dom-to-image-more'
+
+import { useGif } from '@/hooks/useGif'
 
 import { usePlayerStore } from '@/store/modules/player'
-import { useEditorStore } from '@/store/modules/editor'
 
 const ffmpeg = new FFmpeg()
 
@@ -42,7 +42,6 @@ async function cropInVideo(
   h: number,
   x: number,
   y: number,
-  gifH: number,
 ) {
   const gifCropName = 'crop.gif'
 
@@ -55,19 +54,23 @@ async function cropInVideo(
     videoName,
     '-vf', // 编辑操作
     `crop=${w}:${h}:${x}:${y}`,
-    '-s', // 输出大小
-    `150x${gifH}`,
+    /* '-s', // 输出大小
+    `150x${gifH}`, */
     gifCropName,
   ])
 
   return gifCropName
 }
 
-async function textInGIF(gifCropName: string, gifH: number) {
+async function textInGIF(
+  gifCropName: string,
+  watermarkUrl: string,
+  watermarkX: number,
+  watermarkY: number,
+) {
   const gifTextName = 'text.gif'
   const picTextName = 'logo.png'
 
-  const watermarkUrl = await divToImage()
   const logouint8arry = await fetchFile(watermarkUrl)
   await ffmpeg.writeFile(picTextName, logouint8arry)
 
@@ -77,43 +80,44 @@ async function textInGIF(gifCropName: string, gifH: number) {
     '-i',
     picTextName,
     '-filter_complex', // 滤镜
-    `[1:v]scale=150:${gifH}[scaled];[0:v][scaled]overlay=0:0`,
+    /* `[1:v]scale=150:${gifH}[scaled];[0:v][scaled]overlay=${watermarkX}:${watermarkX}`, */
+    `overlay=main_w-overlay_w-${watermarkX}:main_h-overlay_h-${watermarkY}`,
     gifTextName,
   ])
 
   return gifTextName
 }
 
-async function divToImage(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const node = document.getElementById('textPic')
-    domtoimage.toPng(node).then((dataUrl) => {
-      resolve(dataUrl)
-    }, reject)
-  })
-}
-
 export function useFFmpeg() {
   const playerStore = usePlayerStore()
-  const editorStore = useEditorStore()
+  const { createGIFJson } = useGif()
 
   async function videoToGIF() {
-    let finalGif: string = ''
-    const gifH = Math.floor((150 * cropStore.cropH) / cropStore.cropW)
-
-    const videoName = await writeVideo(playerStore.videoSrc)
-    finalGif = await cropInVideo(
-      videoName,
+    const GIFJson = await createGIFJson(
+      playerStore.videoSrc,
       playerStore.startTime,
       playerStore.endTime,
-      cropStore.cropW,
-      cropStore.cropH,
-      cropStore.cropX,
-      cropStore.cropY,
-      gifH,
+    )
+    let finalGif: string = ''
+
+    const videoName = await writeVideo(GIFJson.videosrc)
+    finalGif = await cropInVideo(
+      videoName,
+      GIFJson.videoclip.start,
+      GIFJson.videoclip.end,
+      GIFJson.videocrop.w,
+      GIFJson.videocrop.h,
+      GIFJson.videocrop.x,
+      GIFJson.videocrop.y,
     )
 
-    if (editorStore.editored) finalGif = await textInGIF(finalGif, gifH)
+    if (GIFJson.texts.length)
+      finalGif = await textInGIF(
+        finalGif,
+        GIFJson.texts[0].dataurl,
+        GIFJson.texts[0].pos.x,
+        GIFJson.texts[0].pos.y,
+      )
 
     const final = await ffmpeg.readFile(finalGif, 'binary')
     return URL.createObjectURL(
