@@ -7,12 +7,16 @@
     width="700"
     title="裁剪"
     :close-on-click-modal="false"
+    :show-close="false"
   >
     <div class="crop-box">
       <Crop
-        ref="cropRef"
-        :height="imgHeight"
-        :width="imgWidth"
+        v-model:crop-x="cropX"
+        v-model:crop-y="cropY"
+        v-model:crop-w="cropW"
+        v-model:crop-h="cropH"
+        :content-h="imgHeight"
+        :content-w="imgWidth"
         :crop-square="false"
       >
         <img :src="imgSrc" />
@@ -36,7 +40,6 @@ import { usePlayerStore } from '@/store/modules/player'
 import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
-import type { CropInstance } from '@/components/Crop/crop'
 
 const playerStore = usePlayerStore()
 
@@ -79,8 +82,11 @@ function videoToImage(
   }
 }
 
-const cropRef: Ref<CropInstance> = ref()
-const cropTemp = {
+const cropX = ref(0)
+const cropY = ref(0)
+const cropW = ref(200)
+const cropH = ref(200)
+const cropCache = {
   x: 0,
   y: 0,
   w: 200,
@@ -93,21 +99,24 @@ function cropStart() {
 
 function cropConfirm() {
   cropping.value = false
-  cropTemp.x = cropRef.value.cropBoxTransX
-  cropTemp.y = cropRef.value.cropBoxTransY
-  cropTemp.w = cropRef.value.cropBoxTransW
-  cropTemp.h = cropRef.value.cropBoxTransH
   emitter.emit('videoCrop', {
-    x: (cropTemp.x / imgScale) << 0,
-    y: (cropTemp.y / imgScale) << 0,
-    w: (cropTemp.w / imgScale) << 0,
-    h: (cropTemp.h / imgScale) << 0,
+    x: (cropX.value / imgScale) << 0,
+    y: (cropY.value / imgScale) << 0,
+    w: (cropW.value / imgScale) << 0,
+    h: (cropH.value / imgScale) << 0,
   })
+  cropCache.x = cropX.value
+  cropCache.y = cropY.value
+  cropCache.w = cropW.value
+  cropCache.h = cropH.value
 }
 
 function cropCancel() {
   cropping.value = false
-  cropRef.value.changeCropBox(cropTemp.x, cropTemp.y, cropTemp.w, cropTemp.h)
+  cropX.value = cropCache.x
+  cropY.value = cropCache.y
+  cropW.value = cropCache.w
+  cropH.value = cropCache.h
 }
 </script>
 

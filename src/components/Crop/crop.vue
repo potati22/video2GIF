@@ -20,59 +20,43 @@ import type { Ref } from 'vue'
 
 const props = withDefaults(defineProps<CropProps>(), {
   cropSquare: false,
-  width: 0,
-  height: 0,
+  contentW: 0,
+  contentH: 0,
+  cropX: 0,
+  cropY: 0,
+  cropW: 200,
+  cropH: 200,
 })
 
 const emits = defineEmits<CropEmits>()
 
-const cropBoxTransX = ref(0)
-const cropBoxTransY = ref(0)
-const cropBoxTransW = ref(200)
-const cropBoxTransH = ref(200)
-
 const wrapStyle = computed(() => {
   return {
-    '--x': `${cropBoxTransX.value}px`,
-    '--y': `${cropBoxTransY.value}px`,
-    '--w': `${cropBoxTransW.value}px`,
-    '--h': `${cropBoxTransH.value}px`,
-    '--x-w': `${cropBoxTransX.value + cropBoxTransW.value}px`,
-    '--y-h': `${cropBoxTransY.value + cropBoxTransH.value}px`,
+    '--x': `${props.cropX}px`,
+    '--y': `${props.cropY}px`,
+    '--w': `${props.cropW}px`,
+    '--h': `${props.cropH}px`,
+    '--x-w': `${props.cropX + props.cropW}px`,
+    '--y-h': `${props.cropY + props.cropH}px`,
   }
 })
 
 const cropStyle = computed(() => {
   return {
-    transform: `translate(${cropBoxTransX.value}px, ${cropBoxTransY.value}px)`,
-    width: `${cropBoxTransW.value}px`,
-    height: `${cropBoxTransH.value}px`,
+    transform: `translate(${props.cropX}px, ${props.cropY}px)`,
+    width: `${props.cropW}px`,
+    height: `${props.cropH}px`,
   }
-})
-
-function changeCropBox(x: number, y: number, w: number, h: number) {
-  cropBoxTransX.value = x
-  cropBoxTransY.value = y
-  cropBoxTransW.value = w
-  cropBoxTransH.value = h
-}
-
-defineExpose({
-  cropBoxTransX,
-  cropBoxTransY,
-  cropBoxTransW,
-  cropBoxTransH,
-  changeCropBox,
 })
 
 watch(
   () => props.cropSquare,
   (newVal) => {
     if (!newVal) return
-    if (cropBoxTransW.value > cropBoxTransH.value) {
-      cropBoxTransW.value = cropBoxTransH.value
+    if (props.cropW > props.cropH) {
+      emits('update:cropW', props.cropH)
     } else {
-      cropBoxTransH.value = cropBoxTransW.value
+      emits('update:cropH', props.cropW)
     }
   },
 )
@@ -116,13 +100,13 @@ function closeChange() {
 function registerCrop() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanmove) return
-    const x = cropBoxTransX.value + e.movementX
-    const y = cropBoxTransY.value + e.movementY
-    const maxX = props.width - cropBoxTransW.value
-    const maxY = props.height - cropBoxTransH.value
+    const x = props.cropX + e.movementX
+    const y = props.cropY + e.movementY
+    const maxX = props.contentW - props.cropW
+    const maxY = props.contentH - props.cropH
     if (x <= 0 || x >= maxX || y <= 0 || y >= maxY) return
-    cropBoxTransX.value = x
-    cropBoxTransY.value = y
+    emits('update:cropX', x)
+    emits('update:cropY', y)
   }
 
   moveRef.value.addEventListener('mousedown', openMove)
@@ -132,13 +116,13 @@ function registerCrop() {
 function registerTM() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanchange) return
-    const h = cropBoxTransH.value - e.movementY
-    const y = cropBoxTransY.value + e.movementY
-    const maxH = props.height
-    const maxY = props.height - h
+    const h = props.cropH - e.movementY
+    const y = props.cropY + e.movementY
+    const maxH = props.contentH
+    const maxY = props.contentH - h
     if (h < 0 || h >= maxH || y < 0 || y >= maxY) return
-    cropBoxTransH.value = h
-    cropBoxTransY.value = y
+    emits('update:cropH', h)
+    emits('update:cropY', y)
   }
 
   tmRef.value.addEventListener('mousedown', openChange)
@@ -148,10 +132,10 @@ function registerTM() {
 function registerBM() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanchange) return
-    const h = cropBoxTransH.value + e.movementY
-    const maxH = props.height - cropBoxTransY.value
+    const h = props.cropH + e.movementY
+    const maxH = props.contentH - props.cropY
     if (h < 0 || h >= maxH) return
-    cropBoxTransH.value = h
+    emits('update:cropH', h)
   }
 
   bmRef.value.addEventListener('mousedown', openChange)
@@ -161,13 +145,13 @@ function registerBM() {
 function registerLM() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanchange) return
-    const w = cropBoxTransW.value - e.movementX
-    const x = cropBoxTransX.value + e.movementX
-    const maxW = props.width
-    const maxX = props.width - w
+    const w = props.cropW - e.movementX
+    const x = props.cropX + e.movementX
+    const maxW = props.contentW
+    const maxX = props.contentW - w
     if (w < 0 || w >= maxW || x < 0 || x >= maxX) return
-    cropBoxTransW.value = w
-    cropBoxTransX.value = x
+    emits('update:cropW', w)
+    emits('update:cropX', x)
   }
 
   lmRef.value.addEventListener('mousedown', openChange)
@@ -177,10 +161,10 @@ function registerLM() {
 function registerRM() {
   function mouseMove(e: MouseEvent) {
     if (!cropCanchange) return
-    const w = cropBoxTransW.value + e.movementX
-    const maxW = props.width - cropBoxTransX.value
+    const w = props.cropW + e.movementX
+    const maxW = props.contentW - props.cropX
     if (w < 0 || w >= maxW) return
-    cropBoxTransW.value = w
+    emits('update:cropW', w)
   }
 
   rmRef.value.addEventListener('mousedown', openChange)

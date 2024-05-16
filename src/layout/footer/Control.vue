@@ -1,7 +1,10 @@
 <template>
   <div class="control-box">
     <div class="left-box">
-      <PotIcon icon-class="back" @click="restoreClip" />
+      <PotIcon
+        icon-class="back"
+        @click="() => emitter.emit('videoClipReset')"
+      />
     </div>
     <div class="center-box">
       <span>{{ formatTime3(playerStore.currentTime) }}</span>
@@ -26,13 +29,14 @@
 </template>
 
 <script lang="ts" setup>
-import { useKeyFrameWrap } from '@/hooks/useKeyFrameWrap'
+import { useTrackStore } from '@/store/modules/track'
 import { useVideo } from '@/hooks/useVideo'
 
 import { formatTime3 } from '@/utils/formatTime'
+import emitter from '@/utils/eventBus'
 
-const { videoPlay, videoPause } = useVideo()
-const { trackStore, playerStore, restoreClip } = useKeyFrameWrap()
+const trackStore = useTrackStore()
+const { playerStore, videoPlay, videoPause } = useVideo()
 </script>
 
 <style lang="scss" scoped>

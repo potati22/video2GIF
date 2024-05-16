@@ -9,6 +9,8 @@ type Event = {
   }
   videoRecorded: any
   videoLoaded: any
+  videoClipReset: any
+  videoClipOpen: any
 }
 
 const emitter = mitt<Event>()

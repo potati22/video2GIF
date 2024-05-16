@@ -28,33 +28,18 @@ import { WrapProps, WrapEmits } from './wrap'
 
 const props = withDefaults(defineProps<WrapProps>(), {
   wrapWidth: 0,
+  clipLeft: 0,
+  clipRight: 0,
 })
 
 const emits = defineEmits<WrapEmits>()
 
 const leftRef = ref()
 const rightRef = ref()
-const clipLeft = ref(0)
-const clipRight = ref(0)
 
 let leftFlag = false
 let rightFlag = false
 let clipping = false
-
-function changeClipLeft(offset: number) {
-  clipLeft.value = offset
-}
-
-function changeClipRight(offset: number) {
-  clipRight.value = offset
-}
-
-defineExpose({
-  clipLeft,
-  clipRight,
-  changeClipLeft,
-  changeClipRight,
-})
 
 onMounted(() => {
   registerLeft()
@@ -64,11 +49,10 @@ onMounted(() => {
 
 function registerAll() {
   window.addEventListener('mouseup', () => {
-    leftFlag && emits('clipLeftChange', clipLeft.value)
-    rightFlag && emits('clipRightChange', clipRight.value)
+    leftFlag && emits('clipLeftChange', props.clipLeft)
+    rightFlag && emits('clipRightChange', props.clipRight)
     leftFlag = rightFlag = false
     clipping = false
-    emits('clippingChange', clipping)
   })
 }
 
@@ -77,16 +61,16 @@ function registerLeft() {
     clipping = true
     leftFlag = true
     rightFlag = false
-    emits('clippingChange', clipping)
+    emits('clipOpen', clipping)
   }
 
   function mouseMove(e: MouseEvent) {
     if (!clipping) return
 
-    let offsetLeft = clipLeft.value + e.movementX
+    let offsetLeft = props.clipLeft + e.movementX
     if (offsetLeft < 0) return
-    if (offsetLeft + clipRight.value > props.wrapWidth - 100) return
-    clipLeft.value = offsetLeft
+    if (offsetLeft + props.clipRight > props.wrapWidth - 100) return
+    emits('update:clipLeft', offsetLeft)
   }
 
   leftRef.value.addEventListener('mousedown', mouseDown)
@@ -98,16 +82,16 @@ function registerRight() {
     clipping = true
     leftFlag = false
     rightFlag = true
-    emits('clippingChange', clipping)
+    emits('clipOpen', clipping)
   }
 
   function mouseMove(e: MouseEvent) {
     if (!clipping) return
 
-    let offsetRight = clipRight.value - e.movementX
+    let offsetRight = props.clipRight - e.movementX
     if (offsetRight < 0) return
-    if (offsetRight + clipLeft.value > props.wrapWidth - 100) return
-    clipRight.value = offsetRight
+    if (offsetRight + props.clipLeft > props.wrapWidth - 100) return
+    emits('update:clipRight', offsetRight)
   }
 
   rightRef.value.addEventListener('mousedown', mouseDown)

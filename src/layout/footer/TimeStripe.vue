@@ -8,14 +8,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useClipStore } from '@/store/modules/clip'
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 
 import { useTimeTrack } from '@/hooks/useTimeTrack'
 import { useVideo } from '@/hooks/useVideo'
+import emitter from '@/utils/eventBus'
 
-const clipStore = useClipStore()
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
 
@@ -32,14 +31,9 @@ const timeStripeRunSpeed = computed(() => {
   return trackStore.spaceGap / (trackStore.timeGap * 1000)
 })
 
-watch(
-  () => clipStore.clipping,
-  (newVal) => {
-    if (newVal) {
-      timeStripeShow.value = false
-    }
-  },
-)
+emitter.on('videoClipOpen', () => {
+  timeStripeShow.value = false
+})
 
 watch(
   () => playerStore.currentTime,
