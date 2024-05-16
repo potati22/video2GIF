@@ -43,23 +43,16 @@ watch(
 )
 
 async function getKeyFrames() {
-  const loading = ElLoading.service({
-    lock: true,
-    text: '👩🏻‍💻Working...',
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
-
   keyFrames = await extractKeyFrame()
     .then((res) => res)
     .catch((err) => {
       ElMessage({
-        message: 'ffmpeg错误了',
+        message: '关键帧预览图生成失败',
         type: 'error',
       })
       console.log(err)
       return []
     })
-    .finally(() => loading.close())
 }
 
 async function drawKeyFrames() {

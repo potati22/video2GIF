@@ -17,14 +17,14 @@ export function useVideo() {
             video.currentTime = 0
             // 此时可以获取正确的duration值
             playerStore.initPlayer()
+            resolve(true)
           }
           video.currentTime = 1e101
         } else {
           video.ontimeupdate = videoOnUpateTime
           playerStore.initPlayer()
+          resolve(true)
         }
-
-        resolve(true)
       }
 
       // 先让video自动播放，保证pixi能获取到帧数据
