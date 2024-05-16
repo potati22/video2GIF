@@ -81,7 +81,7 @@ async function textInGIF(
     picTextName,
     '-filter_complex', // 滤镜
     /* `[1:v]scale=150:${gifH}[scaled];[0:v][scaled]overlay=${watermarkX}:${watermarkX}`, */
-    `overlay=main_w-overlay_w-${watermarkX}:main_h-overlay_h-${watermarkY}`,
+    `overlay=${watermarkX}:${watermarkY}`,
     gifTextName,
   ])
 

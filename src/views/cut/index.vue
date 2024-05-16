@@ -83,8 +83,8 @@ const cropRef: Ref<CropInstance> = ref()
 const cropTemp = {
   x: 0,
   y: 0,
-  w: 100,
-  h: 100,
+  w: 200,
+  h: 200,
 }
 
 function cropStart() {
@@ -98,10 +98,10 @@ function cropConfirm() {
   cropTemp.w = cropRef.value.cropBoxTransW
   cropTemp.h = cropRef.value.cropBoxTransH
   emitter.emit('videoCrop', {
-    x: Math.floor(cropTemp.x / imgScale),
-    y: Math.floor(cropTemp.y / imgScale),
-    w: Math.floor(cropTemp.w / imgScale),
-    h: Math.floor(cropTemp.h / imgScale),
+    x: (cropTemp.x / imgScale) << 0,
+    y: (cropTemp.y / imgScale) << 0,
+    w: (cropTemp.w / imgScale) << 0,
+    h: (cropTemp.h / imgScale) << 0,
   })
 }
 

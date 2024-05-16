@@ -20,7 +20,7 @@ function record() {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  /* playerStore.changeVideoSrc('/capture.mp4')
+  /* playerStore.changeVideoSrc('/heli.webm')
   emitter.emit('videoRecorded', loading) */
   askForRecord()
     .then((videoStream) => recording(videoStream))
@@ -56,13 +56,16 @@ function recording(stream: MediaStream): Promise<string> {
       resolve(URL.createObjectURL(evt.data))
     })
 
-    recorder.start() // 开始记录
+    // 延迟开始录制，可解决视频开头几帧与后面帧画面高度不一致的问题
+    setTimeout(() => {
+      recorder.start() // 开始记录
+    }, 1000)
 
     // 录制10s后自动断开
     const stopTimer = setTimeout(() => {
       recorder.stop() // recoder.stop后 录制停止 但流没有停止
       stream.getTracks().forEach((item) => item.stop()) // 选项卡的录制标志与流有关
-    }, 10000)
+    }, 11000)
   })
 }
 </script>

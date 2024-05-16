@@ -28,8 +28,8 @@ const emits = defineEmits<CropEmits>()
 
 const cropBoxTransX = ref(0)
 const cropBoxTransY = ref(0)
-const cropBoxTransW = ref(100)
-const cropBoxTransH = ref(100)
+const cropBoxTransW = ref(200)
+const cropBoxTransH = ref(200)
 
 const wrapStyle = computed(() => {
   return {
