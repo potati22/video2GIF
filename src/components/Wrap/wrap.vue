@@ -61,7 +61,7 @@ function registerLeft() {
     clipping = true
     leftFlag = true
     rightFlag = false
-    emits('clipOpen', clipping)
+    emits('clipOpen')
   }
 
   function mouseMove(e: MouseEvent) {
@@ -82,7 +82,7 @@ function registerRight() {
     clipping = true
     leftFlag = false
     rightFlag = true
-    emits('clipOpen', clipping)
+    emits('clipOpen')
   }
 
   function mouseMove(e: MouseEvent) {

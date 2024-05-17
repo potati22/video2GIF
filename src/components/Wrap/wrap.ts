@@ -7,7 +7,7 @@ export interface WrapProps {
 }
 
 export type WrapEmits = {
-  clipOpen: [state: true]
+  clipOpen: []
   clipLeftChange: [offset: number]
   clipRightChange: [offset: number]
   'update:clipLeft': [value: number]

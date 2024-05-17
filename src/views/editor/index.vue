@@ -57,6 +57,13 @@ watch(textIsBold, (newVal) => {
 })
 
 function addText() {
+  if (!Video2D.isLoaded) {
+    ElMessage({
+      message: '工作区没有视频资源',
+      type: 'warning',
+    })
+    return
+  }
   hasText.value = true
   text = Video2D.addText(textContent.value, {
     fill: textColor.value,

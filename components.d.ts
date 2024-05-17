@@ -17,6 +17,7 @@ declare module 'vue' {
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElMain: typeof import('element-plus/es')['ElMain']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
     PotButton: typeof import('@potati/components')['PotButton']
     PotIcon: typeof import('@potati/components')['PotIcon']
     PotRadio: typeof import('@potati/components')['PotRadio']

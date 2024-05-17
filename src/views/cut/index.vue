@@ -94,6 +94,13 @@ const cropCache = {
 }
 
 function cropStart() {
+  if (!playerStore.videoSrc) {
+    ElMessage({
+      message: '工作区没有视频资源',
+      type: 'warning',
+    })
+    return
+  }
   cropping.value = true
 }
 

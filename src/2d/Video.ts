@@ -18,6 +18,7 @@ class Video {
 
   constructor() {
     this.container = new Container()
+    this.isLoaded = false
   }
 
   async loadVideo(video: HTMLVideoElement) {
@@ -49,6 +50,13 @@ class Video {
   }
 
   cropVideo(x: number, y: number, w: number, h: number) {
+    if (this.texts.size !== 0) {
+      this.texts.forEach((item) => {
+        item.x = 0
+        item.y = 0
+      })
+    }
+
     this.videoTexture.frame.x = x
     this.videoTexture.frame.y = y
     this.videoTexture.frame.width = w

@@ -88,36 +88,47 @@ async function textInGIF(
   return gifTextName
 }
 
+async function resizeGIF(gifName: string, w: number, h: number) {
+  await ffmpeg.exec(['-i', gifName, '-s', `${w}x${h}`, 'small.gif'])
+  return 'small.gif'
+}
+
 export function useFFmpeg() {
   const playerStore = usePlayerStore()
   const { createGIFJson } = useGif()
 
-  async function videoToGIF() {
+  async function videoToGIF(finalW: number, finalH: number) {
     const GIFJson = await createGIFJson(
       playerStore.videoSrc,
       playerStore.startTime,
       playerStore.endTime,
     )
-    let finalGif: string = ''
 
-    const videoName = await writeVideo(GIFJson.videosrc)
-    finalGif = await cropInVideo(
-      videoName,
-      GIFJson.videoclip.start,
-      GIFJson.videoclip.end,
-      GIFJson.videocrop.w,
-      GIFJson.videocrop.h,
-      GIFJson.videocrop.x,
-      GIFJson.videocrop.y,
-    )
-
-    if (GIFJson.texts.length)
-      finalGif = await textInGIF(
-        finalGif,
-        GIFJson.texts[0].dataurl,
-        GIFJson.texts[0].pos.x,
-        GIFJson.texts[0].pos.y,
+    const finalGif = await writeVideo(GIFJson.videosrc)
+      .then((videoName) =>
+        cropInVideo(
+          videoName,
+          GIFJson.videoclip.start,
+          GIFJson.videoclip.end,
+          GIFJson.videocrop.w,
+          GIFJson.videocrop.h,
+          GIFJson.videocrop.x,
+          GIFJson.videocrop.y,
+        ),
       )
+      .then((finalGif) => {
+        if (GIFJson.texts.length) {
+          return textInGIF(
+            finalGif,
+            GIFJson.texts[0].dataurl,
+            GIFJson.texts[0].pos.x,
+            GIFJson.texts[0].pos.y,
+          )
+        } else {
+          return finalGif
+        }
+      })
+      .then((finalGif) => resizeGIF(finalGif, finalW, finalH))
 
     const final = await ffmpeg.readFile(finalGif, 'binary')
     return URL.createObjectURL(
