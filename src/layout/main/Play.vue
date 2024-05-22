@@ -64,6 +64,16 @@ onMounted(async () => {
   )
 
   MainStage.addChild(Video2D.container, Video2D.resizeVideo.bind(Video2D))
+
+  // 浏览器第一次加载video时 可能会有页面奔溃问题
+  MainStage.app.canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault()
+    console.log('WebGL context lost')
+    ElMessage({
+      type: 'info',
+      message: '第一次加载视频失败，刷新浏览器重试即可',
+    })
+  })
 })
 
 emitter.on('videoCrop', ({ x, y, w, h }) => {

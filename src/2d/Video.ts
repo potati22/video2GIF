@@ -28,7 +28,7 @@ class Video {
     // @ts-ignore: autoPlay为VideoSource成员 可以访问
     this.videoTexture.source.autoPlay = false
     // @ts-ignore: preload为VideoSource成员 可以访问
-    // this.videoTexture.source.preload = true
+    this.videoTexture.source.preload = true
 
     this.videoResource = this.videoTexture.source.resource
     this.videoSprite = new Sprite(this.videoTexture)
