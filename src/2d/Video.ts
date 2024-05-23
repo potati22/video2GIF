@@ -32,6 +32,8 @@ class Video {
 
     this.videoResource = this.videoTexture.source.resource
     this.videoSprite = new Sprite(this.videoTexture)
+    this.container.removeChildren()
+    this.texts.clear()
     this.container.addChild(this.videoSprite)
     this.container.setChildIndex(this.videoSprite, 0)
 

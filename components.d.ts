@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Crop: typeof import('./src/components/Crop/crop.vue')['default']
-    Editor: typeof import('./src/components/Editor/editor.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElContainer: typeof import('element-plus/es')['ElContainer']
@@ -20,8 +19,6 @@ declare module 'vue' {
     ElSlider: typeof import('element-plus/es')['ElSlider']
     PotButton: typeof import('@potati/components')['PotButton']
     PotIcon: typeof import('@potati/components')['PotIcon']
-    PotRadio: typeof import('@potati/components')['PotRadio']
-    PotRadioGroup: typeof import('@potati/components')['PotRadioGroup']
     PotSwitch: typeof import('@potati/components')['PotSwitch']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

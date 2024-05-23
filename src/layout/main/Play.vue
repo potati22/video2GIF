@@ -57,7 +57,7 @@ onMounted(async () => {
   })
   videoBox.value.appendChild(MainStage.app.canvas)
 
-  await MainStage.loadBackground('/no-video.png')
+  await MainStage.loadBackground('./no-video.png')
   MainStage.resizeBackground(
     MainStage.app.screen.width,
     MainStage.app.screen.height,

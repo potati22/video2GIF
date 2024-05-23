@@ -23,26 +23,25 @@ interface GIFConfig {
 }
 
 export function useGif() {
-  const GIFJson: GIFConfig = {
-    videosrc: '',
-    videoclip: {
-      start: 0,
-      end: 0,
-    },
-    videocrop: {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    texts: [],
-  }
-
   async function createGIFJson(
     videosrc: string,
     starttime: number,
     endtime: number,
   ) {
+    const GIFJson: GIFConfig = {
+      videosrc: '',
+      videoclip: {
+        start: 0,
+        end: 0,
+      },
+      videocrop: {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0,
+      },
+      texts: [],
+    }
     GIFJson.videosrc = videosrc
     GIFJson.videoclip.start = starttime
     GIFJson.videoclip.end = endtime
@@ -50,11 +49,11 @@ export function useGif() {
     GIFJson.videocrop.y = Video2D.videoTexture.frame.y
     GIFJson.videocrop.w = Video2D.videoTexture.frame.width
     GIFJson.videocrop.h = Video2D.videoTexture.frame.height
-    await textToPng()
+    await textToPng(GIFJson)
     return GIFJson
   }
 
-  async function textToPng() {
+  async function textToPng(GIFJson: GIFConfig) {
     for (const item of Video2D.texts) {
       const res = await MainStage.app.renderer.extract.base64(item)
       GIFJson.texts.push({

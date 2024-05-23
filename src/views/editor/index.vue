@@ -27,6 +27,7 @@
 
 <script lang="ts" setup>
 import { Video2D } from '@/2d/Video'
+import emitter from '@/utils/eventBus'
 
 let text
 
@@ -35,6 +36,15 @@ const textContent = ref('')
 const textColor = ref('#ffffff')
 const textSize = ref(26)
 const textIsBold = ref(false)
+
+emitter.on('videoLoaded', async () => {
+  text = null
+  hasText.value = false
+  textContent.value = ''
+  textColor.value = '#ffffff'
+  textSize.value = 26
+  textIsBold.value = false
+})
 
 watch(textContent, (newVal) => {
   if (!hasText.value) return
