@@ -4,9 +4,7 @@
 
 <script lang="ts" setup>
 import Layout from '@/layout/index.vue'
-import { useFFmpeg } from '@/hooks/useFFmpeg'
-
-const { initFFmpeg } = useFFmpeg()
+import ffmanager from '@/utils/ffmpegManager'
 
 // 第一次进入该网站 需要先加载ffmpeg
 onMounted(() => {
@@ -16,7 +14,8 @@ onMounted(() => {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  initFFmpeg()
+  ffmanager
+    .init()
     .finally(() => loading.close())
     .catch(() => {
       ElMessage({

@@ -12,13 +12,12 @@
 import KeyFrameWrap from './KeyFrameWrap.vue'
 
 import { useTrackStore } from '@/store/modules/track'
-import { useFFmpeg } from '@/hooks/useFFmpeg'
+import ffmanager from '@/utils/ffmpegManager'
 import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
 
 const trackStore = useTrackStore()
-const { extractKeyFrame } = useFFmpeg()
 
 const keyFrameRef: Ref<HTMLCanvasElement> = ref()
 let keyFrameCtx: CanvasRenderingContext2D
@@ -30,8 +29,8 @@ onMounted(() => {
 })
 
 emitter.on('videoLoaded', async (loading) => {
-  /* await getKeyFrames()
-  drawKeyFrames() */
+  await getKeyFrames()
+  drawKeyFrames()
   loading.close()
 })
 
@@ -43,7 +42,8 @@ watch(
 )
 
 async function getKeyFrames() {
-  keyFrames = await extractKeyFrame()
+  keyFrames = await ffmanager
+    .genKeyFrame()
     .then((res) => res)
     .catch((err) => {
       ElMessage({

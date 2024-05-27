@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <PotButton class="btn" @click="downloadGIF">导出GIF</PotButton>
+    <PotButton class="btn" @click="tryDownload">导出GIF</PotButton>
     <a
       ref="gifDownloadRef"
       :href="gifSrc"
@@ -31,7 +31,10 @@
     </div>
     <template #footer>
       <div>
-        <PotButton type="yellow" style="margin-right: 20px" @click="confirm"
+        <PotButton
+          type="yellow"
+          style="margin-right: 20px"
+          @click="confirmDownload"
           >确定</PotButton
         >
         <PotButton @click="cancel">取消</PotButton>
@@ -41,12 +44,10 @@
 </template>
 
 <script setup lang="ts">
-import { useFFmpeg } from '@/hooks/useFFmpeg'
 import { Video2D } from '@/2d/Video'
+import { createGIF } from './genGIF'
 
 import type { Ref } from 'vue'
-
-const { videoToGIF } = useFFmpeg()
 
 const downloading = ref(false)
 const scale = ref(100)
@@ -69,7 +70,7 @@ onUnmounted(() => {
   gifSrc.value && URL.revokeObjectURL(gifSrc.value)
 })
 
-async function downloadGIF() {
+async function tryDownload() {
   if (!Video2D.isLoaded) {
     ElMessage({
       message: '工作区没有视频资源',
@@ -82,7 +83,7 @@ async function downloadGIF() {
   downloading.value = true
 }
 
-async function confirm() {
+async function confirmDownload() {
   downloading.value = false
   gifSrc.value && URL.revokeObjectURL(gifSrc.value)
 
@@ -93,7 +94,7 @@ async function confirm() {
   })
 
   try {
-    gifSrc.value = await videoToGIF(finalW.value, finalH.value)
+    gifSrc.value = await createGIF(finalW.value, finalH.value)
   } catch (err) {
     ElMessage({
       message: 'ffmpeg错误了',

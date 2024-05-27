@@ -6,11 +6,12 @@
 
 <script setup lang="ts">
 import { usePlayerStore } from '@/store/modules/player'
+import ffmanager from '@/utils/ffmpegManager'
 import emitter from '@/utils/eventBus'
 
 const playerStore = usePlayerStore()
 
-function record() {
+async function record() {
   // 主动释放之前创建的URL对象 否则只会在document卸载时自动释放
   if (playerStore.videoSrc) URL.revokeObjectURL(playerStore.videoSrc)
 
@@ -20,21 +21,23 @@ function record() {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  playerStore.changeVideoSrc('/heli.webm')
-  emitter.emit('videoRecorded', loading)
-  /* askForRecord()
+  /* playerStore.changeVideoSrc('/heli.webm')
+  await ffmanager.writeVideo('/heli.webm')
+  emitter.emit('videoRecorded', loading) */
+  askForRecord()
     .then((videoStream) => recording(videoStream))
     .then((videoSrc) => {
       playerStore.changeVideoSrc(videoSrc)
-      emitter.emit('videoRecorded', loading)
+      return ffmanager.writeVideo(videoSrc)
     })
+    .then(() => emitter.emit('videoRecorded', loading))
     .catch(() => {
       loading.close()
       ElMessage({
         message: '发生错误',
         type: 'warning',
       })
-    }) */
+    })
 }
 
 // 提示用户去选择和授权需要捕获的内容，并将其展示在一个MediaStream里

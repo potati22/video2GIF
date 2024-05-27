@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { usePlayerStore } from '@/store/modules/player'
-import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
+import { useGlobalResizeObserver } from '@/hooks/useGlobalResizeObserver'
 
 import { MainStage } from '@/2d/Stage'
 import { Video2D } from '@/2d/Video'
