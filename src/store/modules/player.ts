@@ -14,22 +14,6 @@ export const usePlayerStore = defineStore('player', () => {
     videoSrc.value = src
   }
 
-  function setVideoRef(video: HTMLVideoElement) {
-    videoRef.value = video
-  }
-
-  function initPlayer() {
-    duration.value = Number(videoRef.value.duration.toFixed(2))
-    changeCurrentTime(0)
-    changeStartTime(0)
-    changeEndTime(duration.value)
-    changePlaying(false)
-  }
-
-  function changeCurrentTime(cu: number) {
-    currentTime.value = cu
-  }
-
   function changeStartTime(cu: number) {
     startTime.value = cu
   }
@@ -38,8 +22,74 @@ export const usePlayerStore = defineStore('player', () => {
     endTime.value = cu
   }
 
-  function changePlaying(state: boolean) {
-    playing.value = state
+  function initPlayer() {
+    duration.value = Number(videoRef.value.duration.toFixed(2))
+    currentTime.value = 0
+    startTime.value = 0
+    endTime.value = duration.value
+    playing.value = false
+  }
+
+  async function videoCreate(): Promise<true> {
+    return new Promise((resolve) => {
+      const video = document.createElement('video')
+      videoRef.value = video
+
+      video.oncanplaythrough = () => {
+        video.oncanplaythrough = null
+
+        if (video.duration === Infinity) {
+          video.ontimeupdate = () => {
+            video.ontimeupdate = videoOnUpateTime
+            video.currentTime = 0
+            // 此时可以获取正确的duration值
+            initPlayer()
+            resolve(true)
+          }
+          video.currentTime = 1e101
+        } else {
+          video.ontimeupdate = videoOnUpateTime
+          initPlayer()
+          resolve(true)
+        }
+      }
+
+      // 先让video自动播放，保证pixi能获取到帧数据
+      // 当pixi创建完texture之后，再对texture设置autoPlay为false
+      video.muted = true
+      video.autoplay = true
+      video.src = videoSrc.value
+    })
+  }
+
+  // 监听video的currentTime变化
+  function videoOnUpateTime() {
+    const time = Number(videoRef.value.currentTime.toFixed(2))
+    currentTime.value = time
+  }
+
+  function videoPlay() {
+    // 当前时间 等于 最晚时间 时, 重置当前时间为 最早时间
+    if (currentTime.value >= endTime.value) {
+      videoRef.value.currentTime = startTime.value
+    }
+    playing.value = true
+    videoRef.value.play()
+  }
+
+  function videoPause() {
+    playing.value = false
+    videoRef.value.pause()
+  }
+
+  function videoPauseByAuto() {
+    playing.value = false
+    videoRef.value.pause()
+    videoRef.value.currentTime = endTime.value
+  }
+
+  function videoSkip(time: number) {
+    videoRef.value.currentTime = time
   }
 
   return {
@@ -50,12 +100,13 @@ export const usePlayerStore = defineStore('player', () => {
     startTime,
     endTime,
     playing,
-    setVideoRef,
-    initPlayer,
-    changeCurrentTime,
-    changeStartTime,
-    changeEndTime,
-    changePlaying,
     changeVideoSrc,
+    changeEndTime,
+    changeStartTime,
+    videoCreate,
+    videoPause,
+    videoPauseByAuto,
+    videoPlay,
+    videoSkip,
   }
 })

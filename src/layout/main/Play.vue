@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useVideo } from '@/hooks/useVideo'
+import { usePlayerStore } from '@/store/modules/player'
 import { useGlobalResizeObserver } from '@/hooks/core/useGlobalResizeObserver'
 
 import { MainStage } from '@/2d/Stage'
@@ -22,7 +22,7 @@ import emitter from '@/utils/eventBus'
 
 import type { Ref } from 'vue'
 
-const { playerStore, videoCreate } = useVideo()
+const playerStore = usePlayerStore()
 
 const outerBox: Ref<HTMLElement> = ref()
 const videoBox: Ref<HTMLElement> = ref()
@@ -84,7 +84,7 @@ emitter.on('videoCrop', ({ x, y, w, h }) => {
 emitter.on('videoRecorded', async (loading) => {
   MainStage.background.visible = false
 
-  await videoCreate(playerStore.videoSrc)
+  await playerStore.videoCreate()
   Video2D.loadVideo(playerStore.videoRef)
   Video2D.resizeVideo(MainStage.app.screen.width, MainStage.app.screen.height)
   emitter.emit('videoLoaded', loading)

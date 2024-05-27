@@ -17,36 +17,32 @@ import Wrap from '@/components/Wrap/wrap.vue'
 import emitter from '@/utils/eventBus'
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
-import { useTimeTrack } from '@/hooks/useTimeTrack'
-import { useVideo } from '@/hooks/useVideo'
 
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
-
-const { getCurrentTimefromOffsetX, getOffsetXfromCurrentTime } = useTimeTrack()
-const { videoSkip } = useVideo()
 
 const clipLeft = ref(0)
 const clipRight = ref(0)
 
 function changeStartTimeByClipLeft() {
-  const currentTime = getCurrentTimefromOffsetX(clipLeft.value)
+  const currentTime = trackStore.getCurrentTimefromOffsetX(clipLeft.value)
   playerStore.changeStartTime(currentTime)
-  videoSkip(currentTime)
+  playerStore.videoSkip(currentTime)
 }
 
 function changeEndTimeByClipRight() {
-  const currentTime = getCurrentTimefromOffsetX(
+  const currentTime = trackStore.getCurrentTimefromOffsetX(
     trackStore.trackWidth - clipRight.value,
   )
   playerStore.changeEndTime(currentTime)
-  videoSkip(currentTime)
+  playerStore.videoSkip(currentTime)
 }
 
 function resetClip() {
-  clipLeft.value = getOffsetXfromCurrentTime(playerStore.startTime)
+  clipLeft.value = trackStore.getOffsetXfromCurrentTime(playerStore.startTime)
   clipRight.value =
-    trackStore.trackWidth - getOffsetXfromCurrentTime(playerStore.endTime)
+    trackStore.trackWidth -
+    trackStore.getOffsetXfromCurrentTime(playerStore.endTime)
 }
 
 emitter.on('videoLoaded', () => {

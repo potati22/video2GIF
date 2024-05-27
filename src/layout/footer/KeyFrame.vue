@@ -30,8 +30,8 @@ onMounted(() => {
 })
 
 emitter.on('videoLoaded', async (loading) => {
-  await getKeyFrames()
-  drawKeyFrames()
+  /* await getKeyFrames()
+  drawKeyFrames() */
   loading.close()
 })
 

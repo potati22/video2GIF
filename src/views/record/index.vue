@@ -20,9 +20,9 @@ function record() {
     background: 'rgba(0, 0, 0, 0.7)',
   })
 
-  /* playerStore.changeVideoSrc('/heli.webm')
-  emitter.emit('videoRecorded', loading) */
-  askForRecord()
+  playerStore.changeVideoSrc('/heli.webm')
+  emitter.emit('videoRecorded', loading)
+  /* askForRecord()
     .then((videoStream) => recording(videoStream))
     .then((videoSrc) => {
       playerStore.changeVideoSrc(videoSrc)
@@ -34,7 +34,7 @@ function record() {
         message: '发生错误',
         type: 'warning',
       })
-    })
+    }) */
 }
 
 // 提示用户去选择和授权需要捕获的内容，并将其展示在一个MediaStream里

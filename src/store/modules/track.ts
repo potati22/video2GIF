@@ -47,6 +47,19 @@ export const useTrackStore = defineStore('track', () => {
     scaleLevel.value + 1 <= timeLineSpecMax && ++scaleLevel.value
   }
 
+  function getCurrentTimefromOffsetX(offsetX: number) {
+    if (playerStore.duration === 0) return 0
+    const R = offsetX / (playerStore.duration * spaceGap.value)
+    return Number((R * playerStore.duration).toFixed(2))
+  }
+
+  function getOffsetXfromCurrentTime(time: number) {
+    if (playerStore.duration === 0) return 0
+    // 当前时间 / 总时长 = offsetX / 真实总轴长
+    const R = time / playerStore.duration
+    return Math.floor(R * trackWidth.value)
+  }
+
   return {
     scaleLevel,
     timeGap,
@@ -55,5 +68,7 @@ export const useTrackStore = defineStore('track', () => {
     trackWidth,
     reduceScaleLevel,
     addScaleLevel,
+    getCurrentTimefromOffsetX,
+    getOffsetXfromCurrentTime,
   }
 })

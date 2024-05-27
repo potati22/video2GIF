@@ -11,12 +11,12 @@
       <PotIcon
         v-show="!playerStore.playing"
         icon-class="play"
-        @click="videoPlay"
+        @click="playerStore.videoPlay"
       />
       <PotIcon
         v-show="playerStore.playing"
         icon-class="pause"
-        @click="videoPause"
+        @click="playerStore.videoPause"
       />
       <span>{{ formatTime3(playerStore.duration) }}</span>
     </div>
@@ -30,13 +30,13 @@
 
 <script lang="ts" setup>
 import { useTrackStore } from '@/store/modules/track'
-import { useVideo } from '@/hooks/useVideo'
+import { usePlayerStore } from '@/store/modules/player'
 
 import { formatTime3 } from '@/utils/formatTime'
 import emitter from '@/utils/eventBus'
 
 const trackStore = useTrackStore()
-const { playerStore, videoPlay, videoPause } = useVideo()
+const playerStore = usePlayerStore()
 </script>
 
 <style lang="scss" scoped>

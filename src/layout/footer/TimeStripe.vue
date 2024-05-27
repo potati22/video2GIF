@@ -11,15 +11,10 @@
 import { useTrackStore } from '@/store/modules/track'
 import { usePlayerStore } from '@/store/modules/player'
 
-import { useTimeTrack } from '@/hooks/useTimeTrack'
-import { useVideo } from '@/hooks/useVideo'
 import emitter from '@/utils/eventBus'
 
 const trackStore = useTrackStore()
 const playerStore = usePlayerStore()
-
-const { getOffsetXfromCurrentTime } = useTimeTrack()
-const { videoPauseByAuto } = useVideo()
 
 const offsetX = ref(0)
 // 时间线的偏移距离（起始点为3
@@ -39,7 +34,7 @@ watch(
   () => playerStore.currentTime,
   (newVal) => {
     if (!playerStore.playing) {
-      offsetX.value = getOffsetXfromCurrentTime(newVal)
+      offsetX.value = trackStore.getOffsetXfromCurrentTime(newVal)
       if (!timeStripeShow.value) {
         timeStripeShow.value = true
       }
@@ -50,7 +45,9 @@ watch(
 watch(
   () => trackStore.scaleLevel,
   () => {
-    offsetX.value = getOffsetXfromCurrentTime(playerStore.currentTime)
+    offsetX.value = trackStore.getOffsetXfromCurrentTime(
+      playerStore.currentTime,
+    )
   },
 )
 
@@ -62,10 +59,10 @@ watch(
 )
 
 function timeStripeRun() {
-  const offsetXMax = getOffsetXfromCurrentTime(playerStore.endTime)
+  const offsetXMax = trackStore.getOffsetXfromCurrentTime(playerStore.endTime)
 
   if (offsetX.value >= offsetXMax) {
-    offsetX.value = getOffsetXfromCurrentTime(playerStore.startTime)
+    offsetX.value = trackStore.getOffsetXfromCurrentTime(playerStore.startTime)
   }
   const preOffsetX = offsetX.value
 
@@ -87,7 +84,7 @@ function timeStripeRun() {
     }
 
     if (offsetX.value == offsetXMax) {
-      videoPauseByAuto()
+      playerStore.videoPauseByAuto()
     } else {
       preTimeStamp = timestamp
       if (!done) window.requestAnimationFrame(step)
