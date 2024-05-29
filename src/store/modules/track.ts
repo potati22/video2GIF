@@ -49,7 +49,7 @@ export const useTrackStore = defineStore('track', () => {
 
   function getCurrentTimefromOffsetX(offsetX: number) {
     if (playerStore.duration === 0) return 0
-    const R = offsetX / (playerStore.duration * spaceGap.value)
+    const R = offsetX / trackWidth.value
     return Number((R * playerStore.duration).toFixed(2))
   }
 
