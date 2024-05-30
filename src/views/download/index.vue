@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <PotButton class="btn" @click="tryDownload">导出GIF</PotButton>
+    <PotButton class="btn" @click="openDialog">导出GIF</PotButton>
     <a
       ref="gifDownloadRef"
       :href="gifSrc"
@@ -8,60 +8,24 @@
       style="display: none"
     ></a>
   </div>
-  <el-dialog
-    v-model="downloading"
-    width="500"
-    title="调整GIF"
-    :close-on-click-modal="false"
-    :show-close="false"
-  >
-    <div class="gif-box">
-      <div class="gif-row">
-        <span class="text">调整尺寸：</span>
-        <el-slider v-model="scale" :step="10" :min="minScale" :max="100" />
-      </div>
-      <div class="gif-row">
-        <span class="text">原始尺寸：</span>
-        <span>{{ originalW }} X {{ originalH }}</span>
-      </div>
-      <div class="gif-row">
-        <span class="text">最终尺寸：</span>
-        <span>{{ finalW }} X {{ finalH }}</span>
-      </div>
-    </div>
-    <template #footer>
-      <div>
-        <PotButton
-          type="yellow"
-          style="margin-right: 20px"
-          @click="confirmDownload"
-          >确定</PotButton
-        >
-        <PotButton @click="cancel">取消</PotButton>
-      </div>
-    </template>
-  </el-dialog>
+  <Dialog
+    v-model:is-dialog-show="downloading"
+    :original-w="originalW"
+    :original-h="originalH"
+    @confirm="downloadGIF"
+  ></Dialog>
 </template>
 
 <script setup lang="ts">
+import Dialog from './dialog.vue'
 import { Video2D } from '@/2d/Video'
-import { createGIF } from './genGIF'
+import { createGIF } from './generateGIF'
 
 import type { Ref } from 'vue'
 
 const downloading = ref(false)
-const scale = ref(100)
 let originalW = ref(0)
 let originalH = ref(0)
-const minScale = computed(() => {
-  return ((150 / originalH.value) * 100) << 0
-})
-const finalW = computed(() => {
-  return (originalW.value * (scale.value / 100)) << 0
-})
-const finalH = computed(() => {
-  return (originalH.value * (scale.value / 100)) << 0
-})
 
 const gifSrc = ref('')
 const gifDownloadRef: Ref<HTMLAnchorElement> = ref()
@@ -70,7 +34,7 @@ onUnmounted(() => {
   gifSrc.value && URL.revokeObjectURL(gifSrc.value)
 })
 
-async function tryDownload() {
+function openDialog() {
   if (!Video2D.isLoaded) {
     ElMessage({
       message: '工作区没有视频资源',
@@ -83,8 +47,7 @@ async function tryDownload() {
   downloading.value = true
 }
 
-async function confirmDownload() {
-  downloading.value = false
+async function downloadGIF(finalW: number, finalH: number) {
   gifSrc.value && URL.revokeObjectURL(gifSrc.value)
 
   const loading = ElLoading.service({
@@ -94,7 +57,7 @@ async function confirmDownload() {
   })
 
   try {
-    gifSrc.value = await createGIF(finalW.value, finalH.value)
+    gifSrc.value = await createGIF(finalW, finalH)
   } catch (err) {
     ElMessage({
       message: 'ffmpeg错误了',
@@ -111,10 +74,6 @@ async function confirmDownload() {
     gifDownloadRef.value.click()
   }, 0)
 }
-
-function cancel() {
-  downloading.value = false
-}
 </script>
 
 <style lang="scss" scoped>
@@ -127,23 +86,5 @@ function cancel() {
 .btn {
   width: 250px;
   height: 36px;
-}
-.gif-box {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-.gif-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.text {
-  font-weight: bold;
-  margin-right: 20px;
-}
-.el-slider {
-  width: 70%;
-  --el-slider-main-bg-color: var(--pot-color-yellow);
 }
 </style>

@@ -3,6 +3,14 @@ import { MainStage } from '@/2d/Stage'
 import { Video2D } from '@/2d/Video'
 import ffmanager from '@/utils/ffmpegManager'
 
+interface GIFText {
+  pos: {
+    x: number
+    y: number
+  }
+  dataurl: string
+}
+
 interface GIFConfig {
   videosrc: string
   videoclip: {
@@ -15,16 +23,10 @@ interface GIFConfig {
     w: number
     h: number
   }
-  texts?: {
-    pos: {
-      x: number
-      y: number
-    }
-    dataurl: string
-  }[]
+  texts?: GIFText[]
 }
 
-async function createGIFJson() {
+async function createGIFJson(): Promise<GIFConfig> {
   const playerStore = usePlayerStore()
 
   const GIFJson = {} as GIFConfig
@@ -44,7 +46,7 @@ async function createGIFJson() {
   return GIFJson
 }
 
-async function textToPng() {
+async function textToPng(): Promise<GIFText[]> {
   const texts = []
   for (const item of Video2D.texts) {
     const res = await MainStage.app.renderer.extract.base64(item)
@@ -59,7 +61,10 @@ async function textToPng() {
   return texts
 }
 
-export async function createGIF(finalW: number, finalH: number) {
+export async function createGIF(
+  finalW: number,
+  finalH: number,
+): Promise<string> {
   const GIFJson = await createGIFJson()
   const GIF = await ffmanager
     .videoToGIF(
