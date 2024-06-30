@@ -22,7 +22,8 @@ class FFManager {
   }
 
   async init() {
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
+    // const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
+    const baseURL = 'https://potati22.github.io/video2GIF'
     this.isInited = await this.ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(
