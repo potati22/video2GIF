@@ -1,4 +1,4 @@
-import { D as c, n } from './index-f246c644.js'
+import { D as c, n } from './index-1a4f7b41.js'
 class l {
   constructor(a) {
     ;(this._canvasPool = Object.create(null)),

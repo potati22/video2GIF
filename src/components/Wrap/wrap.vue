@@ -139,6 +139,15 @@ function registerRight() {
 .select-right:hover {
   cursor: ew-resize;
 }
+.select-left::after,
+.select-right::after {
+  content: '';
+  position: absolute;
+  width: 400%;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
 .shadow {
   position: absolute;
   top: 0;
