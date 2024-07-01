@@ -8812,13 +8812,13 @@ const Vo = (e) => {
     test: () => !0,
     load: async () => {
       await xs(
-        () => import('./browserAll-431c75d9.js'),
+        () => import('./browserAll-829f90d1.js'),
         [
-          './browserAll-431c75d9.js',
-          './init-3d28dcdd.js',
-          './colorToUniform-74a8c3f8.js',
-          './CanvasPool-93ca5665.js',
-          './batchSamplersUniformGroup-75cefaca.js',
+          './browserAll-829f90d1.js',
+          './init-deecbeb7.js',
+          './colorToUniform-64c7363a.js',
+          './CanvasPool-d71710c9.js',
+          './batchSamplersUniformGroup-6169732a.js',
         ],
         import.meta.url,
       )
@@ -8829,13 +8829,13 @@ const Vo = (e) => {
     test: () => typeof self < 'u' && self.WorkerGlobalScope !== void 0,
     load: async () => {
       await xs(
-        () => import('./webworkerAll-f8077738.js'),
+        () => import('./webworkerAll-70a5697a.js'),
         [
-          './webworkerAll-f8077738.js',
-          './init-3d28dcdd.js',
-          './colorToUniform-74a8c3f8.js',
-          './CanvasPool-93ca5665.js',
-          './batchSamplersUniformGroup-75cefaca.js',
+          './webworkerAll-70a5697a.js',
+          './init-deecbeb7.js',
+          './colorToUniform-64c7363a.js',
+          './CanvasPool-d71710c9.js',
+          './batchSamplersUniformGroup-6169732a.js',
         ],
         import.meta.url,
       )
@@ -14864,12 +14864,12 @@ async function Vb(e) {
     const o = t[r]
     if (o === 'webgpu' && (await zb())) {
       const { WebGPURenderer: a } = await xs(
-        () => import('./WebGPURenderer-d34140c1.js'),
+        () => import('./WebGPURenderer-6a88a950.js'),
         [
-          './WebGPURenderer-d34140c1.js',
-          './colorToUniform-74a8c3f8.js',
-          './SharedSystems-809b6875.js',
-          './CanvasPool-93ca5665.js',
+          './WebGPURenderer-6a88a950.js',
+          './colorToUniform-64c7363a.js',
+          './SharedSystems-342dccd2.js',
+          './CanvasPool-d71710c9.js',
         ],
         import.meta.url,
       )
@@ -14883,12 +14883,12 @@ async function Vb(e) {
       )
     ) {
       const { WebGLRenderer: a } = await xs(
-        () => import('./WebGLRenderer-3a5931d0.js'),
+        () => import('./WebGLRenderer-ec4b5e2f.js'),
         [
-          './WebGLRenderer-3a5931d0.js',
-          './colorToUniform-74a8c3f8.js',
-          './batchSamplersUniformGroup-75cefaca.js',
-          './SharedSystems-809b6875.js',
+          './WebGLRenderer-ec4b5e2f.js',
+          './colorToUniform-64c7363a.js',
+          './batchSamplersUniformGroup-6169732a.js',
+          './SharedSystems-342dccd2.js',
         ],
         import.meta.url,
       )
@@ -20558,7 +20558,7 @@ const hw = Ye(cw, [['__scopeId', 'data-v-15d479d1']]),
       )
     },
   })
-const fw = Ye(dw, [['__scopeId', 'data-v-68dd4332']]),
+const fw = Ye(dw, [['__scopeId', 'data-v-bc86a310']]),
   pw = st({
     __name: 'KeyFrameWrap',
     setup(e) {
@@ -21220,7 +21220,7 @@ const Bw = st({
         Te(() => {
           const t = my.service({
             lock: !0,
-            text: '需要一段时间初始化网站资源，请耐心等候(如果加载时间超过5分钟，请刷新重试)',
+            text: '需要一段时间初始化网站资源，请耐心等候（科学上网资源加载快）',
             background: 'rgba(0, 0, 0, 0.7)',
           })
           If.init()
@@ -21240,9 +21240,9 @@ const Bw = st({
       path: '/record',
       component: () =>
         xs(
-          () => import('./index-c10cd080.js'),
+          () => import('./index-f1af9ac5.js'),
           [
-            './index-c10cd080.js',
+            './index-f1af9ac5.js',
             '..\\assets\\index-08c4522e.css',
             '..\\assets\\button-e76b79e2.css',
           ],
@@ -21254,11 +21254,11 @@ const Bw = st({
       path: '/cut',
       component: () =>
         xs(
-          () => import('./index-0835a243.js'),
+          () => import('./index-08a4c2ad.js'),
           [
-            './index-0835a243.js',
-            './el-overlay-9d7012cf.js',
-            './focus-trap-c8be6e9c.js',
+            './index-08a4c2ad.js',
+            './el-overlay-dc6a96c5.js',
+            './focus-trap-4db1b527.js',
             '..\\assets\\el-overlay-49152403.css',
             '..\\assets\\index-3ed7b2af.css',
             '..\\assets\\button-e76b79e2.css',
@@ -21271,11 +21271,11 @@ const Bw = st({
       path: '/editor',
       component: () =>
         xs(
-          () => import('./index-6d17580a.js'),
+          () => import('./index-af1b0aba.js'),
           [
-            './index-6d17580a.js',
-            './el-input-bb203cd7.js',
-            './focus-trap-c8be6e9c.js',
+            './index-af1b0aba.js',
+            './el-input-3c27ad84.js',
+            './focus-trap-4db1b527.js',
             '..\\assets\\el-input-961013f5.css',
             '..\\assets\\index-78880f65.css',
             '..\\assets\\button-e76b79e2.css',
@@ -21288,13 +21288,13 @@ const Bw = st({
       path: '/download',
       component: () =>
         xs(
-          () => import('./index-e650e66a.js'),
+          () => import('./index-d53a651c.js'),
           [
-            './index-e650e66a.js',
-            './el-overlay-9d7012cf.js',
-            './focus-trap-c8be6e9c.js',
+            './index-d53a651c.js',
+            './el-overlay-dc6a96c5.js',
+            './focus-trap-4db1b527.js',
             '..\\assets\\el-overlay-49152403.css',
-            './el-input-bb203cd7.js',
+            './el-input-3c27ad84.js',
             '..\\assets\\el-input-961013f5.css',
             '..\\assets\\index-350a53d7.css',
             '..\\assets\\button-e76b79e2.css',

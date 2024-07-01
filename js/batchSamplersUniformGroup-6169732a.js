@@ -1,5 +1,5 @@
-import { M as e } from './index-f246c644.js'
-import { U as o } from './colorToUniform-74a8c3f8.js'
+import { M as e } from './index-1a4f7b41.js'
+import { U as o } from './colorToUniform-64c7363a.js'
 const t = new Int32Array(e)
 for (let r = 0; r < e; r++) t[r] = r
 const i = new o(
